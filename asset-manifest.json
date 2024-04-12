@@ -1,13 +1,10 @@
 {
   "files": {
-    "main.css": "/psycholog-warszawa/static/css/main.7acaea2f.css",
-    "main.js": "/psycholog-warszawa/static/js/main.07d3183d.js",
+    "main.js": "/psycholog-warszawa/static/js/main.dc643d18.js",
     "index.html": "/psycholog-warszawa/index.html",
-    "main.7acaea2f.css.map": "/psycholog-warszawa/static/css/main.7acaea2f.css.map",
-    "main.07d3183d.js.map": "/psycholog-warszawa/static/js/main.07d3183d.js.map"
+    "main.dc643d18.js.map": "/psycholog-warszawa/static/js/main.dc643d18.js.map"
   },
   "entrypoints": [
-    "static/css/main.7acaea2f.css",
-    "static/js/main.07d3183d.js"
+    "static/js/main.dc643d18.js"
   ]
 }
