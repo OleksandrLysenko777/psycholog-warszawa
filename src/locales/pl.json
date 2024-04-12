@@ -1,0 +1,11 @@
+{
+  "menu": {
+    "start": "START",
+    "team": "ZESPÓŁ",
+    "howWeWork": "JAK PRACUJEMY",
+    "price": "CENNIK",
+    "offer": "OFERTA",
+    "contact": "KONTAKT",
+    "reviews": "OPINIE"
+  }
+}
