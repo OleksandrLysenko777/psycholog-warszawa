@@ -1,0 +1,88 @@
+.team-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.specialist {
+  display: flex;
+  flex-wrap: wrap;
+  width: 80%;
+  max-width: 1200px;
+  margin-bottom: 40px;
+  border: 1px solid #ddd;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+}
+
+.specialist h2 {
+  font-size: 40px;
+  margin-bottom: 30px;
+  width: 100%;
+  text-align: center;
+}
+
+.specialist-info {
+  display: flex;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.specialist-photo {
+  width: 300px;
+  height: auto;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.specialist-description {
+  font-size: 20px;
+  margin-left: 40px;
+}
+
+.accordion {
+  width: 100%;
+  margin-top: 20px;
+}
+
+.accordion .tab {
+  margin-bottom: 10px;
+}
+
+.accordion .tab button {
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  cursor: pointer;
+  padding: 10px;
+  width: 100%;
+  text-align: left;
+  font-size: 16px;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+  color:black;
+}
+
+.accordion .tab button:hover {
+  background-color: #e9e9e9;
+}
+
+.accordion .content {
+  padding: 10px;
+  background-color: #f1f1f1;
+  border: 1px solid #ddd;
+  border-top: none;
+  border-radius: 0 0 4px 4px;
+}
+
+.specialist-reviews {
+  margin-top: 20px;
+}
+
+.specialist-reviews .review {
+  border: 1px solid #ddd;
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 10px;
+}

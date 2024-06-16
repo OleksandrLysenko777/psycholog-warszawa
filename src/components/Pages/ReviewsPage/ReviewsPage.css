@@ -1,0 +1,75 @@
+.reviews-page {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  padding: 20px;
+  gap: 20px;
+  height: calc(100vh - 40px); /* Высота страницы с учетом отступов */
+  box-sizing: border-box;
+}
+
+.reviews-list {
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 600px;
+  height: 800px;
+  overflow-y: auto;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+.reviews-list h1 {
+  margin-top: 0;
+  font-size: 24px;
+  text-align: center;
+}
+
+.reviews-list .review {
+  border-bottom: 1px solid #eee;
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+}
+
+.reviews-list .review:last-child {
+  border-bottom: none;
+}
+
+.reviews-list .review h3 {
+  margin: 0;
+  font-size: 18px;
+  color: #007bff;
+}
+
+.reviews-list .review p {
+  margin: 5px 0;
+  font-size: 14px;
+  color: #333;
+}
+
+.reviews-list .review .react-stars {
+  display: inline-block;
+  margin: 5px 0;
+}
+
+/* Custom scrollbar */
+.reviews-list::-webkit-scrollbar {
+  width: 12px;
+}
+
+.reviews-list::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 8px;
+}
+
+.reviews-list::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 8px;
+}
+
+.reviews-list::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}

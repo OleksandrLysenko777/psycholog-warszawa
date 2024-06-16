@@ -1,11 +1,104 @@
 {
   "menu": {
     "start": "START",
+    "news": "AKTUALNOŚCI",
     "team": "ZESPÓŁ",
     "howWeWork": "JAK PRACUJEMY",
     "price": "CENNIK",
     "offer": "OFERTA",
     "contact": "KONTAKT",
     "reviews": "OPINIE"
+  },
+  "centerDescription": "Centrum Pomocy Psychologicznej, Psychotaumatologii i Interwencji Kryzysowej",
+  "specialist1": {
+     "name": "Natalia Basko",
+    "description": "Natalia jest dyplomowanym psychologiem z ponad 10-letnim stażem.",
+    "details": [
+      { "title": "Jak zmieniła mnie psychoterapia", "content": "Psychologia zmieniła moje życie, pomogła mi lepiej zrozumieć siebie i innych ludzi." },
+      { "title": "O mnie", "content": "Nazywam się Natalia, jestem certyfikowanym psychologiem z ponad 10-letnim doświadczeniem w dziedzinie psychoterapii." },
+      { "title": "Z czym pracuję", "content": "Pracuję z problemami lękowymi, depresyjnymi, sytuacjami stresowymi" },
+      { "title": "Wykształcenie", "content": "Mam tytuł magistra psychologii" },
+      { "title": "Certyfikaty", "content": "Jestem certyfikowanym terapeutą poznawczo-behawioralnym" }
+    ]
+  },
+  "specialist2": {
+    "name": "Sebastian Chmeliński",
+    "description": "Sebastian jest doświadczonym psychologiem i psychoterapeutą posiadającym szeroką wiedzę z zakresu psychoterapii.",
+    "details": [
+      { "title": "Jak zmieniła mnie psychoterapia", "content": "Psychologia dała mi narzędzia umożliwiające głębsze zrozumienie ludzkiej natury" },
+      { "title": "O mnie", "content": "Jestem Sebastian, doświadczony psycholog i psychoterapeuta." },
+      { "title": "Z czym pracuję", "content": "Moja praca polega na pomaganiu w depresji" },
+      { "title": "Wykształcenie", "content": "Ukończyłem studia na Uniwersytecie Warszawskim na kierunku psychologia." },
+      { "title": "Certyfikaty", "content": "Posiadam certyfikat terapii poznawczo-behawioralnej" }
+    ]
+  },
+  "reviews": {
+    "title": "Opinie",
+    "addTitle": "Dodaj opinię",
+    "selectSpecialist": "Wybierz specjalistę",
+    "chooseSpecialist": "-/-",
+    "rating": "Ocena",
+    "name": "Imię",
+    "lastName": "Nazwisko",
+    "reviewText": "Opinia",
+    "submitButton": "Prześlij",
+    "errorNoRating": "Prosimy o ocenę.",
+    "errorIncomplete": "Prosimy wypęłnić niezbędne pola"
+  },
+"start": {
+    "title": "Centrum Pomocy Psychologicznej, Psychotraumatologii i Interwencji Kryzysowej",
+    "text0": "Potrzebujesz fachowej pomocy psychologicznej, wsparcia, przydatnych wskazówek. Chcesz wiedzieć jak radzić sobie z własnymi emocjami oraz emocjami swojego dziecka? Nie wiesz jak rozmawiać z trudnym nastolatkiem? A może doświadczasz kryzysu i nie widzisz rozwiązań? Umów się na spotkanie z naszym specjalistą.",
+    "text1": "Jesteśmy psychologami, psychotraumatologami z wieloletnim doświadczeniem zawodowym. Udzielamy pomocy psychologicznej i wsparcia osobom w trudnej sytuacji życiowej. Zajmujemy się interwencją kryzysową, poradnictwem psychologicznym oraz terapią indywidualną. Prowadzimy grupy wsparcia dla osób w kryzysie. Pracujemy również z dziećmi w wieku szkolnym. Udzielamy wsparcia ofiarom przemocy w rodzinie. Prowadzimy szkolenia z umiejętności miękkich.",
+    "sections": {
+      "section1": {
+        "title": "Pomoc psychologiczna",
+        "content": "Psychoterapia jest jedną z form pomocy w sytuacji cierpienia psychicznego. Nadrzędnym celem psychoterapii jest usunięcie lub ograniczenie przykrych dla człowieka symptomów będących przyczyną jego cierpienia, a także uruchomienie procesu tworzenia się zmian."
+      },
+      "section2": {
+        "title": "Psychoterapia dzieci!!!!!!!!!",
+        "content": "Psychoterapia dzieci polega na systematycznych spotkaniach dziecka z terapeutą raz lub więcej razy w tygodniu. Sesje trwają 50 minut a ich przebieg dostosowany jest do wieku i potrzeb dziecka. Najczęściej spotkania mają formę niedyrektywnej zabawy, w której dziecko za pomocą dostępnych mu przedmiotów opowiada, przeżywa, pokazuje obszary/tematy, które są dla niego trudne."
+      },
+      "section3": {
+        "title": "Psychoterapia młodzieży",
+        "content": "Dorastanie jest okresem niezwykle burzliwym, w którym młody człowiek buduje własną tożsamość oraz doświadcza wielu zmian w wyglądzie fizycznym, rozwoju poznawczym i emocjonalnym. Wielu młodych ludzi jest zadowolonych z tego, kim są i jak żyją. Znajdują odpowiedź na pytanie „kim jestem?” Zdarza się jednak, że nastolatek przeżywa różnego rodzaju trudności, z którymi nie potrafi poradzić sobie samodzielnie."
+      },
+      "section4": {
+        "title": "Psychoterapia dorosłych",
+        "content": "Życiowe i rodzinne tragedie, kryzysy w związkach, problemy wychowawcze z dziećmi, utrata pracy itp. wydarzenia potrafią przewrócić w miarę uporządkowany świat niejednego człowieka i załamać go. Nie zawsze ma on w sobie tyle siły, aby samemu dać sobie radę z tym ciężarem."
+      },
+      "section5": {
+        "title": "Psychotraumatologia",
+        "content": "Jest dziedziną psychologii, która zajmuje się pomocą osobom doświadczającym trudności po stresie traumatycznym, związanym z gwałtownym lub długotrwałym, zewnętrznym lub wewnętrznym zagrożeniem życia i zdrowia. W następstwie zdarzeń o charakterze losowym (katastrofy naturalne, wypadki samochodowe) oraz spowodowanych udziałem innych ludzi (przemoc psychiczna, fizyczna, seksualna, konflikty zbrojne). Osoba w sytuacji traumatycznej doświadcza skrajnej bezradności i bezsilności, odczuwa silny lęk i brak kontroli nad sytuacją, w której się znalazła, oraz często poczucie winy i odpowiedzialności za zaistniałą sytuację. Wydarzenia traumatyczne jest bardzo destrukcyjne dla psychiki człowieka, ponieważ nie można się do niego przygotować, uciec ani do niego dostosować."
+      },
+      "section6": {
+        "title": "Konsultacja psychologiczna",
+        "content": "To najczęściej pierwsze spotkanie z psychologiem, które ma na celu określenie problemu oraz zaplanowanie poszczególnych kroków prowadzących do jego rozwiązania. Pierwsze spotkanie jest również okazją do zweryfikowania oczekiwań dotyczących pomocy psychologicznej. Z konsultacji psychologicznej często korzystają osoby, które szukają odpowiedzi na konkretne pytania (dotyczące np. wychowania dzieci, rozwiązania konfliktów w związku, problemów w pracy) lub osoby, które odczuwają potrzebę zmiany w swoim życiu. Konsultacja psychologiczna to 1 do 3 spotkań."
+      },
+      "section7": {
+        "title": "Psychoterapia indywidualna",
+        "content": "Stanowi formę pomocy psychologicznej. Terapeuta towarzyszy pacjentowi w zrozumieniu istoty przeżywanych przez niego problemów i ich rozwiązywaniu. Proces ten służy uzyskaniu w sposób konstruktywny trwałej zmiany, której autorem jest sam pacjent."
+      },
+      "section8": {
+        "title": "Choroba psychiczna",
+        "content": "Za choroby psychiczne uznawane są zaburzenia powstające na tle organicznych zmian w ośrodkowym układzie nerwowym. Są to takie jednostki chorobowe jak: otępienie, schizofrenia, choroba afektywna jednobiegunowa, choroba afektywna dwubiegunowa. Pozostałe jednostki określane są mianem zaburzeń psychicznych. Są to:  Zaburzenia nerwicowe  Zaburzenia odżywiania się  Zaburzenia snu  Zaburzenia seksualne  Zaburzenia osobowości (np. osobowość chwiejna emocjonalnie, zależna, impulsywna, lękowa, histrioniczna, borderline etc.) Chorobę psychiczną diagnozuje lekarz psychiatra. Oprócz terapii wymagane jest leczenie psychiatryczne."
+      }
+      
+    }
+  },
+    "contact": {
+    "title": "Kontakt",
+    "addressTitle": "Adres",
+    "address": "Aleja Stanów Zjednoczonych 51, 04-028 Warszawa",
+    "phoneTitle": "Telefon",
+    "phone": "+48 794 555 809, +48 601 949 472",
+    "emailTitle": "E-mail",
+    "email": "psychologwaw2@gmail.com",
+    "skypeTitle": "Skype",
+    "skype": "psycholog.waw",
+    "hoursTitle": "Godziny pracy",
+    "hours": "Poniedziałek - Piątek: 8:00 - 20:00",
+    "resignationTitle": "Zasady odwoływania spotkań",
+    "resignationText1": "Bezpłatne odwołanie wizyty jest możliwe nie później niż 24 godziny przed sesją. Jeżeli jednak do sesji zostało mniej niż 24 godziny, a pacjent nie ma możliwości pojawienia się na spotkaniu, zobowiązany jest do poniesienia pełnego kosztu wizyty. W przypadku niepojawienia się na spotkaniu bez uprzedzenia, koszt wizyty również ponosi pacjent.",
+    "resignationText2": "Zasady odwoływania spotkań stanowią ważny element kontraktu terapeutycznego i zostaną omówione na pierwszych konsultacjach przed rozpoczęciem terapii."
   }
 }
