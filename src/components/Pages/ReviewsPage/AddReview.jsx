@@ -7,10 +7,9 @@ const AddReview = ({ specialists, addReview }) => {
   const { t } = useTranslation();
   const [selectedSpecialist, setSelectedSpecialist] = useState('');
   const [name, setName] = useState('');
-  const [lastName, setLastName] = useState('');
   const [reviewText, setReviewText] = useState('');
   const [rating, setRating] = useState(0);
-  const [ratingKey, setRatingKey] = useState(Date.now()); // Ключ для компонента ReactStars
+  const [ratingKey, setRatingKey] = useState(Date.now()); 
   const [error, setError] = useState('');
 
   const handleSubmit = e => {
@@ -19,24 +18,22 @@ const AddReview = ({ specialists, addReview }) => {
       setError(t('reviews.errorNoRating'));
       return;
     }
-    if (!selectedSpecialist || !name || !lastName || !reviewText) {
+    if (!selectedSpecialist || !name || !reviewText) {
       setError(t('reviews.errorIncomplete'));
       return;
     }
     addReview({
       specialistId: selectedSpecialist,
       name,
-      lastName,
       reviewText,
       rating,
-      date: new Date().toISOString(), // Добавление текущей даты
+      date: new Date().toISOString(), 
     });
     setSelectedSpecialist('');
     setName('');
-    setLastName('');
     setReviewText('');
-    setRating(0); // Сброс звездочек
-    setRatingKey(Date.now()); // Обновление ключа для перерисовки
+    setRating(0); 
+    setRatingKey(Date.now()); 
     setError('');
   };
 
@@ -68,15 +65,6 @@ const AddReview = ({ specialists, addReview }) => {
         />
       </div>
       <div className="form-group">
-        <label htmlFor="lastName">{t('reviews.lastName')}</label>
-        <input
-          type="text"
-          id="lastName"
-          value={lastName}
-          onChange={e => setLastName(e.target.value)}
-        />
-      </div>
-      <div className="form-group">
         <label htmlFor="reviewText">{t('reviews.reviewText')}</label>
         <textarea
           id="reviewText"
@@ -87,7 +75,7 @@ const AddReview = ({ specialists, addReview }) => {
       <div className="form-group">
         <label>{t('reviews.rating')}</label>
         <ReactStars
-          key={ratingKey} // Используем ключ для перерисовки
+          key={ratingKey}
           count={5}
           value={rating}
           onChange={newRating => setRating(newRating)}

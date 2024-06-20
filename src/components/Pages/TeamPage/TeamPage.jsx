@@ -1,7 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
+import Slider from 'react-slick';
 import { useTranslation } from 'react-i18next';
 import Accordion from './Accordion';
 import ReactStars from 'react-rating-stars-component';
+import 'slick-carousel/slick/slick.css';
+import 'slick-carousel/slick/slick-theme.css';
 import './TeamPage.css';
 
 function TeamPage({ reviews }) {
@@ -11,8 +14,12 @@ function TeamPage({ reviews }) {
     {
       id: 'natalia',
       name: t('specialist1.name'),
-      photo: process.env.PUBLIC_URL + '/images/natalia.jpg',
-      description: t('specialist1.description'),
+      photo: process.env.PUBLIC_URL + '/images/17.jpg',
+      description: `
+        <p><strong>${t('specialist1.description.therapy')}</strong></p>
+        <p><strong>${t('specialist1.description.experience')}</strong></p>       
+        <p><strong>${t('specialist1.description.location')}</strong></p>
+      `,
       details: [
         { title: t('specialist1.details.0.title'), content: t('specialist1.details.0.content') },
         { title: t('specialist1.details.1.title'), content: t('specialist1.details.1.content') },
@@ -36,15 +43,32 @@ function TeamPage({ reviews }) {
     },
   ];
 
-  const [currentPage, setCurrentPage] = useState(0);
-  const reviewsPerPage = 3;
-
-  const handleNext = () => {
-    setCurrentPage((prevPage) => prevPage + 1);
-  };
-
-  const handlePrev = () => {
-    setCurrentPage((prevPage) => prevPage - 1);
+  const settings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 3,
+    slidesToScroll: 1,
+    centerMode: true,
+    centerPadding: '5',
+    responsive: [
+      {
+        breakpoint: 1024,
+        settings: {
+          slidesToShow: 2,
+          slidesToScroll: 1,
+          infinite: true,
+          dots: true
+        }
+      },
+      {
+        breakpoint: 600,
+        settings: {
+          slidesToShow: 1,
+          slidesToScroll: 1
+        }
+      }
+    ]
   };
 
   return (
@@ -54,33 +78,30 @@ function TeamPage({ reviews }) {
           <h2 className="specialist-name">{specialist.name}</h2>
           <div className="specialist-info">
             <img src={specialist.photo} alt={specialist.name} className="specialist-photo" />
-            <p className="specialist-description">{specialist.description}</p>
+            <div className="specialist-description" dangerouslySetInnerHTML={{ __html: specialist.description }}></div>
           </div>
           <Accordion items={specialist.details} />
           <div className="specialist-reviews">
             <h3>{t('reviews.title')}</h3>
-            <div className="reviews-slider">
+            <Slider {...settings}>
               {reviews
                 .filter((review) => review.specialistId === specialist.id)
-                .slice(currentPage * reviewsPerPage, (currentPage + 1) * reviewsPerPage)
                 .map((review, index) => (
                   <div key={index} className="review-card">
-                    <p><strong>{review.name} {review.lastName[0]}.</strong></p>
-                    <ReactStars
-                      count={5}
-                      value={review.rating}
-                      edit={false}
-                      size={24}
-                      activeColor="#ffd700"
-                    />
+                    <div className="review-header">
+                      <p><strong>{review.name}</strong></p>
+                      <ReactStars
+                        count={5}
+                        value={review.rating}
+                        edit={false}
+                        size={20}
+                        activeColor="#ffd700"
+                      />
+                    </div>
                     <p>{review.reviewText}</p>
                   </div>
                 ))}
-            </div>
-            <div className="reviews-navigation">
-              <button onClick={handlePrev} disabled={currentPage === 0}>Previous</button>
-              <button onClick={handleNext} disabled={(currentPage + 1) * reviewsPerPage >= reviews.length}>Next</button>
-            </div>
+            </Slider>
           </div>
         </div>
       ))}

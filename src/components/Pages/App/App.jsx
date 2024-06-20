@@ -1,13 +1,16 @@
 import React, { useState } from 'react';
+import './App.css';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Header from './Pages/Header/Header';
-import StartPage from './Pages/StartPage/StartPage';
-import TeamPage from './Pages/TeamPage/TeamPage';
-import HowWeWorkPage from './Pages/HowWeWorkPage';
-import PricePage from './Pages/PricePage';
-import OfferPage from './Pages/OfferPage';
-import ContactPage from './Pages/ContactPage/ContactPage';
-import ReviewsPage from './Pages/ReviewsPage/ReviewsPage';
+import Header from '../Header/Header';
+import StartPage from '../StartPage/StartPage';
+import TeamPage from '../TeamPage/TeamPage';
+import HowWeWorkPage from '../HowWeWorkPage';
+import PricePage from '../PricePage';
+import OfferPage from '../OfferPage';
+import ContactPage from '../ContactPage/ContactPage';
+import ReviewsPage from '../ReviewsPage/ReviewsPage';
+
+
 
 
 function App() {

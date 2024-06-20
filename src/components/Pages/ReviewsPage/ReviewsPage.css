@@ -4,7 +4,7 @@
   align-items: stretch;
   padding: 20px;
   gap: 20px;
-  height: calc(100vh - 40px); /* Высота страницы с учетом отступов */
+  height: calc(100vh - 40px); 
   box-sizing: border-box;
 }
 
@@ -38,6 +38,12 @@
   border-bottom: none;
 }
 
+.reviews-list .review-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .reviews-list .review h3 {
   margin: 0;
   font-size: 18px;
@@ -46,7 +52,7 @@
 
 .reviews-list .review p {
   margin: 5px 0;
-  font-size: 14px;
+  font-size: 20px;
   color: #333;
 }
 
@@ -55,7 +61,6 @@
   margin: 5px 0;
 }
 
-/* Custom scrollbar */
 .reviews-list::-webkit-scrollbar {
   width: 12px;
 }

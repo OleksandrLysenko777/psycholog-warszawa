@@ -6,7 +6,8 @@
 
 .specialist {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
+  align-items: center;
   width: 80%;
   max-width: 1200px;
   margin-bottom: 40px;
@@ -61,7 +62,7 @@
   font-size: 16px;
   border-radius: 4px;
   transition: background-color 0.3s;
-  color:black;
+  color: black;
 }
 
 .accordion .tab button:hover {
@@ -77,12 +78,34 @@
 }
 
 .specialist-reviews {
+  width: 100%;
   margin-top: 20px;
+  text-align: center;
 }
 
-.specialist-reviews .review {
+.review-card {
+  background-color: #f9f9f9;
   border: 1px solid #ddd;
-  padding: 10px;
-  border-radius: 4px;
-  margin-bottom: 10px;
+  border-radius: 8px;
+  padding: 15px;
+  margin: 5px;
+  box-sizing: border-box;
+  text-align: left;
+}
+
+.review-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.slick-prev:before,
+.slick-next:before {
+  color: #007bff;
+}
+
+.slick-dots li button:before {
+  font-size: 7px;
+ bottom: -20px;
+  color: #007bff;
 }

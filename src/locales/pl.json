@@ -12,12 +12,16 @@
   "centerDescription": "Centrum Pomocy Psychologicznej, Psychotaumatologii i Interwencji Kryzysowej",
   "specialist1": {
      "name": "Natalia Basko",
-    "description": "Natalia jest dyplomowanym psychologiem z ponad 10-letnim stażem.",
+    "description": {
+      "therapy": "Terapia indywidualna: 200zł (50min)",
+      "experience": "Staż pracy: 15 lat",    
+      "location": "Przyjmuję stacjonarnie w Warszawie. Pracuję również online."
+    },
     "details": [
-      { "title": "Jak zmieniła mnie psychoterapia", "content": "Psychologia zmieniła moje życie, pomogła mi lepiej zrozumieć siebie i innych ludzi." },
-      { "title": "O mnie", "content": "Nazywam się Natalia, jestem certyfikowanym psychologiem z ponad 10-letnim doświadczeniem w dziedzinie psychoterapii." },
-      { "title": "Z czym pracuję", "content": "Pracuję z problemami lękowymi, depresyjnymi, sytuacjami stresowymi" },
-      { "title": "Wykształcenie", "content": "Mam tytuł magistra psychologii" },
+      { "title": "Jak zmieniła mnie psychoterapia", "content": "Psychoterapia jest moim niezastąpionym narzędziem samopomocy, samopoznania oraz odnalezienia siły w trudnych momentach życia.  Jest dla mnie spotkaniem ze sobą w prawdzie i niesamowicie ciekawą drogą do poznania swojego wewnętrznego świata. Dzięki terapeutycznej pracy idę swoją własną, świadomą  i odpowiedzialną drogą życia, z poczuciem wdzięczności i samorealizacji." },
+      { "title": "O mnie", "content": "Jestem psychologiem praktykiem, psychotraumatologiem. Specjalizuje się w pracy z traumą.  Człowiek jest dla mnie tajemnicą, którą lubię poznawać. Pracuje z dorosłymi i dziećmi od 12 roku życia. Kocham góry, poznawanie nowych miejsc, kultur i smaków. Siłę czerpie na łonie natury, cenię ciszę i własny rozwój. Rozmawiam w języku polskim, ukraińskim i rosyjskim."},
+      { "title": "Z czym pracuję", "content": "Zaburzenia psychiczne, depresja, kryzys tożsamości, problemy adaptacyjne, utrata bliskich, żałoba, samouszkodzenia. Pracuję z osobami w kryzysie rozwodowym, zagrożonymi samobójstwem, ofiarami przemocy, migrantami, ofiarami wojny. Pomagam w odbudowaniu równowagi życiowej, pogłębianiu samoświadomości, samo empatii i dokonywaniu świadomych i odpowiedzialnych wyborów życiowych." },
+      { "title": "Wykształcenie", "content": "Wyższe magisterskie. W 2009 roku Ukończyłam stacjonarne studia magisterskie z psychologii na Uniwersytecie Kardynała Stefana Wyszyńskiego w Warszawie oraz dwuletnie Studia Podyplomowe na Uniwersytecie Warszawskim z Diagnozy Klinicznej Dziecka i Jego Rodziny. Dodatkowo ukończyłam wiele kursów i szkoleń przygotowujących mnie do pracy terapeutycznej z traumą oraz klientem w szeroko rozumianym kryzysie. Pracuje interwencyjnie, terapeutycznie, konsultacyjnie. Swoją pracę poddaje superwizji i interwizji koleżeńskiej." },
       { "title": "Certyfikaty", "content": "Jestem certyfikowanym terapeutą poznawczo-behawioralnym" }
     ]
   },
@@ -54,31 +58,28 @@
         "title": "Pomoc psychologiczna",
         "content": "Psychoterapia jest jedną z form pomocy w sytuacji cierpienia psychicznego. Nadrzędnym celem psychoterapii jest usunięcie lub ograniczenie przykrych dla człowieka symptomów będących przyczyną jego cierpienia, a także uruchomienie procesu tworzenia się zmian."
       },
+      
       "section2": {
-        "title": "Psychoterapia dzieci!!!!!!!!!",
-        "content": "Psychoterapia dzieci polega na systematycznych spotkaniach dziecka z terapeutą raz lub więcej razy w tygodniu. Sesje trwają 50 minut a ich przebieg dostosowany jest do wieku i potrzeb dziecka. Najczęściej spotkania mają formę niedyrektywnej zabawy, w której dziecko za pomocą dostępnych mu przedmiotów opowiada, przeżywa, pokazuje obszary/tematy, które są dla niego trudne."
-      },
-      "section3": {
         "title": "Psychoterapia młodzieży",
         "content": "Dorastanie jest okresem niezwykle burzliwym, w którym młody człowiek buduje własną tożsamość oraz doświadcza wielu zmian w wyglądzie fizycznym, rozwoju poznawczym i emocjonalnym. Wielu młodych ludzi jest zadowolonych z tego, kim są i jak żyją. Znajdują odpowiedź na pytanie „kim jestem?” Zdarza się jednak, że nastolatek przeżywa różnego rodzaju trudności, z którymi nie potrafi poradzić sobie samodzielnie."
       },
-      "section4": {
+      "section3": {
         "title": "Psychoterapia dorosłych",
         "content": "Życiowe i rodzinne tragedie, kryzysy w związkach, problemy wychowawcze z dziećmi, utrata pracy itp. wydarzenia potrafią przewrócić w miarę uporządkowany świat niejednego człowieka i załamać go. Nie zawsze ma on w sobie tyle siły, aby samemu dać sobie radę z tym ciężarem."
       },
-      "section5": {
+      "section4": {
         "title": "Psychotraumatologia",
         "content": "Jest dziedziną psychologii, która zajmuje się pomocą osobom doświadczającym trudności po stresie traumatycznym, związanym z gwałtownym lub długotrwałym, zewnętrznym lub wewnętrznym zagrożeniem życia i zdrowia. W następstwie zdarzeń o charakterze losowym (katastrofy naturalne, wypadki samochodowe) oraz spowodowanych udziałem innych ludzi (przemoc psychiczna, fizyczna, seksualna, konflikty zbrojne). Osoba w sytuacji traumatycznej doświadcza skrajnej bezradności i bezsilności, odczuwa silny lęk i brak kontroli nad sytuacją, w której się znalazła, oraz często poczucie winy i odpowiedzialności za zaistniałą sytuację. Wydarzenia traumatyczne jest bardzo destrukcyjne dla psychiki człowieka, ponieważ nie można się do niego przygotować, uciec ani do niego dostosować."
       },
-      "section6": {
+      "section5": {
         "title": "Konsultacja psychologiczna",
         "content": "To najczęściej pierwsze spotkanie z psychologiem, które ma na celu określenie problemu oraz zaplanowanie poszczególnych kroków prowadzących do jego rozwiązania. Pierwsze spotkanie jest również okazją do zweryfikowania oczekiwań dotyczących pomocy psychologicznej. Z konsultacji psychologicznej często korzystają osoby, które szukają odpowiedzi na konkretne pytania (dotyczące np. wychowania dzieci, rozwiązania konfliktów w związku, problemów w pracy) lub osoby, które odczuwają potrzebę zmiany w swoim życiu. Konsultacja psychologiczna to 1 do 3 spotkań."
       },
-      "section7": {
+      "section6": {
         "title": "Psychoterapia indywidualna",
         "content": "Stanowi formę pomocy psychologicznej. Terapeuta towarzyszy pacjentowi w zrozumieniu istoty przeżywanych przez niego problemów i ich rozwiązywaniu. Proces ten służy uzyskaniu w sposób konstruktywny trwałej zmiany, której autorem jest sam pacjent."
       },
-      "section8": {
+      "section7": {
         "title": "Choroba psychiczna",
         "content": "Za choroby psychiczne uznawane są zaburzenia powstające na tle organicznych zmian w ośrodkowym układzie nerwowym. Są to takie jednostki chorobowe jak: otępienie, schizofrenia, choroba afektywna jednobiegunowa, choroba afektywna dwubiegunowa. Pozostałe jednostki określane są mianem zaburzeń psychicznych. Są to:  Zaburzenia nerwicowe  Zaburzenia odżywiania się  Zaburzenia snu  Zaburzenia seksualne  Zaburzenia osobowości (np. osobowość chwiejna emocjonalnie, zależna, impulsywna, lękowa, histrioniczna, borderline etc.) Chorobę psychiczną diagnozuje lekarz psychiatra. Oprócz terapii wymagane jest leczenie psychiatryczne."
       }
@@ -98,7 +99,7 @@
     "hoursTitle": "Godziny pracy",
     "hours": "Poniedziałek - Piątek: 8:00 - 20:00",
     "resignationTitle": "Zasady odwoływania spotkań",
-    "resignationText1": "Bezpłatne odwołanie wizyty jest możliwe nie później niż 24 godziny przed sesją. Jeżeli jednak do sesji zostało mniej niż 24 godziny, a pacjent nie ma możliwości pojawienia się na spotkaniu, zobowiązany jest do poniesienia pełnego kosztu wizyty. W przypadku niepojawienia się na spotkaniu bez uprzedzenia, koszt wizyty również ponosi pacjent.",
-    "resignationText2": "Zasady odwoływania spotkań stanowią ważny element kontraktu terapeutycznego i zostaną omówione na pierwszych konsultacjach przed rozpoczęciem terapii."
+    "resignationText": "Bezpłatne odwołanie wizyty jest możliwe nie później niż 24 godziny przed sesją."
+   
   }
 }

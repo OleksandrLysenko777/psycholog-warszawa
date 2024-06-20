@@ -18,8 +18,8 @@ const ContactPage = () => {
         </div>
         <div className="resignation-info">
           <h2>{t('contact.resignationTitle')}</h2>
-          <p>{t('contact.resignationText1')}</p>
-          <p>{t('contact.resignationText2')}</p>
+          <p>{t('contact.resignationText')}</p>
+          
         </div>
       </div>
       <div className="map-container">

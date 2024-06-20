@@ -1,0 +1,12 @@
+
+html, body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  background-image: url('../../../../public/images/13.jpg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-position: center;
+    
+}

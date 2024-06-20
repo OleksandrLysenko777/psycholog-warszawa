@@ -7,8 +7,6 @@ import './AddReview.css';
 
 const ReviewsPage = ({ specialists, addReview, reviews }) => {
   const { t } = useTranslation();
-
-  // Сортировка отзывов по убыванию даты добавления (предполагается, что отзывы имеют поле `date`)
   const sortedReviews = [...reviews].sort((a, b) => new Date(b.date) - new Date(a.date));
 
   return (
@@ -18,16 +16,18 @@ const ReviewsPage = ({ specialists, addReview, reviews }) => {
         <h1>{t('reviews.title')}</h1>
         {sortedReviews.map((review, index) => (
           <div key={index} className="review">
-            <h3>{specialists.find(spec => spec.id === review.specialistId)?.name || review.specialistName}</h3>
-            <p><strong>{review.name} {review.lastName[0]}.</strong></p>
-            <StarRatings
-              rating={review.rating}
-              starRatedColor="blue"
-              numberOfStars={5}
-              name='rating'
-              starDimension="20px"
-              starSpacing="2px"
-            />
+            <div className="review-header">
+              <h3>{specialists.find(spec => spec.id === review.specialistId)?.name || review.specialistName}</h3>
+              <StarRatings
+                rating={review.rating}
+                starRatedColor="#ffd700"
+                numberOfStars={5}
+                name='rating'
+                starDimension="20px"
+                starSpacing="2px"
+              />
+            </div>
+            <p><strong>{review.name}</strong></p>
             <p>{review.reviewText}</p>
           </div>
         ))}

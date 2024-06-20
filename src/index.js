@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import App from '../src/components/App'; 
+import App from '../src/components/Pages/App/App'; 
 import './locales/i18n'; 
 
 const rootElement = document.getElementById('root');

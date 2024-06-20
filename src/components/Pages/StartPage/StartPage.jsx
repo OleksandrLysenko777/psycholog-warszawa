@@ -13,7 +13,7 @@ const StartPage = () => {
     { id: 'section5', title: t('start.sections.section5.title'), content: t('start.sections.section5.content') },
     { id: 'section6', title: t('start.sections.section6.title'), content: t('start.sections.section6.content') },
     { id: 'section7', title: t('start.sections.section7.title'), content: t('start.sections.section7.content') },
-    { id: 'section8', title: t('start.sections.section8.title'), content: t('start.sections.section8.content') },
+    
   ];
 
   return (
