@@ -1,0 +1,76 @@
+.review-card {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 15px;
+  margin: 5px;
+  box-sizing: border-box;
+  text-align: left;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  height: 220px; /* Увеличиваем высоту карточки */
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
+  z-index: 0; /* Добавляем z-index */
+}
+
+.review-card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+  background-color: #f0f8ff; /* Светло-голубой фон при ховере */
+  border-color: #007bff; /* Синяя граница при ховере */
+  z-index: 10; /* Увеличиваем z-index при ховере */
+}
+
+.specialist-name {
+  margin-bottom: 5px; /* Отступ снизу для имени специалиста */
+}
+
+.specialist-name p {
+  color: #007bff;
+  transition: color 0.3s ease;
+}
+
+.review-card:hover .specialist-name p {
+  color: #0056b3; /* Более темный синий цвет при ховере */
+}
+
+.review-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.review-header p {
+  margin: 0;
+}
+
+.review-header .react-stars {
+  margin: 0;
+}
+
+.review-card p {
+  margin: 0;
+  margin-bottom: 10px; /* Оставляем место для ссылки */
+}
+
+.read-more {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  color: rgb(92, 63, 63);
+  text-decoration: none;
+  font-weight: bold;
+  transition: color 0.3s ease, text-decoration 0.3s ease;
+}
+
+.read-more:hover {
+  text-decoration: underline;
+  color: #007bff;
+}
+
+.reviews-section {
+  overflow: visible; /* Обеспечиваем видимость карточек */
+  padding: 20px 0; /* Добавляем отступы сверху и снизу */
+}

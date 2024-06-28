@@ -47,7 +47,9 @@
     "reviewText": "Opinia",
     "submitButton": "Prześlij",
     "errorNoRating": "Prosimy o ocenę.",
-    "errorIncomplete": "Prosimy wypęłnić niezbędne pola"
+    "errorIncomplete": "Prosimy wypęłnić niezbędne pola",    
+    "readMore": "Czytaj więcej"
+  
   },
 "start": {
     "title": "Centrum Pomocy Psychologicznej, Psychotraumatologii i Interwencji Kryzysowej",
@@ -58,7 +60,6 @@
         "title": "Pomoc psychologiczna",
         "content": "Psychoterapia jest jedną z form pomocy w sytuacji cierpienia psychicznego. Nadrzędnym celem psychoterapii jest usunięcie lub ograniczenie przykrych dla człowieka symptomów będących przyczyną jego cierpienia, a także uruchomienie procesu tworzenia się zmian."
       },
-      
       "section2": {
         "title": "Psychoterapia młodzieży",
         "content": "Dorastanie jest okresem niezwykle burzliwym, w którym młody człowiek buduje własną tożsamość oraz doświadcza wielu zmian w wyglądzie fizycznym, rozwoju poznawczym i emocjonalnym. Wielu młodych ludzi jest zadowolonych z tego, kim są i jak żyją. Znajdują odpowiedź na pytanie „kim jestem?” Zdarza się jednak, że nastolatek przeżywa różnego rodzaju trudności, z którymi nie potrafi poradzić sobie samodzielnie."
@@ -81,10 +82,10 @@
       },
       "section7": {
         "title": "Choroba psychiczna",
-        "content": "Za choroby psychiczne uznawane są zaburzenia powstające na tle organicznych zmian w ośrodkowym układzie nerwowym. Są to takie jednostki chorobowe jak: otępienie, schizofrenia, choroba afektywna jednobiegunowa, choroba afektywna dwubiegunowa. Pozostałe jednostki określane są mianem zaburzeń psychicznych. Są to:  Zaburzenia nerwicowe  Zaburzenia odżywiania się  Zaburzenia snu  Zaburzenia seksualne  Zaburzenia osobowości (np. osobowość chwiejna emocjonalnie, zależna, impulsywna, lękowa, histrioniczna, borderline etc.) Chorobę psychiczną diagnozuje lekarz psychiatra. Oprócz terapii wymagane jest leczenie psychiatryczne."
+        "content": "Za choroby psychiczne uznawane są zaburzenia powstające na tle organicznych zmian w ośrodkowym układzie nerwowym. Są to takie jednostki chorobowe jak: otępienie, schizofrenia, choroba afektywna jednobiegunowa, choroba afektywna dwubiegunowa. Pozostałe jednostki określane są mianem zaburzeń psychicznych. Są to: Zaburzenia nerwicowe, Zaburzenia odżywiania się, Zaburzenia snu, Zaburzenia seksualne, Zaburzenia osobowości (np. osobowość chwiejna emocjonalnie, zależna, impulsywna, lękowa, histrioniczna, borderline etc.) Chorobę psychiczną diagnozuje lekarz psychiatra. Oprócz terapii wymagane jest leczenie psychiatryczne."
       }
-      
     }
+    
   },
     "contact": {
     "title": "Kontakt",

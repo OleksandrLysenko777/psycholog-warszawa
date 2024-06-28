@@ -1,8 +1,11 @@
 import React from 'react';
-import Slider from 'react-slick';
 import { useTranslation } from 'react-i18next';
+import Slider from 'react-slick';
 import Accordion from './Accordion';
-import ReactStars from 'react-rating-stars-component';
+import ReviewCardTeam from './ReviewCardTeam';
+import CustomArrow from '../App/Svg/CustomArrow'; 
+import leftArrow from '../App/Svg/leftArrow.svg'; 
+import rightArrow from '../App/Svg/rightArrow.svg'; 
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import './TeamPage.css';
@@ -45,12 +48,15 @@ function TeamPage({ reviews }) {
 
   const settings = {
     dots: true,
-    infinite: true,
+    infinite: reviews.length > 1,
     speed: 500,
-    slidesToShow: 3,
+    slidesToShow: reviews.length < 3 ? 1 : 3,
     slidesToScroll: 1,
-    centerMode: true,
-    centerPadding: '5',
+    centerMode: reviews.length > 2,
+    centerPadding: '1',
+     prevArrow: reviews.length > 0 ? <CustomArrow icon={leftArrow} /> : null,
+    nextArrow: reviews.length > 0 ? <CustomArrow icon={rightArrow} /> : null,
+    arrows: reviews.length > 1, 
     responsive: [
       {
         breakpoint: 1024,
@@ -87,19 +93,7 @@ function TeamPage({ reviews }) {
               {reviews
                 .filter((review) => review.specialistId === specialist.id)
                 .map((review, index) => (
-                  <div key={index} className="review-card">
-                    <div className="review-header">
-                      <p><strong>{review.name}</strong></p>
-                      <ReactStars
-                        count={5}
-                        value={review.rating}
-                        edit={false}
-                        size={20}
-                        activeColor="#ffd700"
-                      />
-                    </div>
-                    <p>{review.reviewText}</p>
-                  </div>
+                  <ReviewCardTeam key={index} review={review} />
                 ))}
             </Slider>
           </div>

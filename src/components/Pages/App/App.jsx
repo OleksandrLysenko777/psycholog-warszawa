@@ -10,9 +10,6 @@ import OfferPage from '../OfferPage';
 import ContactPage from '../ContactPage/ContactPage';
 import ReviewsPage from '../ReviewsPage/ReviewsPage';
 
-
-
-
 function App() {
   const [reviews, setReviews] = useState([]);
 
@@ -30,8 +27,8 @@ function App() {
       <div className="App">
         <Header />
         <Routes>
-          <Route path="/" element={<StartPage />} />
-          <Route path="/start" element={<StartPage />} />
+          <Route path="/" element={<StartPage reviews={reviews} specialists={specialists} />} />
+          <Route path="/start" element={<StartPage reviews={reviews} specialists={specialists} />} />
           <Route path="/team" element={<TeamPage reviews={reviews} />} />
           <Route path="/how-we-work" element={<HowWeWorkPage />} />
           <Route path="/price" element={<PricePage />} />
