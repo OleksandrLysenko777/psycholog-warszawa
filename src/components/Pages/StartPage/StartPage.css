@@ -149,6 +149,31 @@
   box-sizing: border-box;
   border-radius: 10px;
 }
+.start-page .content .section .section-text .section-content p {
+  margin-bottom: 1em !important;
+}
+
+.section-content ul {
+  padding-left: 0; /* Удаление отступа слева для всего списка */
+  list-style: none; /* Удаление стандартных маркеров */
+  margin: 0; /* Удаление внешних отступов */
+}
+
+.section-content ul li {
+  display: flex; /* Использование flexbox для выравнивания */
+  align-items: center; /* Вертикальное выравнивание */
+  margin-bottom: 0.75em; /* Нижний отступ между элементами списка */
+  font-size: 1em; /* Размер шрифта */
+  line-height: 1.5em; /* Высота строки */
+}
+
+.section-content ul li::before {
+  content: '✔'; /* Задает галочку как маркер */
+  margin-right: 10px; /* Отступ справа от маркера */
+  font-size: 1.2em; /* Размер маркера */
+  color: #4caf50; /* Цвет маркера */
+  line-height: 1; /* Высота строки маркера */
+}
 
 .section:hover .section-content {
   display: block;

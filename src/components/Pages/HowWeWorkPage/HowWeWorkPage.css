@@ -1,0 +1,30 @@
+.how-we-work-page {
+  width: 90%;
+  margin: 0 auto;
+  font-family: 'Arial', sans-serif;
+  color: #333;
+  padding: 20px;
+}
+
+.how-we-work-page h1 {
+  text-align: center;
+  margin-bottom: 40px;
+  color: #2c3e50;
+}
+
+.how-we-work-page section {
+  margin-bottom: 40px;
+}
+
+.how-we-work-page h2 {
+  font-size: 28px;
+  margin-bottom: 10px;
+  color: #34495e;
+}
+
+.how-we-work-page p {
+  font-size: 18px;
+  line-height: 1.8;
+  color: #666;
+  text-align: justify;
+}
