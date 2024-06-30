@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import './App.css';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Header from '../Header/Header';
 import StartPage from '../StartPage/StartPage';
 import TeamPage from '../TeamPage/TeamPage';
-import HowWeWorkPage from '../HowWeWorkPage';
+import HowWeWorkPage from '../HowWeWorkPage/HowWeWorkPage';
 import PricePage from '../PricePage';
 import OfferPage from '../OfferPage';
 import ContactPage from '../ContactPage/ContactPage';
@@ -23,11 +23,11 @@ function App() {
   ];
 
   return (
-    <Router>
+    <Router basename="/psycholog-warszawa">
       <div className="App">
         <Header />
         <Routes>
-          <Route path="/" element={<StartPage reviews={reviews} specialists={specialists} />} />
+          <Route path="/" element={<Navigate to="/start" />} />
           <Route path="/start" element={<StartPage reviews={reviews} specialists={specialists} />} />
           <Route path="/team" element={<TeamPage reviews={reviews} />} />
           <Route path="/how-we-work" element={<HowWeWorkPage />} />
