@@ -9,6 +9,9 @@ import PricePage from '../PricePage';
 import OfferPage from '../OfferPage';
 import ContactPage from '../ContactPage/ContactPage';
 import ReviewsPage from '../ReviewsPage/ReviewsPage';
+import AdminLogin from '../AdminLogin/AdminLogin';
+import AdminDashboard from '../AdminDashboard/AdminDashboard';
+
 
 function App() {
   const [reviews, setReviews] = useState([]);
@@ -35,6 +38,8 @@ function App() {
           <Route path="/offer" element={<OfferPage />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/reviews" element={<ReviewsPage specialists={specialists} addReview={addReview} reviews={reviews} />} />
+          <Route path="/admin-login" element={<AdminLogin />} /> 
+           <Route path="/admin-dashboard" element={<AdminDashboard />} />
         </Routes>
       </div>
     </Router>

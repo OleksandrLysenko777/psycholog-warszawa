@@ -21,6 +21,8 @@ function Header() {
           <li><Link to="/offer">{t('menu.offer')}</Link></li>
           <li><Link to="/contact">{t('menu.contact')}</Link></li>
           <li><Link to="/reviews">{t('menu.reviews')}</Link></li>
+          <li><Link to="/admin-login" className="hidden-admin-link">Admin</Link></li>
+          <li><Link to="/admin-register" className="hidden-admin-link">Admin Register</Link></li>
         </ul>
       </nav>
       <LanguageSwitcher />

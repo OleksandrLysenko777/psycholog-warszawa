@@ -10,3 +10,6 @@ html, body {
   background-position: center;
     
 }
+.hidden-admin-link {
+  display: none;
+}
