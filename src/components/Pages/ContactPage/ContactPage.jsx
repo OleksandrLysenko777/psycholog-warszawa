@@ -18,7 +18,7 @@ const ContactPage = () => {
         </div>
         <div className="resignation-info">
           <h2>{t('contact.resignationTitle')}</h2>
-          <p>{t('contact.resignationText')}</p>
+          <p>{t('contact.resignationText1')}</p>
           
         </div>
       </div>

@@ -5,7 +5,7 @@ import StarRatings from 'react-star-ratings';
 import './ReviewsPage.css';
 import './AddReview.css';
 
-const ReviewsPage = ({ specialists, addReview, reviews }) => {
+const ReviewsPage = ({ specialists, addReview, deleteReview, reviews, isAdmin }) => {
   const { t } = useTranslation();
   const sortedReviews = [...reviews].sort((a, b) => new Date(b.date) - new Date(a.date));
 
@@ -26,6 +26,14 @@ const ReviewsPage = ({ specialists, addReview, reviews }) => {
                 starDimension="20px"
                 starSpacing="2px"
               />
+              {isAdmin && (
+                <button
+                  onClick={() => deleteReview(index)}
+                  className="delete-review-button"
+                >
+                  {t('reviews.deleteButton')}
+                </button>
+              )}
             </div>
             <p><strong>{review.name}</strong></p>
             <p>{review.reviewText}</p>

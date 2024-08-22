@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "homepage": "https://OleksandrLysenko777.github.io/psycholog-warszawa/",
-  "proxy": "http://localhost:3001", 
+  "proxy": "http://localhost:3001",
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.5.2",
     "@fortawesome/free-solid-svg-icons": "^6.5.2",
@@ -26,6 +26,7 @@
     "react-i18next": "^14.1.0",
     "react-rating": "^2.0.5",
     "react-rating-stars-component": "^2.2.0",
+    "react-responsive-carousel": "^3.2.23",
     "react-router-dom": "^6.22.3",
     "react-scripts": "5.0.1",
     "react-slick": "^0.30.2",

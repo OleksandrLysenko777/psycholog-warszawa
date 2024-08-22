@@ -147,3 +147,39 @@
   font-size: 10px;
   color: #007bff;
 }
+
+
+
+
+.certificate-slide {
+  max-width: 100%;
+  margin: 0 auto;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  overflow: hidden;
+  text-align: center;
+  padding-bottom: 10px;
+}
+
+.delete-button {
+  background-color: red;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 5px 10px;
+  cursor: pointer;
+  display: block;
+  margin: 10px auto; /* Центрируем кнопку удаления */
+}
+
+.carousel .slide img {
+  max-height: 500px;
+  object-fit: contain;
+  width: 100%;
+}
+
+.certificate-image {
+  max-height: 500px;
+  width: 100%;
+  object-fit: contain;
+}

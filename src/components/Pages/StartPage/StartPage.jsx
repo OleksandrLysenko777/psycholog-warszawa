@@ -56,13 +56,19 @@ const StartPage = ({ reviews, specialists }) => {
       image: process.env.PUBLIC_URL + '/images/12.jpg',
       icon: process.env.PUBLIC_URL + '/images/icon.png',
     },
-    {
-      id: 'section3',
-      title: t('start.sections.section3.title'),
-      content: [t('start.sections.section3.content')],
-      image: process.env.PUBLIC_URL + '/images/13.jpg',
+     {
+      id: 'section7',
+    title: t('start.sections.section7.title'),
+    content: [
+      t('start.sections.section7.content1'),
+      t('start.sections.section7.content2')      
+    ],
+    list: t('start.sections.section7.list', { returnObjects: true }),
+    contentAfterList: t('start.sections.section7.content3'),
+      image: process.env.PUBLIC_URL + '/images/14.jpg',
       icon: process.env.PUBLIC_URL + '/images/icon.png',
     },
+   
     {
       id: 'section4',
       title: t('start.sections.section4.title'),
@@ -71,6 +77,14 @@ const StartPage = ({ reviews, specialists }) => {
         t('start.sections.section4.content2'),
       ],
       image: process.env.PUBLIC_URL + '/images/14.jpg',
+      icon: process.env.PUBLIC_URL + '/images/icon.png',
+    },
+    
+    {
+      id: 'section6',
+      title: t('start.sections.section6.title'),
+      content: [t('start.sections.section6.content')],
+      image: process.env.PUBLIC_URL + '/images/12.jpg',
       icon: process.env.PUBLIC_URL + '/images/icon.png',
     },
     {
@@ -84,25 +98,14 @@ const StartPage = ({ reviews, specialists }) => {
       image: process.env.PUBLIC_URL + '/images/15.jpg',
       icon: process.env.PUBLIC_URL + '/images/icon.png',
     },
-    {
-      id: 'section6',
-      title: t('start.sections.section6.title'),
-      content: [t('start.sections.section6.content')],
-      image: process.env.PUBLIC_URL + '/images/12.jpg',
+     {
+      id: 'section3',
+      title: t('start.sections.section3.title'),
+      content: [t('start.sections.section3.content')],
+      image: process.env.PUBLIC_URL + '/images/13.jpg',
       icon: process.env.PUBLIC_URL + '/images/icon.png',
-    },
-    {
-      id: 'section7',
-    title: t('start.sections.section7.title'),
-    content: [
-      t('start.sections.section7.content1'),
-      t('start.sections.section7.content2')      
-    ],
-    list: t('start.sections.section7.list', { returnObjects: true }),
-    contentAfterList: t('start.sections.section7.content3'),
-      image: process.env.PUBLIC_URL + '/images/14.jpg',
-      icon: process.env.PUBLIC_URL + '/images/icon.png',
-    },
+    }
+   
   ];
 
   const sliderSettings = {

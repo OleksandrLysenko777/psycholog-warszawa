@@ -21,7 +21,7 @@
       { "title": "Jak zmieniła mnie psychoterapia", "content": "Psychoterapia jest moim niezastąpionym narzędziem samopomocy, samopoznania oraz odnalezienia siły w trudnych momentach życia.  Jest dla mnie spotkaniem ze sobą w prawdzie i niesamowicie ciekawą drogą do poznania swojego wewnętrznego świata. Dzięki terapeutycznej pracy idę swoją własną, świadomą  i odpowiedzialną drogą życia, z poczuciem wdzięczności i samorealizacji." },
       { "title": "O mnie", "content": "Jestem psychologiem praktykiem, psychotraumatologiem. Specjalizuje się w pracy z traumą.  Człowiek jest dla mnie tajemnicą, którą lubię poznawać. Pracuje z dorosłymi i dziećmi od 12 roku życia. Kocham góry, poznawanie nowych miejsc, kultur i smaków. Siłę czerpie na łonie natury, cenię ciszę i własny rozwój. Rozmawiam w języku polskim, ukraińskim i rosyjskim."},
       { "title": "Z czym pracuję", "content": "Zaburzenia psychiczne, depresja, kryzys tożsamości, problemy adaptacyjne, utrata bliskich, żałoba, samouszkodzenia. Pracuję z osobami w kryzysie rozwodowym, zagrożonymi samobójstwem, ofiarami przemocy, migrantami, ofiarami wojny. Pomagam w odbudowaniu równowagi życiowej, pogłębianiu samoświadomości, samo empatii i dokonywaniu świadomych i odpowiedzialnych wyborów życiowych." },
-      { "title": "Wykształcenie", "content": "Wyższe magisterskie. W 2009 roku Ukończyłam stacjonarne studia magisterskie z psychologii na Uniwersytecie Kardynała Stefana Wyszyńskiego w Warszawie oraz dwuletnie Studia Podyplomowe na Uniwersytecie Warszawskim z Diagnozy Klinicznej Dziecka i Jego Rodziny. Dodatkowo ukończyłam wiele kursów i szkoleń przygotowujących mnie do pracy terapeutycznej z traumą oraz klientem w szeroko rozumianym kryzysie. Pracuje interwencyjnie, terapeutycznie, konsultacyjnie. Swoją pracę poddaje superwizji i interwizji koleżeńskiej." },
+      { "title": "Wykształcenie", "content": "Wyższe magisterskie. W 2009 roku Ukończyłam stacjonarne studia magisterskie z psychologii na Uniwersytecie Kardynała Stefana Wyszyńskiego w Warszawie oraz dwuletnie Studia Podyplomowe na Uniwersytecie Warszawskim z Diagnozy Klinicznej Dziecka i Jego Rodziny. Dodatkowo ukończyłam wiele kursów i szkoleń przygotowujących mnie do pracy terapeutycznej z traumą oraz klientem w szeroko rozumianym kryzysie. Pracuję interwencyjnie, terapeutycznie, konsultacyjnie. Swoją pracę poddaje superwizji i interwizji koleżeńskiej." },
       { "title": "Certyfikaty", "content": "Jestem certyfikowanym terapeutą poznawczo-behawioralnym" }
     ]
   },
@@ -48,7 +48,8 @@
     "submitButton": "Prześlij",
     "errorNoRating": "Prosimy o ocenę.",
     "errorIncomplete": "Prosimy wypęłnić niezbędne pola",    
-    "readMore": "Czytaj więcej"
+    "readMore": "Czytaj więcej",
+    "deleteButton": "Usuń"
   
   },
 "start": {
@@ -112,7 +113,7 @@
     "hoursTitle": "Godziny pracy",
     "hours": "Poniedziałek - Piątek: 8:00 - 20:00",
     "resignationTitle": "Zasady odwoływania spotkań",
-    "resignationText": "Bezpłatne odwołanie wizyty jest możliwe nie później niż 24 godziny przed sesją."
+    "resignationText1": "Bezpłatne odwołanie wizyty jest możliwe nie później niż 24 godziny przed sesją."
    
   },
   "howWeWork": {
@@ -146,5 +147,55 @@
       "content1": "Bezpłatne odwołanie wizyty jest możliwe nie później niż 24 godziny przed sesją. Jeżeli jednak do sesji zostało mniej niż 24 godziny, a pacjent nie ma możliwości pojawienia się na spotkaniu, zobowiązany jest do poniesienia pełnego kosztu wizyty. W przypadku niepojawienia się na spotkaniu bez uprzedzenia, koszt wizyty również ponosi pacjent.",
       "content2": "Zasady odwoływania spotkań stanowią ważny element kontraktu terapeutycznego i zostaną omówione na pierwszych konsultacjach przed rozpoczęciem terapii."
     }
+  },
+  "offer": {
+    "title": "Oferta",   
+    "individualPsychotherapy": {
+      "title": "Psychoterapia indywidualna",
+      "content1": "Jest okazją do wprowadzenia zmian w swoim życiu, odzyskania siły, możliwością otrzymania wsparcia i zrozumienia oraz metodą leczenia, dotyczącą psychologicznego funkcjonowania człowieka.",
+      "content2": "Z psychoterapii indywidualnej mogą skorzystać osoby, które m.in. odczuwają trudności emocjonalne, chciałyby odzyskać psychiczną równowagę, poprawić relacje z innymi ludźmi."
+    },
+    "adolescentTherapy": {
+      "title": "Terapia młodzieży",
+      "content1": "Okres dorastania wiąże się często z różnymi trudnościami natury psychicznej, buntem, „eksperymentowaniem”. Poczucie niezrozumienia rodzi frustrację i często sprawia, że nastolatek odgradza się od najbliższych osób. Terapia młodzieży to spotkania z psychologiem, w atmosferze bezpieczeństwa i akceptacji, mające na celu wsparcie młodej osoby i udzielenie jej pomocy w odnalezieniu się w świecie i zaistniałej trudnej sytuacji. Również psycholog wspiera i edukuje na etapie adaptacji do nowej sytuacji (np. zmiana szkoły, miejsca zamieszkania, kraju, zmiana sytuacji rodzinnej)."
+    },
+     "meetingGuidelines": {
+      "title": "Zasady dotyczące spotkań",
+      "content1": "Zawarcie kontraktu terapeutycznego - umowa między pacjentem, a terapeutą określająca warunki współpracy np.: określenie częstotliwości spotkań – zwykle 1 do 2 razy w tygodniu, ustalenie stałego dnia i godziny spotkań. Zawarcie kontraktu terapeutycznego to kulminacyjny moment przygotowań do rozpoczęcia psychoterapii. Wstępnie kształtowana jest też relacja terapeutyczna. Następuje uporządkowanie wzajemnych oczekiwań oraz celów, co daje podstawę do ich monitorowania, a to z kolei wpływa korzystnie na zaangażowanie, współpracę i motywację.",
+      "content2": "Kontrakt terapeutyczny zapewnia obydwu stronom poczucie bezpieczeństwa w trakcie wspólnej pracy. Podczas jego uzgadniania podkreśla się współodpowiedzialność i świadomość dokonywanych wyborów.",
+      "content3": "Długość psychoterapii zależna jest od celu i problemu, z jakim przychodzi pacjent. Psychoterapia może być krótkoterminowa (do 15 spotkań) lub długoterminowa (do kilku lat)."
+    },
+    "crisisIntervention": {
+      "title": "Interwencja kryzysowa",
+      "content1": "Jest formą pomocy psychologicznej, polegającej na kontakcie terapeutycznym, skoncentrowanym na problemie wywołującym kryzys, czasowo ograniczonym, w którym dochodzi do konfrontacji osoby z kryzysem i do jego rozwiązania. Redukcja syptomów i przywrócenie równowagi psychicznej zapobiega dalszej dezorganizacji.",
+      "content2": "Klasyczny model interwencji kryzysowej polega na zapewnieniu wsparcia emocjonalnego, poczucia bezpieczeństwa, zredukowaniu lęku."
+    },
+    "cancellationPolicy": {
+      "title": "Zasady odwoływania spotkań",
+      "content1": "Bezpłatne odwołanie wizyty jest możliwe nie później niż 24 godziny przed sesją. Jeżeli jednak do sesji zostało mniej niż 24 godziny, a pacjent nie ma możliwości pojawienia się na spotkaniu, zobowiązany jest do poniesienia pełnego kosztu wizyty. W przypadku niepojawienia się na spotkaniu bez uprzedzenia, koszt wizyty również ponosi pacjent.",
+      "content2": "Zasady odwoływania spotkań stanowią ważny element kontraktu terapeutycznego i zostaną omówione na pierwszych konsultacjach przed rozpoczęciem terapii."
+    },
+    "workPsychology": {
+      "title": "Psychologia pracy"     
+    },
+    "groupTherapy": {
+      "title": "Terapia grupowa dla osób w kryzysie"     
+    }
+  },
+   "prices": {
+    "title": "Cennik",
+    "service": "Usługa",
+    "price": "Cena",
+    "psychologicalConsultation": "Konsultacja psychologiczna",
+    "individualPsychotherapy": "Indywidualna psychoterapia",
+    "interventionConsultationsForCouples": "Konsultacje interwencyjne dla par i małżeństw",
+    "onlineConsultation": "Konsultacja/psychoterapia/terapia indywidualna online",
+    "payment": "Płatność gotówką lub przelewem na konto"
+    
+  }, 
+    "footer": {    
+    "cookiesInfo": "Strona używa plików cookies i podobnych technologii w celu realizacji usług, reklamy, statystyk, optymalizacji. Jeśli nie blokujesz tych plików, zgadzasz się na ich użycie oraz zapisanie w pamięci urządzenia. Możesz określić warunki przechowywania lub dostępu do plików cookies w Twojej przeglądarce.",
+    "allRightsReserved": "Wszystkie prawa zastrzeżone"
   }
-}
+  }
+

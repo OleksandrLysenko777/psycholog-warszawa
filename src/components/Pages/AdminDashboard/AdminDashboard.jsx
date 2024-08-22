@@ -43,9 +43,10 @@ const AdminDashboard = () => {
             value={content.welcomeMessage}
             onChange={(e) => setContent({ ...content, welcomeMessage: e.target.value })}
             required
+            style={{ width: '100%', height: '100px', padding: '10px', borderRadius: '5px', marginBottom: '10px' }}
           />
         </label>
-        <button type="submit">Update Content</button>
+        <button type="submit" style={{ padding: '10px 20px', borderRadius: '5px' }}>Update Content</button>
       </form>
     </div>
   );

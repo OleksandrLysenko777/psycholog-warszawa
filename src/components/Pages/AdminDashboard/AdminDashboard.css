@@ -1,0 +1,38 @@
+.admin-dashboard {
+  width: 60%;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f4f4f4;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.admin-dashboard h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.admin-dashboard form {
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-dashboard label {
+  margin-bottom: 10px;
+}
+
+.admin-dashboard textarea {
+  font-family: 'Arial', sans-serif;
+  font-size: 16px;
+}
+
+.admin-dashboard button {
+  background-color: #007bff;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.admin-dashboard button:hover {
+  background-color: #0056b3;
+}

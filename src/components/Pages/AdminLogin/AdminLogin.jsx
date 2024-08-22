@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './AdminLogin.css';
 
-const AdminLogin = () => {
+const AdminLogin = ({ onLogin }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-
   const [inputVerificationCode, setInputVerificationCode] = useState('');
   const [isVerified, setIsVerified] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -22,7 +22,6 @@ const AdminLogin = () => {
       });
 
       const loginData = await loginResponse.json();
-      console.log('Login response:', loginData);
       if (loginData.success) {
         const sendCodeResponse = await fetch('http://localhost:3001/send-verification-code', {
           method: 'POST',
@@ -33,7 +32,6 @@ const AdminLogin = () => {
         });
 
         const sendCodeData = await sendCodeResponse.json();
-        console.log('Send code response:', sendCodeData);
         if (sendCodeData.success) {
           alert('Verification code sent to your email.');
           setIsVerified(true);
@@ -50,7 +48,7 @@ const AdminLogin = () => {
 
   const handleVerify = async (e) => {
     e.preventDefault();
-    console.log('Verifying code:', inputVerificationCode);
+
     try {
       const verifyResponse = await fetch('http://localhost:3001/verify-code', {
         method: 'POST',
@@ -61,10 +59,10 @@ const AdminLogin = () => {
       });
 
       const verifyData = await verifyResponse.json();
-      console.log('Verify response:', verifyData);
       if (verifyData.success) {
         alert('Login successful!');
-        setIsLoggedIn(true);
+        onLogin(username, password); // Передаем данные для логина
+        navigate('/admin-dashboard'); // Перенаправляем на AdminDashboard после успешной верификации
       } else {
         alert('Invalid verification code.');
       }
@@ -75,50 +73,43 @@ const AdminLogin = () => {
 
   return (
     <div className="admin-login">
-      {!isLoggedIn ? (
-        !isVerified ? (
-          <form onSubmit={handleLogin}>
-            <h2>Admin Login</h2>
-            <label>
-              Username:
-              <input
-                type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                required
-              />
-            </label>
-            <label>
-              Password:
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </label>
-            <button type="submit">Login</button>
-          </form>
-        ) : (
-          <form onSubmit={handleVerify}>
-            <h2>Email Verification</h2>
-            <label>
-              Verification Code:
-              <input
-                type="text"
-                value={inputVerificationCode}
-                onChange={(e) => setInputVerificationCode(e.target.value)}
-                required
-              />
-            </label>
-            <button type="submit">Verify</button>
-          </form>
-        )
+      {!isVerified ? (
+        <form onSubmit={handleLogin}>
+          <h2>Admin Login</h2>
+          <label>
+            Username:
+            <input
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+            />
+          </label>
+          <label>
+            Password:
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </label>
+          <button type="submit">Login</button>
+        </form>
       ) : (
-        <div>
-          <h2>Welcome, Admin!</h2>
-          <a href="/admin-dashboard">Go to Dashboard</a>
-        </div>
+        <form onSubmit={handleVerify}>
+          <h2>Email Verification</h2>
+          <label>
+            Verification Code:
+            <input
+              type="text"
+              value={inputVerificationCode}
+              onChange={(e) => setInputVerificationCode(e.target.value)}
+              required
+            />
+          </label>
+          <button type="submit">Verify</button>
+        </form>
       )}
     </div>
   );
