@@ -3,7 +3,7 @@ import ReactStars from 'react-rating-stars-component';
 import { useTranslation } from 'react-i18next';
 import './AddReview.css';
 
-const AddReview = ({ specialists, addReview }) => {
+const AddReview = ({ specialists, onReviewAdded }) => {
   const { t } = useTranslation();
   const [selectedSpecialist, setSelectedSpecialist] = useState('');
   const [name, setName] = useState('');
@@ -12,8 +12,10 @@ const AddReview = ({ specialists, addReview }) => {
   const [ratingKey, setRatingKey] = useState(Date.now()); 
   const [error, setError] = useState('');
 
-  const handleSubmit = e => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Проверка на неполное заполнение формы
     if (rating === 0) {
       setError(t('reviews.errorNoRating'));
       return;
@@ -22,19 +24,43 @@ const AddReview = ({ specialists, addReview }) => {
       setError(t('reviews.errorIncomplete'));
       return;
     }
-    addReview({
-      specialistId: selectedSpecialist,
-      name,
-      reviewText,
-      rating,
-      date: new Date().toISOString(), 
-    });
-    setSelectedSpecialist('');
-    setName('');
-    setReviewText('');
-    setRating(0); 
-    setRatingKey(Date.now()); 
-    setError('');
+
+    try {
+      const newReview = {
+        id: Date.now(), // Генерация уникального ID
+        specialistId: selectedSpecialist,
+        name,
+        reviewText,
+        rating,
+        date: new Date().toISOString(), 
+      };
+
+      const response = await fetch('http://localhost:3001/add-review', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newReview),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      // Очищаем форму только после успешного сохранения
+      setSelectedSpecialist('');
+      setName('');
+      setReviewText('');
+      setRating(0);
+      setRatingKey(Date.now());
+      setError('');
+
+      // Обновляем список отзывов на странице
+      onReviewAdded(newReview);
+    } catch (err) {
+      console.error('Error submitting review:', err);
+      setError(t('reviews.errorSaving')); // Отображаем сообщение об ошибке
+    }
   };
 
   return (

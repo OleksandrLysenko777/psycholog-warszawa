@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './PricePage.css';
 import { useTranslation } from 'react-i18next';
+import SaveButton from '../../SaveButton/SaveButton';  // Импорт кнопки сохранения
 
 const PricePage = ({ isAdmin }) => {
   const { t } = useTranslation();
@@ -36,7 +37,7 @@ const PricePage = ({ isAdmin }) => {
 
   const handleSave = async () => {
     try {
-      const response = await fetch('http://localhost:3001/prices', {
+      const response = await fetch('http://localhost:3001/update-prices', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -73,11 +74,11 @@ const PricePage = ({ isAdmin }) => {
                 <input
                   type="text"
                   name="psychologicalConsultation"
-                  value={prices.psychologicalConsultation}
+                  value={prices.psychologicalConsultation || ''}
                   onChange={handleChange}
                 />
               ) : (
-                prices.psychologicalConsultation
+                prices.psychologicalConsultation || ''
               )}
             </td>
           </tr>
@@ -88,11 +89,11 @@ const PricePage = ({ isAdmin }) => {
                 <input
                   type="text"
                   name="individualPsychotherapy"
-                  value={prices.individualPsychotherapy}
+                  value={prices.individualPsychotherapy || ''}
                   onChange={handleChange}
                 />
               ) : (
-                prices.individualPsychotherapy
+                prices.individualPsychotherapy || ''
               )}
             </td>
           </tr>
@@ -103,11 +104,11 @@ const PricePage = ({ isAdmin }) => {
                 <input
                   type="text"
                   name="interventionConsultationsForCouples"
-                  value={prices.interventionConsultationsForCouples}
+                  value={prices.interventionConsultationsForCouples || ''}
                   onChange={handleChange}
                 />
               ) : (
-                prices.interventionConsultationsForCouples
+                prices.interventionConsultationsForCouples || ''
               )}
             </td>
           </tr>
@@ -118,18 +119,18 @@ const PricePage = ({ isAdmin }) => {
                 <input
                   type="text"
                   name="onlineConsultation"
-                  value={prices.onlineConsultation}
+                  value={prices.onlineConsultation || ''}
                   onChange={handleChange}
                 />
               ) : (
-                prices.onlineConsultation
+                prices.onlineConsultation || ''
               )}
             </td>
           </tr>
         </tbody>
       </table>
-      
-      {isAdmin && <button onClick={handleSave}>{t('prices.saveButton')}</button>}
+
+      {isAdmin && <SaveButton onClick={handleSave} />}
     </div>
   );
 };

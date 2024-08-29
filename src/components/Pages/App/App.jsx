@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Header from '../Header/Header';
@@ -11,11 +11,25 @@ import OfferPage from '../OfferPage/OfferPage';
 import ContactPage from '../ContactPage/ContactPage';
 import ReviewsPage from '../ReviewsPage/ReviewsPage';
 import AdminLogin from '../AdminLogin/AdminLogin';
-import AdminDashboard from '../AdminDashboard/AdminDashboard';
 
 function App() {
   const [reviews, setReviews] = useState([]);
-  const [isAdmin, setIsAdmin] = useState(false); 
+  const [isAdmin, setIsAdmin] = useState(false);  // Состояние для отслеживания логина администратора
+
+  // Загрузка отзывов с сервера при монтировании компонента
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        const response = await fetch('http://localhost:3001/reviews');
+        const data = await response.json();
+        setReviews(data);  // Установка полученных отзывов в состояние
+      } catch (error) {
+        console.error('Ошибка при загрузке отзывов:', error);
+      }
+    };
+
+    fetchReviews();
+  }, []); // Пустой массив зависимостей означает, что этот эффект выполнится один раз при монтировании
 
   const addReview = (review) => {
     setReviews([...reviews, review]);
@@ -27,11 +41,11 @@ function App() {
   };
 
   const handleLogin = () => {
-    setIsAdmin(true);
+    setIsAdmin(true);  // Логиним администратора
   };
 
   const handleLogout = () => {
-    setIsAdmin(false);
+    setIsAdmin(false);  // Выходим из системы
   };
 
   const specialists = [
@@ -42,7 +56,7 @@ function App() {
   return (
     <Router basename="/psycholog-warszawa">
       <div className="page-container">
-        <Header isAdmin={isAdmin} onLogout={handleLogout} />
+        <Header isAdmin={isAdmin} onLogout={handleLogout} />  {/* Передаем состояние и функцию выхода */}
         <div className="content-wrap">
           <Routes>
             <Route path="/" element={<Navigate to="/start" />} />
@@ -65,10 +79,6 @@ function App() {
             <Route 
               path="/admin-login" 
               element={<AdminLogin onLogin={handleLogin} />} 
-            />
-            <Route 
-              path="/admin-dashboard" 
-              element={isAdmin ? <AdminDashboard /> : <Navigate to="/admin-login" />} 
             />
           </Routes>
         </div>

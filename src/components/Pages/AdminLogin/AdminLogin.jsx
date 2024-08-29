@@ -61,8 +61,8 @@ const AdminLogin = ({ onLogin }) => {
       const verifyData = await verifyResponse.json();
       if (verifyData.success) {
         alert('Login successful!');
-        onLogin(username, password); // Передаем данные для логина
-        navigate('/admin-dashboard'); // Перенаправляем на AdminDashboard после успешной верификации
+        onLogin(username, password); 
+        navigate('/start'); 
       } else {
         alert('Invalid verification code.');
       }

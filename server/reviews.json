@@ -1,0 +1,34 @@
+[
+  {
+    "specialistId": "natalia",
+    "name": "уаыуа",
+    "reviewText": "ыуаыуа",
+    "rating": 4,
+    "date": "2024-08-28T23:45:20.794Z",
+    "id": 1724888720794
+  },
+  {
+    "specialistId": "sebastian",
+    "name": "wadwa",
+    "reviewText": "wad",
+    "rating": 3,
+    "date": "2024-08-28T23:48:03.562Z",
+    "id": 1724888883562
+  },
+  {
+    "specialistId": "natalia",
+    "name": "wadw",
+    "reviewText": "dwd",
+    "rating": 5,
+    "date": "2024-08-28T23:48:10.280Z",
+    "id": 1724888890281
+  },
+  {
+    "id": 1724889705588,
+    "specialistId": "natalia",
+    "name": "efef",
+    "reviewText": "sefe",
+    "rating": 5,
+    "date": "2024-08-29T00:01:45.588Z"
+  }
+]

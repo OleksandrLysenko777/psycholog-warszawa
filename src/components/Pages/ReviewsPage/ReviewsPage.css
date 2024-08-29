@@ -1,10 +1,9 @@
 .reviews-page {
   display: flex;
   justify-content: center;
-  align-items: flex-start; /* Исправлено: Теперь элементы будут начинаться с верха */
+  align-items: flex-start;
   padding: 20px;
   gap: 20px;
-  min-height: 80vh; /* Установите минимальную высоту, чтобы контейнер заполнил пространство */
   box-sizing: border-box;
 }
 
@@ -16,11 +15,8 @@
   width: 100%;
   max-width: 600px;
   height: 800px;
-  flex-grow: 1;
   overflow-y: auto;
   box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
 }
 
 .reviews-list h1 {
@@ -81,7 +77,7 @@
 }
 
 .delete-review-button {
-  background-color: red;
+  background-color: #ff0000;
   color: white;
   border: none;
   border-radius: 3px;
@@ -92,4 +88,30 @@
 
 .delete-review-button:hover {
   background-color: darkred;
+}
+
+.save-changes-container {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: #ffffff;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+  text-align: center;
+  z-index: 1000;
+}
+
+.save-changes-button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.save-changes-button:hover {
+  background-color: #0056b3;
 }

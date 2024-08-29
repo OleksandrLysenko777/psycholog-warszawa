@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import Slider from 'react-slick';
 import Accordion from './Accordion';
 import ReviewCardTeam from './ReviewCardTeam';
 import CustomArrow from '../App/Svg/CustomArrow';
+import SaveButton from '../../SaveButton/SaveButton'; // Импорт кнопки сохранения
 import leftArrow from '../App/Svg/leftArrow.svg';
 import rightArrow from '../App/Svg/rightArrow.svg';
 import 'slick-carousel/slick/slick.css';
@@ -12,30 +13,108 @@ import './TeamPage.css';
 import { Carousel } from 'react-responsive-carousel';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
 
-function TeamPage({ reviews, isAdmin }) {  // Добавляем isAdmin как пропс
+function TeamPage({ reviews, isAdmin }) {
   const { t } = useTranslation();
 
   const [nataliaCertificates, setNataliaCertificates] = useState([]);
   const [sebastianCertificates, setSebastianCertificates] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [changesMade, setChangesMade] = useState(false); // Состояние для отслеживания изменений
 
-  const handleFileChange = (event, specialistId) => {
+  // Загрузка существующих сертификатов при загрузке компонента
+  useEffect(() => {
+    const fetchCertificates = async (specialistId, setCertificates) => {
+      try {
+        const response = await fetch(`http://localhost:3001/certificates/${specialistId}`);
+        const data = await response.json();
+        if (data.success) {
+          setCertificates(data.certificates);
+        }
+      } catch (error) {
+        console.error('Ошибка при загрузке сертификатов:', error);
+      }
+    };
+
+    fetchCertificates('natalia', setNataliaCertificates);
+    fetchCertificates('sebastian', setSebastianCertificates);
+  }, []);
+
+  const handleFileChange = async (event, specialistId) => {
     const files = Array.from(event.target.files);
-    const newCertificates = files.map(file => URL.createObjectURL(file));
+    const formData = new FormData();
 
-    if (specialistId === 'natalia') {
-      setNataliaCertificates([...nataliaCertificates, ...newCertificates]);
-    } else if (specialistId === 'sebastian') {
-      setSebastianCertificates([...sebastianCertificates, ...newCertificates]);
+    formData.append('specialistId', specialistId);
+    files.forEach((file) => {
+      formData.append('certificates', file);  // Здесь 'certificates' должно совпадать с именем поля в multer
+    });
+
+    try {
+      const response = await fetch('http://localhost:3001/upload-certificate', {
+        method: 'POST',
+        body: formData,
+      });
+      const data = await response.json();
+
+      if (data.success) {
+        const newCertificates = data.filePaths.map(path => path.split('/').pop());
+        if (specialistId === 'natalia') {
+          setNataliaCertificates([...nataliaCertificates, ...newCertificates]);
+        } else if (specialistId === 'sebastian') {
+          setSebastianCertificates([...sebastianCertificates, ...newCertificates]);
+        }
+        setChangesMade(true); // Обновляем состояние при изменениях
+      } else {
+        console.error('Ошибка при загрузке сертификатов на сервер.');
+      }
+    } catch (error) {
+      console.error('Ошибка при загрузке сертификатов:', error);
     }
   };
 
-  const handleDeleteCertificate = (index, specialistId) => {
-    if (specialistId === 'natalia') {
-      setNataliaCertificates(nataliaCertificates.filter((_, i) => i !== index));
-    } else if (specialistId === 'sebastian') {
-      setSebastianCertificates(sebastianCertificates.filter((_, i) => i !== index));
+  const handleDeleteCertificate = async (index, specialistId) => {
+  const certificates = specialistId === 'natalia' ? nataliaCertificates : sebastianCertificates;
+  const filePath = certificates[index];
+
+  try {
+    const response = await fetch('http://localhost:3001/delete-certificate', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ filePath, specialistId }),
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+      let updatedCertificates;
+      if (specialistId === 'natalia') {
+        updatedCertificates = nataliaCertificates.filter((_, i) => i !== index);
+        setNataliaCertificates(updatedCertificates);
+      } else if (specialistId === 'sebastian') {
+        updatedCertificates = sebastianCertificates.filter((_, i) => i !== index);
+        setSebastianCertificates(updatedCertificates);
+      }
+
+      if (updatedCertificates.length === 0) {
+        setCurrentIndex(0); // Сброс индекса, если все сертификаты удалены
+      } else if (currentIndex >= updatedCertificates.length) {
+        setCurrentIndex(updatedCertificates.length - 1); // Сброс на последний элемент
+      }
+
+      setChangesMade(true); // Обновляем состояние при изменениях
+    } else {
+      console.error('Ошибка при удалении сертификата.');
     }
+  } catch (error) {
+    console.error('Ошибка при удалении сертификата:', error);
+  }
+};
+
+  const handleSaveChanges = async () => {
+    // После успешного сохранения всех изменений на сервере
+    setChangesMade(false);
+    alert('Изменения успешно сохранены');
   };
 
   const handleImageClick = (index) => {
@@ -61,7 +140,7 @@ function TeamPage({ reviews, isAdmin }) {  // Добавляем isAdmin как 
           title: t('specialist1.details.4.title'), 
           content: (
             <div>
-              {isAdmin && (  // Показываем только администратору
+              {isAdmin && (
                 <input
                   type="file"
                   accept="image/*"
@@ -81,7 +160,7 @@ function TeamPage({ reviews, isAdmin }) {  // Добавляем isAdmin как 
                 {nataliaCertificates.map((src, index) => (
                   <div key={index} className="certificate-slide">
                     <img 
-                      src={src} 
+                      src={`/uploads/${src}`} 
                       alt={`Certificate ${index + 1}`} 
                       onClick={() => handleImageClick(index)} 
                       className="certificate-image"
@@ -89,7 +168,7 @@ function TeamPage({ reviews, isAdmin }) {  // Добавляем isAdmin как 
                   </div>
                 ))}
               </Carousel>
-              {isAdmin && (  // Показываем только администратору
+              {isAdmin && (
                 <button
                   onClick={() => handleDeleteCertificate(currentIndex, 'natalia')}
                   className="delete-button"
@@ -116,7 +195,7 @@ function TeamPage({ reviews, isAdmin }) {  // Добавляем isAdmin как 
           title: t('specialist2.details.4.title'), 
           content: (
             <div>
-              {isAdmin && (  // Показываем только администратору
+              {isAdmin && (
                 <input
                   type="file"
                   accept="image/*"
@@ -136,7 +215,7 @@ function TeamPage({ reviews, isAdmin }) {  // Добавляем isAdmin как 
                 {sebastianCertificates.map((src, index) => (
                   <div key={index} className="certificate-slide">
                     <img 
-                      src={src} 
+                      src={`/uploads/${src}`} 
                       alt={`Certificate ${index + 1}`} 
                       onClick={() => handleImageClick(index)} 
                       className="certificate-image"
@@ -144,7 +223,7 @@ function TeamPage({ reviews, isAdmin }) {  // Добавляем isAdmin как 
                   </div>
                 ))}
               </Carousel>
-              {isAdmin && (  // Показываем только администратору
+              {isAdmin && (
                 <button
                   onClick={() => handleDeleteCertificate(currentIndex, 'sebastian')}
                   className="delete-button"
@@ -212,6 +291,11 @@ function TeamPage({ reviews, isAdmin }) {  // Добавляем isAdmin как 
           </div>
         </div>
       ))}
+      {isAdmin && changesMade && (
+        <div className="save-changes-container">
+          <SaveButton onClick={handleSaveChanges} />
+        </div>
+      )}
     </div>
   );
 }

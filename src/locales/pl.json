@@ -7,7 +7,9 @@
     "price": "CENNIK",
     "offer": "OFERTA",
     "contact": "KONTAKT",
-    "reviews": "OPINIE"
+    "reviews": "OPINIE",
+    "logout": "Wyjść"
+  
   },
   "centerDescription": "Centrum Pomocy Psychologicznej, Psychotaumatologii i Interwencji Kryzysowej",
   "specialist1": {
@@ -49,7 +51,8 @@
     "errorNoRating": "Prosimy o ocenę.",
     "errorIncomplete": "Prosimy wypęłnić niezbędne pola",    
     "readMore": "Czytaj więcej",
-    "deleteButton": "Usuń"
+    "deleteButton": "Usuń",
+    "saveChangesButton": "Zapisz"
   
   },
 "start": {
@@ -196,6 +199,7 @@
     "footer": {    
     "cookiesInfo": "Strona używa plików cookies i podobnych technologii w celu realizacji usług, reklamy, statystyk, optymalizacji. Jeśli nie blokujesz tych plików, zgadzasz się na ich użycie oraz zapisanie w pamięci urządzenia. Możesz określić warunki przechowywania lub dostępu do plików cookies w Twojej przeglądarce.",
     "allRightsReserved": "Wszystkie prawa zastrzeżone"
-  }
+  },
+  "saveButton": "Zapisz zmiany"
   }
 

@@ -11,7 +11,19 @@ const fs = require('fs');
 const app = express();
 const port = 3001;
 
-const upload = multer({ dest: 'uploads/' });
+const certificatesFilePath = path.join(__dirname, 'certificates.json');
+
+// Настройка хранения файлов с помощью multer
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'uploads/');
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + path.extname(file.originalname));
+  },
+});
+
+const upload = multer({ storage: storage }).array('certificates', 10);
 
 let verificationCode = null;
 let isAdminLoggedIn = false;
@@ -20,8 +32,8 @@ const adminData = {
   password: 'password',
   email: 'direst2010@gmail.com',
 };
-let siteContent = { welcomeMessage: 'Welcome to our site!' };
 
+let siteContent = { welcomeMessage: 'Welcome to our site!' };
 let prices = {
   individualTherapy: '200 PLN',
   adolescentTherapy: '180 PLN',
@@ -29,10 +41,35 @@ let prices = {
   crisisIntervention: '220 PLN',
 };
 
+let reviews = [];
+let certificates = {};
+
+// Загрузка сертификатов из файла при старте сервера
+if (fs.existsSync(certificatesFilePath)) {
+  const data = fs.readFileSync(certificatesFilePath);
+  certificates = JSON.parse(data);
+} else {
+  // Если файл не существует, создаем его
+  fs.writeFileSync(certificatesFilePath, JSON.stringify(certificates, null, 2));
+}
+
+const reviewsFilePath = path.join(__dirname, 'reviews.json');
+if (!fs.existsSync(reviewsFilePath)) {
+  fs.writeFileSync(reviewsFilePath, JSON.stringify([], null, 2));
+  console.log('reviews.json created with an empty array');
+} else {
+  const data = fs.readFileSync(reviewsFilePath, 'utf8');
+  try {
+    reviews = JSON.parse(data);
+  } catch (err) {
+    console.error('Error parsing reviews.json:', err);
+  }
+}
+
 app.use(bodyParser.json());
 app.use(cors());
 
-// Проверка загруженных переменных окружения
+// Логирование и проверка переменных окружения
 console.log('Email:', process.env.EMAIL);
 console.log('Email Password:', process.env.EMAIL_PASSWORD);
 
@@ -71,9 +108,7 @@ async function sendMail(email, code) {
 app.post('/send-verification-code', async (req, res) => {
   const { email } = req.body;
   verificationCode = Math.floor(100000 + Math.random() * 900000); // Генерируем код только один раз
-  console.log(
-    `Generated verification code: ${verificationCode} for email: ${email}`
-  );
+  console.log(`Generated verification code: ${verificationCode} for email: ${email}`);
 
   try {
     const mailResult = await sendMail(email, verificationCode);
@@ -107,6 +142,7 @@ app.post('/login', (req, res) => {
   console.log(`Login attempt with username: ${username}`);
   if (username === adminData.username && password === adminData.password) {
     console.log('Login successful');
+    isAdminLoggedIn = true;
     res.send({ success: true, email: adminData.email });
   } else {
     console.log('Login failed');
@@ -117,86 +153,154 @@ app.post('/login', (req, res) => {
 // Middleware для проверки, что админ залогинен
 function checkAdminLoggedIn(req, res, next) {
   if (!isAdminLoggedIn) {
+    console.log('Unauthorized access attempt');
     return res.status(401).send({ success: false, message: 'Unauthorized' });
   }
+  console.log('Admin is logged in, proceeding with the request');
   next();
 }
 
+// Эндпоинт для получения отзывов
+app.get('/reviews', (req, res) => {
+  console.log('Fetching all reviews');
+  res.json(reviews);
+});
+
+// Новый эндпоинт для добавления отзывов (доступен всем пользователям)
+app.post('/add-review', (req, res) => {
+  console.log('Received a POST request on /add-review');
+
+  const newReview = req.body;
+  console.log('New review received:', newReview);
+
+  reviews.push(newReview);
+
+  // Сохранение отзывов в файл
+  fs.writeFileSync(reviewsFilePath, JSON.stringify(reviews, null, 2));
+  console.log('Review added and saved to file successfully');
+
+  res.send({ success: true });
+});
+
+// Эндпоинт для обновления отзывов (требует авторизации)
+app.post('/update-reviews', checkAdminLoggedIn, (req, res) => {
+  console.log('Received a POST request on /update-reviews');
+
+  const { reviews: newReviews } = req.body;
+  console.log('Data received:', newReviews);
+
+  if (!Array.isArray(newReviews)) {
+    console.log('Invalid data format received');
+    return res.status(400).send({ success: false, message: 'Invalid reviews data' });
+  }
+
+  reviews = newReviews;
+
+  // Сохранение отзывов в файл
+  fs.writeFileSync(reviewsFilePath, JSON.stringify(reviews, null, 2));
+  console.log('Reviews saved to file successfully');
+
+  res.send({ success: true });
+});
+
 // Эндпоинт для получения цен
 app.get('/prices', (req, res) => {
+  console.log('Fetching prices');
   res.json(prices);
 });
 
 // Эндпоинт для обновления цен (доступен только залогированным админам)
-app.post('/prices', checkAdminLoggedIn, (req, res) => {
-  prices = req.body;
-  res.send({ success: true });
+app.post('/update-prices', checkAdminLoggedIn, (req, res) => {
+  console.log('Received a POST request on /update-prices');
+  console.log('Data received:', req.body);
+
+  try {
+    // Обновляем цены
+    prices = { ...prices, ...req.body };
+
+    // Отправляем успешный ответ
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Error updating prices:', error);
+    res.status(500).json({ success: false, message: 'Internal Server Error' });
+  }
 });
 
-// Обработка загрузки сертификатов
-app.post(
-  '/upload-certificate',
-  checkAdminLoggedIn,
-  upload.single('certificate'),
-  (req, res) => {
-    if (!req.file) {
-      return res
-        .status(400)
-        .send({ success: false, message: 'No file uploaded' });
+// Эндпоинт для загрузки сертификатов
+app.post('/upload-certificate', checkAdminLoggedIn, (req, res) => {
+  upload(req, res, (err) => {
+    console.log('Request received:', req.body, req.files);
+
+    if (err instanceof multer.MulterError) {
+      console.error('Multer error:', err);
+      return res.status(500).json({ success: false, message: err.message });
+    } else if (err) {
+      console.error('Unknown error:', err);
+      return res.status(500).json({ success: false, message: 'Unknown error' });
     }
 
-    const tempPath = req.file.path;
-    const targetPath = path.join(__dirname, 'uploads', req.file.originalname);
+    if (!req.files || req.files.length === 0) {
+      console.warn('No files uploaded');
+      return res.status(400).json({ success: false, message: 'No files uploaded' });
+    }
 
-    fs.rename(tempPath, targetPath, err => {
-      if (err)
-        return res
-          .status(500)
-          .send({ success: false, message: 'File processing error' });
+    const { specialistId } = req.body;
 
-      res.send({
-        success: true,
-        filePath: `/uploads/${req.file.originalname}`,
-      });
+    if (!certificates[specialistId]) {
+      certificates[specialistId] = [];
+    }
+
+    req.files.forEach((file) => {
+      certificates[specialistId].push(file.filename);
     });
-  }
-);
 
-// Обработка удаления сертификатов
+    // Сохранение сертификатов в файл
+    fs.writeFileSync(certificatesFilePath, JSON.stringify(certificates, null, 2));
+
+    res.json({ success: true, filePaths: req.files.map((file) => `/uploads/${file.filename}`) });
+  });
+});
+
+// Эндпоинт для удаления сертификатов
 app.post('/delete-certificate', checkAdminLoggedIn, (req, res) => {
-  const { filePath } = req.body;
-  const fullPath = path.join(__dirname, filePath);
+  const { filePath, specialistId } = req.body;
 
-  fs.unlink(fullPath, err => {
-    if (err)
-      return res
-        .status(500)
-        .send({ success: false, message: 'File deletion error' });
+  if (!filePath || !specialistId) {
+    return res.status(400).send({ success: false, message: 'Invalid filePath or specialistId' });
+  }
+
+  const fullPath = path.join(__dirname, 'uploads', path.basename(filePath)); // Используйте path.basename для корректного извлечения имени файла
+
+  fs.unlink(fullPath, (err) => {
+    if (err) {
+      return res.status(500).send({ success: false, message: 'File deletion error' });
+    }
+
+    certificates[specialistId] = certificates[specialistId].filter(
+      (cert) => cert !== path.basename(filePath)
+    );
+
+    // Сохранение сертификатов в файл
+    fs.writeFileSync(certificatesFilePath, JSON.stringify(certificates, null, 2));
 
     res.send({ success: true });
   });
 });
 
 // Предоставление списка сертификатов для всех пользователей
-app.get('/certificates', (req, res) => {
-  const certificatesDir = path.join(__dirname, 'uploads');
-  fs.readdir(certificatesDir, (err, files) => {
-    if (err) {
-      return res
-        .status(500)
-        .send({ success: false, message: 'Unable to retrieve certificates' });
-    }
-    const filePaths = files.map(file => `/uploads/${file}`);
-    res.send({ success: true, certificates: filePaths });
-  });
+app.get('/certificates/:specialistId', (req, res) => {
+  const { specialistId } = req.params;
+  res.send({ success: true, certificates: certificates[specialistId] || [] });
 });
 
+// Эндпоинт для получения контента сайта
 app.get('/content', (req, res) => {
   console.log('Content requested');
   res.send(siteContent);
 });
 
-app.post('/update-content', (req, res) => {
+// Эндпоинт для обновления контента сайта
+app.post('/update-content', checkAdminLoggedIn, (req, res) => {
   const { content } = req.body;
   console.log('Content update:', content);
   siteContent = content;
