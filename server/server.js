@@ -12,6 +12,8 @@ const app = express();
 const port = 3001;
 
 const certificatesFilePath = path.join(__dirname, 'certificates.json');
+const avatarsFilePath = path.join(__dirname, 'avatars.json');  // Новый файл для хранения аватаров
+const pricesFilePath = path.join(__dirname, 'prices.json');
 
 // Настройка хранения файлов с помощью multer
 const storage = multer.diskStorage({
@@ -24,6 +26,7 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage: storage }).array('certificates', 10);
+const uploadAvatar = multer({ storage: storage }).single('avatar');  // Новый загрузчик для аватара
 
 let verificationCode = null;
 let isAdminLoggedIn = false;
@@ -34,16 +37,31 @@ const adminData = {
 };
 
 let siteContent = { welcomeMessage: 'Welcome to our site!' };
-let prices = {
-  individualTherapy: '200 PLN',
-  adolescentTherapy: '180 PLN',
-  groupTherapy: '150 PLN',
-  crisisIntervention: '220 PLN',
-};
+let prices = {};
 
 let reviews = [];
 let certificates = {};
+let avatars = {};  // Добавляем пустой объект для аватаров
 
+if (fs.existsSync(pricesFilePath)) {
+  try {
+    const data = fs.readFileSync(pricesFilePath, 'utf8');
+    prices = JSON.parse(data);
+    console.log('Prices loaded successfully from prices.json:', prices);
+  } catch (err) {
+    console.error('Error reading prices.json:', err);
+  }
+} else {
+  // Если файл не существует, создаем его пустым
+  prices = {};  // Пустой объект, так как дефолтные цены не нужны
+  try {
+    fs.writeFileSync(pricesFilePath, JSON.stringify(prices, null, 2));
+    console.log('Empty prices.json created');
+  } catch (err) {
+    console.error('Error creating prices.json:', err);
+  }
+}
+ 
 // Загрузка сертификатов из файла при старте сервера
 if (fs.existsSync(certificatesFilePath)) {
   const data = fs.readFileSync(certificatesFilePath);
@@ -51,6 +69,15 @@ if (fs.existsSync(certificatesFilePath)) {
 } else {
   // Если файл не существует, создаем его
   fs.writeFileSync(certificatesFilePath, JSON.stringify(certificates, null, 2));
+}
+
+// Загрузка аватаров из файла при старте сервера
+if (fs.existsSync(avatarsFilePath)) {
+  const data = fs.readFileSync(avatarsFilePath);
+  avatars = JSON.parse(data);
+} else {
+  // Если файл не существует, создаем его
+  fs.writeFileSync(avatarsFilePath, JSON.stringify(avatars, null, 2));
 }
 
 const reviewsFilePath = path.join(__dirname, 'reviews.json');
@@ -205,26 +232,35 @@ app.post('/update-reviews', checkAdminLoggedIn, (req, res) => {
 
 // Эндпоинт для получения цен
 app.get('/prices', (req, res) => {
-  console.log('Fetching prices');
+  console.log('Fetching prices:', prices);
   res.json(prices);
 });
 
-// Эндпоинт для обновления цен (доступен только залогированным админам)
+// Эндпоинт для обновления цен
 app.post('/update-prices', checkAdminLoggedIn, (req, res) => {
-  console.log('Received a POST request on /update-prices');
-  console.log('Data received:', req.body);
+  console.log('Получен POST-запрос на /update-prices');
+  console.log('Полученные данные:', req.body);
 
   try {
-    // Обновляем цены
+    // Обновляем объект с ценами
     prices = { ...prices, ...req.body };
 
-    // Отправляем успешный ответ
-    res.json({ success: true });
+    // Записываем обновленные цены в файл JSON
+    fs.writeFile(pricesFilePath, JSON.stringify(prices, null, 2), (err) => {
+      if (err) {
+        console.error('Ошибка при записи в файл prices.json:', err);
+        return res.status(500).json({ success: false, message: 'Ошибка при сохранении цен' });
+      }
+      console.log('Цены успешно обновлены и сохранены в prices.json');
+      res.json({ success: true });
+    });
   } catch (error) {
-    console.error('Error updating prices:', error);
-    res.status(500).json({ success: false, message: 'Internal Server Error' });
+    console.error('Ошибка при обновлении цен:', error);
+    res.status(500).json({ success: false, message: 'Внутренняя ошибка сервера' });
   }
 });
+
+
 
 // Эндпоинт для загрузки сертификатов
 app.post('/upload-certificate', checkAdminLoggedIn, (req, res) => {
@@ -261,6 +297,52 @@ app.post('/upload-certificate', checkAdminLoggedIn, (req, res) => {
   });
 });
 
+// Эндпоинт для загрузки аватара
+app.post('/upload-avatar', checkAdminLoggedIn, (req, res) => {
+  uploadAvatar(req, res, (err) => {
+    console.log('Request received for avatar upload:', req.body, req.file);
+
+    if (err instanceof multer.MulterError) {
+      console.error('Multer error:', err);
+      return res.status(500).json({ success: false, message: err.message });
+    } else if (err) {
+      console.error('Unknown error:', err);
+      return res.status(500).json({ success: false, message: 'Unknown error' });
+    }
+
+    if (!req.file) {
+      console.warn('No file uploaded');
+      return res.status(400).json({ success: false, message: 'No file uploaded' });
+    }
+
+    const { specialistId } = req.body;
+
+    // Логируем имя файла перед сохранением
+    console.log('Filename with extension:', req.file.filename);
+
+    // Удаление предыдущего аватара
+    if (avatars[specialistId]) {
+      const previousAvatarPath = path.join(__dirname, 'uploads', avatars[specialistId]);
+      fs.unlink(previousAvatarPath, (err) => {
+        if (err) {
+          console.error('Ошибка при удалении предыдущего аватара:', err);
+        } else {
+          console.log(`Предыдущий аватар ${avatars[specialistId]} успешно удален`);
+        }
+      });
+    }
+
+    // Загрузка аватара для специалиста
+    avatars[specialistId] = req.file.filename;
+
+    // Сохранение изменений в avatars.json
+    fs.writeFileSync(avatarsFilePath, JSON.stringify(avatars, null, 2));
+
+    // Ответ с путём к загруженному аватару
+    res.json({ success: true, avatarPath: `/uploads/${req.file.filename}` });
+  });
+});
+
 // Эндпоинт для удаления сертификатов
 app.post('/delete-certificate', checkAdminLoggedIn, (req, res) => {
   const { filePath, specialistId } = req.body;
@@ -291,6 +373,18 @@ app.post('/delete-certificate', checkAdminLoggedIn, (req, res) => {
 app.get('/certificates/:specialistId', (req, res) => {
   const { specialistId } = req.params;
   res.send({ success: true, certificates: certificates[specialistId] || [] });
+});
+
+// Эндпоинт для получения аватара
+app.get('/avatar/:specialistId', (req, res) => {
+  const { specialistId } = req.params;
+  const avatar = avatars[specialistId];  // Используем avatars.json для получения пути к аватару
+
+  if (avatar) {
+    res.json({ success: true, avatar: `/uploads/${avatar}` });
+  } else {
+    res.json({ success: true, avatar: '/uploads/default-avatar.jpg' }); // Если аватара нет, возвращаем дефолтное изображение
+  }
 });
 
 // Эндпоинт для получения контента сайта

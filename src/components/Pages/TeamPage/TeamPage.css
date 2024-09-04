@@ -43,9 +43,9 @@
 }
 
 .specialist-photo {
-  width: 300px;
-  height: auto;
-  border-radius: 50%;
+ width: 300px; 
+  height: 400px; 
+  border-radius: 50%; 
   object-fit: cover;
 }
 

@@ -12,12 +12,15 @@ import 'slick-carousel/slick/slick-theme.css';
 import './TeamPage.css';
 import { Carousel } from 'react-responsive-carousel';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
+import AvatarUploader from './AvatarUploader/AvatarUploader'; // Импорт компонента для загрузки аватара
 
 function TeamPage({ reviews, isAdmin }) {
   const { t } = useTranslation();
 
   const [nataliaCertificates, setNataliaCertificates] = useState([]);
   const [sebastianCertificates, setSebastianCertificates] = useState([]);
+  const [nataliaAvatar, setNataliaAvatar] = useState(null);  // Состояние для аватара Натальи
+  const [sebastianAvatar, setSebastianAvatar] = useState(null); // Состояние для аватара Себастьяна
   const [currentIndex, setCurrentIndex] = useState(0);
   const [changesMade, setChangesMade] = useState(false); // Состояние для отслеживания изменений
 
@@ -38,6 +41,33 @@ function TeamPage({ reviews, isAdmin }) {
     fetchCertificates('natalia', setNataliaCertificates);
     fetchCertificates('sebastian', setSebastianCertificates);
   }, []);
+
+  useEffect(() => {
+  const fetchAvatar = async (specialistId, setAvatar) => {
+    try {
+      const response = await fetch(`http://localhost:3001/avatar/${specialistId}`);
+      const data = await response.json();
+      if (data.success) {
+        setAvatar(data.avatar); // Устанавливаем путь к аватару
+      }
+    } catch (error) {
+      console.error('Ошибка при загрузке аватара:', error);
+    }
+  };
+
+  // Загрузка аватара для каждого специалиста
+  fetchAvatar('natalia', setNataliaAvatar);
+  fetchAvatar('sebastian', setSebastianAvatar);
+}, []);
+
+  // Функция для обновления состояния аватара
+  const handleAvatarSave = (avatarPath, specialistId) => {
+    if (specialistId === 'natalia') {
+      setNataliaAvatar(avatarPath);
+    } else if (specialistId === 'sebastian') {
+      setSebastianAvatar(avatarPath);
+    }
+  };
 
   const handleFileChange = async (event, specialistId) => {
     const files = Array.from(event.target.files);
@@ -72,44 +102,44 @@ function TeamPage({ reviews, isAdmin }) {
   };
 
   const handleDeleteCertificate = async (index, specialistId) => {
-  const certificates = specialistId === 'natalia' ? nataliaCertificates : sebastianCertificates;
-  const filePath = certificates[index];
+    const certificates = specialistId === 'natalia' ? nataliaCertificates : sebastianCertificates;
+    const filePath = certificates[index];
 
-  try {
-    const response = await fetch('http://localhost:3001/delete-certificate', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ filePath, specialistId }),
-    });
+    try {
+      const response = await fetch('http://localhost:3001/delete-certificate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ filePath, specialistId }),
+      });
 
-    const data = await response.json();
+      const data = await response.json();
 
-    if (data.success) {
-      let updatedCertificates;
-      if (specialistId === 'natalia') {
-        updatedCertificates = nataliaCertificates.filter((_, i) => i !== index);
-        setNataliaCertificates(updatedCertificates);
-      } else if (specialistId === 'sebastian') {
-        updatedCertificates = sebastianCertificates.filter((_, i) => i !== index);
-        setSebastianCertificates(updatedCertificates);
+      if (data.success) {
+        let updatedCertificates;
+        if (specialistId === 'natalia') {
+          updatedCertificates = nataliaCertificates.filter((_, i) => i !== index);
+          setNataliaCertificates(updatedCertificates);
+        } else if (specialistId === 'sebastian') {
+          updatedCertificates = sebastianCertificates.filter((_, i) => i !== index);
+          setSebastianCertificates(updatedCertificates);
+        }
+
+        if (updatedCertificates.length === 0) {
+          setCurrentIndex(0); // Сброс индекса, если все сертификаты удалены
+        } else if (currentIndex >= updatedCertificates.length) {
+          setCurrentIndex(updatedCertificates.length - 1); // Сброс на последний элемент
+        }
+
+        setChangesMade(true); // Обновляем состояние при изменениях
+      } else {
+        console.error('Ошибка при удалении сертификата.');
       }
-
-      if (updatedCertificates.length === 0) {
-        setCurrentIndex(0); // Сброс индекса, если все сертификаты удалены
-      } else if (currentIndex >= updatedCertificates.length) {
-        setCurrentIndex(updatedCertificates.length - 1); // Сброс на последний элемент
-      }
-
-      setChangesMade(true); // Обновляем состояние при изменениях
-    } else {
-      console.error('Ошибка при удалении сертификата.');
+    } catch (error) {
+      console.error('Ошибка при удалении сертификата:', error);
     }
-  } catch (error) {
-    console.error('Ошибка при удалении сертификата:', error);
-  }
-};
+  };
 
   const handleSaveChanges = async () => {
     // После успешного сохранения всех изменений на сервере
@@ -125,7 +155,7 @@ function TeamPage({ reviews, isAdmin }) {
     {
       id: 'natalia',
       name: t('specialist1.name'),
-      photo: process.env.PUBLIC_URL + '/images/17.jpg',
+      photo: `http://localhost:3001${nataliaAvatar}`, // Используем загруженный аватар или дефолтное изображение
       description: `
         <p><strong>${t('specialist1.description.therapy')}</strong></p>
         <p><strong>${t('specialist1.description.experience')}</strong></p>       
@@ -184,7 +214,7 @@ function TeamPage({ reviews, isAdmin }) {
     {
       id: 'sebastian',
       name: t('specialist2.name'),
-      photo: process.env.PUBLIC_URL + '/images/sebastian.jpg',
+      photo: `http://localhost:3001${sebastianAvatar}`, // Используем загруженный аватар или дефолтное изображение
       description: t('specialist2.description'),
       details: [
         { title: t('specialist2.details.0.title'), content: t('specialist2.details.0.content') },
@@ -239,34 +269,36 @@ function TeamPage({ reviews, isAdmin }) {
   ];
 
   const settings = {
-    dots: true,
-    infinite: reviews.length > 1,
+    dots: reviews.length > 1, // Показываем точки только если больше одного отзыва
+    infinite: false, // Отключаем бесконечный цикл, чтобы избежать дублирования
     speed: 500,
-    slidesToShow: reviews.length < 3 ? 1 : 3,
+    slidesToShow: 3, // Всегда показываем ровно 3 слайда
     slidesToScroll: 1,
-    centerMode: reviews.length > 2,
-    centerPadding: '1',
-    prevArrow: reviews.length > 0 ? <CustomArrow icon={leftArrow} /> : null,
-    nextArrow: reviews.length > 0 ? <CustomArrow icon={rightArrow} /> : null,
-    arrows: reviews.length > 1, 
+    arrows: true, // Всегда показываем стрелки
+    prevArrow: <CustomArrow icon={leftArrow} />, // Кастомная левая стрелка
+    nextArrow: <CustomArrow icon={rightArrow} />, // Кастомная правая стрелка
     responsive: [
       {
         breakpoint: 1024,
         settings: {
-          slidesToShow: 2,
+          slidesToShow: 2, // Для планшетов показываем 2 слайда
           slidesToScroll: 1,
-          infinite: true,
-          dots: true
-        }
+          infinite: false,
+          dots: reviews.length > 1,
+          arrows: reviews.length > 2, // Стрелки отображаются, если отзывов больше 2
+        },
       },
       {
         breakpoint: 600,
         settings: {
-          slidesToShow: 1,
-          slidesToScroll: 1
-        }
-      }
-    ]
+          slidesToShow: 1, // Для мобильных устройств показываем 1 слайд
+          slidesToScroll: 1,
+          infinite: false,
+          dots: reviews.length > 1,
+          arrows: false, // На мобильных устройствах стрелки отключены
+        },
+      },
+    ],
   };
 
   return (
@@ -277,17 +309,24 @@ function TeamPage({ reviews, isAdmin }) {
           <div className="specialist-info">
             <img src={specialist.photo} alt={specialist.name} className="specialist-photo" />
             <div className="specialist-description" dangerouslySetInnerHTML={{ __html: specialist.description }}></div>
+            {isAdmin && (
+              <div className="avatar-uploader">
+                <AvatarUploader specialistId={specialist.id} onSave={(avatarPath) => handleAvatarSave(avatarPath, specialist.id)} />
+              </div>
+            )}
           </div>
           <Accordion items={specialist.details} />
           <div className="specialist-reviews">
             <h3>{t('reviews.title')}</h3>
-            <Slider {...settings}>
-              {reviews
-                .filter((review) => review.specialistId === specialist.id)
-                .map((review, index) => (
-                  <ReviewCardTeam key={index} review={review} />
-                ))}
-            </Slider>
+            {reviews.length > 0 && (
+              <Slider {...settings}>
+                {reviews
+                  .filter((review) => review.specialistId === specialist.id)
+                  .map((review, index) => (
+                    <ReviewCardTeam key={index} review={review} />
+                  ))}
+              </Slider>
+            )}
           </div>
         </div>
       ))}
