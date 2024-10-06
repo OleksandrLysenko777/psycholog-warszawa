@@ -38,20 +38,22 @@
 .specialist-info {
   display: flex;
   align-items: flex-start;
+  justify-content: center; /* Центрируем содержимое */
   width: 100%;
   gap: 40px;
 }
 
 .specialist-photo {
- width: 300px; 
-  height: 400px; 
-  border-radius: 50%; 
+  width: 280px;
+  height: 370px;
+  border-radius: 50%;
   object-fit: cover;
 }
 
 .specialist-description {
-  font-size: 20px;
+  font-size: 18px;
   color: #333;
+  max-width: 600px; /* Ограничиваем ширину описания */
 }
 
 .accordion {
@@ -69,7 +71,7 @@
   cursor: pointer;
   padding: 10px;
   width: 100%;
-  text-align: left;
+  text-align: center;   
   font-size: 18px;
   border-radius: 4px;
   transition: background-color 0.3s;
@@ -84,6 +86,7 @@
   padding: 10px;
   background-color: #f1f1f1;
   border: 1px solid #ddd;
+   text-align: center;  
   border-top: none;
   border-radius: 0 0 4px 4px;
   color: #2c3e50;
@@ -104,8 +107,7 @@
   box-sizing: border-box;
   text-align: left;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  height: 150px;
-  overflow: hidden;
+  min-height: 150px; /* Для минимальной высоты, чтобы карточки были одинаковыми */
 }
 
 .review-header {
@@ -148,9 +150,6 @@
   color: #007bff;
 }
 
-
-
-
 .certificate-slide {
   max-width: 100%;
   margin: 0 auto;
@@ -182,4 +181,70 @@
   max-height: 500px;
   width: 100%;
   object-fit: contain;
+}
+
+/* Медиазапросы для планшетов и мобильных устройств */
+@media (max-width: 1024px) {
+  .specialist-photo {
+    width: 200px;
+    height: 280px;
+  }
+
+  .specialist h2 {
+    font-size: 30px;
+  }
+
+  .specialist-description {
+    font-size: 16px;
+    max-width: 100%; /* На планшетах описание будет занимать всю ширину */
+  }
+
+  .specialist-info {
+    flex-direction: column; /* Вертикальное расположение для планшетов */
+    align-items: center;
+  }
+
+  .specialist-reviews {
+    width: 100%;
+  }
+
+  .review-card {
+    height: auto; /* Делаем карточку отзывов адаптивной по высоте */
+  }
+}
+
+@media (max-width: 600px) {
+  .specialist-photo {
+    width: 150px;
+    height: 200px;
+  }
+
+  .specialist h2 {
+    font-size: 24px;
+  }
+
+  .specialist-description {
+    font-size: 14px;
+    text-align: center; /* На мобильных устройствах текст центрируется */
+  }
+
+  .specialist-info {
+    gap: 20px; /* Уменьшаем отступы на мобильных устройствах */
+  }
+
+  .review-card {
+    padding: 10px;
+    margin: 5px;
+  }
+
+  .slick-prev,
+  .slick-next {
+    width: 20px;
+    height: 20px;
+  }
+
+  .delete-button {
+    padding: 5px;
+    font-size: 14px;
+  }
 }

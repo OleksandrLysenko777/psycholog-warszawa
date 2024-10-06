@@ -17,36 +17,43 @@
 .review-header-team {
   display: flex;
   justify-content: space-between;
-  align-items: center; /* Выравнивание элементов по центру */
+  align-items: center;
   margin-bottom: 5px;
 }
 
 .review-header-team p {
   margin: 0;
-  flex-grow: 1; /* Позволяет имени занимать доступное пространство */
-  white-space: nowrap; /* Предотвращает перенос текста */
+  flex-grow: 1;
+  white-space: nowrap;
   overflow: hidden;
-  text-overflow: ellipsis; /* Добавляет многоточие, если текст не помещается */
+  text-overflow: ellipsis;
 }
 
 .review-header-team .react-stars {
-  flex-shrink: 0; /* Предотвращает сжатие звёздочек */
-  margin-left: 10px; /* Добавляет небольшой отступ слева от звёздочек */
+  flex-shrink: 0;
+  margin-left: 10px;
 }
 
 .review-text-team {
-  margin-top: 5px; /* Добавляет небольшой отступ сверху для текста отзыва */
-  margin-bottom: auto; /* Позволяет тексту расти и занимать доступное пространство */
+  margin-top: 5px;
+  margin-bottom: auto;
+  display: -webkit-box;
+  -webkit-line-clamp: 3; /* Ограничиваем текст тремя строками для Webkit */
+  -webkit-box-orient: vertical;
+  line-clamp: 3; /* Стандартное свойство для совместимости */
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .read-more-team {
   text-align: right;
-  align-self: flex-end; /* Выравнивание ссылки по правому краю */
+  align-self: flex-end;
 }
 
 .read-more-team a {
   color: rgb(92, 63, 63);
   text-decoration: none;
+  font-weight: bold; /* Подчеркиваем важность ссылки */
 }
 
 .read-more-team a:hover {

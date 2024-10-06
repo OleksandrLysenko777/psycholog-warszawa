@@ -270,20 +270,22 @@ function TeamPage({ reviews, isAdmin }) {
 
   const settings = {
     dots: reviews.length > 1, // Показываем точки только если больше одного отзыва
-    infinite: false, // Отключаем бесконечный цикл, чтобы избежать дублирования
+    infinite: reviews.length > 1,
     speed: 500,
     slidesToShow: 3, // Всегда показываем ровно 3 слайда
     slidesToScroll: 1,
     arrows: true, // Всегда показываем стрелки
-    prevArrow: <CustomArrow icon={leftArrow} />, // Кастомная левая стрелка
-    nextArrow: <CustomArrow icon={rightArrow} />, // Кастомная правая стрелка
+    autoplay: true, // Добавлено для автоматического переключения
+    autoplaySpeed: 3000, // Интервал переключения в миллисекундах (2000 = 2 секунды)
+    prevArrow: reviews.length > 0 ? <CustomArrow icon={leftArrow} /> : null,
+    nextArrow: reviews.length > 0 ? <CustomArrow icon={rightArrow} /> : null,
     responsive: [
       {
         breakpoint: 1024,
         settings: {
           slidesToShow: 2, // Для планшетов показываем 2 слайда
           slidesToScroll: 1,
-          infinite: false,
+          infinite: reviews.length > 1,
           dots: reviews.length > 1,
           arrows: reviews.length > 2, // Стрелки отображаются, если отзывов больше 2
         },
@@ -293,7 +295,7 @@ function TeamPage({ reviews, isAdmin }) {
         settings: {
           slidesToShow: 1, // Для мобильных устройств показываем 1 слайд
           slidesToScroll: 1,
-          infinite: false,
+          infinite: reviews.length > 1,
           dots: reviews.length > 1,
           arrows: false, // На мобильных устройствах стрелки отключены
         },

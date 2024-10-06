@@ -7,6 +7,15 @@
   box-sizing: border-box;
 }
 
+/* Отзывы и форма находятся рядом на настольных и планшетных версиях */
+.add-review-form {
+  order: 1; /* Форма отображается слева */
+  width: 100%; /* Форма занимает всю ширину */
+  max-width: 600px; /* Максимальная ширина, такая же как у отзывов */
+  margin: 0 auto; /* Центрируем форму */
+  padding: 10px; /* Добавляем отступы */
+}
+
 .reviews-list {
   background-color: #ffffff;
   padding: 20px;
@@ -17,18 +26,30 @@
   height: 800px;
   overflow-y: auto;
   box-sizing: border-box;
+  order: 2; /* Отзывы отображаются справа */
+}
+
+.reviews-list .review-date {
+  font-size: 10px !important; /* Принудительное уменьшение размера шрифта */
+  color: #888 !important; /* Серый цвет для менее заметного отображения */
+  position: absolute;
+  right: 10px; /* Располагаем немного отступив от правого края */
+  bottom: 5px; /* Отступаем от нижнего края */
+  padding: 2px 5px; /* Небольшие отступы вокруг текста даты */
+  font-style: italic; /* Добавляем легкий курсив для улучшения восприятия */
 }
 
 .reviews-list h1 {
-  margin-top: 0;
+  margin-top: 18px;
   font-size: 24px;
   text-align: center;
 }
 
 .reviews-list .review {
+  position: relative; /* Для того чтобы внутри блока можно было разместить дату */
   border-bottom: 1px solid #eee;
-  padding-bottom: 10px;
-  margin-bottom: 10px;
+  padding-bottom: 20px; /* Добавляем отступ внизу для даты */
+  margin-bottom: 20px;
 }
 
 .reviews-list .review:last-child {
@@ -53,29 +74,6 @@
   color: #333;
 }
 
-.reviews-list .review .react-stars {
-  display: inline-block;
-  margin: 5px 0;
-}
-
-.reviews-list::-webkit-scrollbar {
-  width: 12px;
-}
-
-.reviews-list::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 8px;
-}
-
-.reviews-list::-webkit-scrollbar-thumb {
-  background: #888;
-  border-radius: 8px;
-}
-
-.reviews-list::-webkit-scrollbar-thumb:hover {
-  background: #555;
-}
-
 .delete-review-button {
   background-color: #ff0000;
   color: white;
@@ -90,28 +88,66 @@
   background-color: darkred;
 }
 
-.save-changes-container {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background-color: #ffffff;
-  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
-  padding: 10px;
-  text-align: center;
-  z-index: 1000;
-}
+/* Медиа-запросы для мобильных устройств (до 480px) */
+@media (max-width: 480px) {
+  .reviews-page {
+    flex-direction: column; /* Форма сверху, отзывы снизу */
+    padding: 10px;
+    gap: 10px;
+  }
 
-.save-changes-button {
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  padding: 10px 20px;
-  cursor: pointer;
-  font-size: 16px;
-}
+  .add-review-form {
+    order: 1; /* Форма будет сверху */
+    width: 100%; /* Занимает всю ширину экрана */
+    padding: 15px; /* Увеличим отступы для улучшения визуального восприятия */
+    margin: 0; /* Убираем внешние отступы */
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Добавляем тень */
+  }
 
-.save-changes-button:hover {
-  background-color: #0056b3;
+  .add-review-form input,
+  .add-review-form textarea,
+  .add-review-form button {
+    width: 100%; /* Поля ввода и кнопка занимают всю ширину */
+    margin-bottom: 10px; /* Отступы между полями */
+  }
+
+  .add-review-form button {
+    padding: 10px; /* Больше отступов для кнопки */
+    font-size: 16px; /* Увеличиваем размер шрифта кнопки */
+  }
+
+  .reviews-list {
+    order: 2; /* Отзывы будут снизу */
+    width: 100%; /* Занимают всю ширину экрана */
+    padding: 15px;
+    height: auto; /* Убираем фиксированную высоту */
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .reviews-list h1 {
+    font-size: 20px;
+  }
+
+  .reviews-list .review h3 {
+    font-size: 14px;
+  }
+
+  .reviews-list .review p {
+    font-size: 16px;
+  }
+
+  .delete-review-button {
+    padding: 5px;
+    font-size: 12px;
+  }
+
+  .review-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+  }
 }

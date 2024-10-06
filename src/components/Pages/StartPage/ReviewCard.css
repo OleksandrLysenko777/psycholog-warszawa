@@ -12,6 +12,7 @@
   overflow: hidden;
   transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
   z-index: 0; /* Добавляем z-index */
+  
 }
 
 .review-card:hover {
@@ -50,9 +51,15 @@
   margin: 0;
 }
 
-.review-card p {
-  margin: 0;
+.review-card p {  
   margin-bottom: 10px; /* Оставляем место для ссылки */
+   margin-top: 5px; 
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* Ограничиваем текст тремя строками для Webkit */
+  -webkit-box-orient: vertical;
+  line-clamp: 3; /* Стандартное свойство для совместимости */
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .read-more {

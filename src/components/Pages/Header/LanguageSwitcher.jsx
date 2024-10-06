@@ -25,10 +25,10 @@ function LanguageSwitcher() {
 
   return (
     <div className="language-switcher">
-      <button onClick={() => changeLanguage('pl')} className="lang-button">
+      <button onClick={() => changeLanguage('pl')} className={`lang-button ${language === 'pl' ? 'active' : ''}`}>
         <PolandSVG />
       </button>
-      <button onClick={() => changeLanguage('ua')} className="lang-button">
+      <button onClick={() => changeLanguage('ua')} className={`lang-button ${language === 'ua' ? 'active' : ''}`}>
         <UkraineSVG />
       </button>
     </div>

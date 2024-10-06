@@ -4,7 +4,7 @@
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   width: 100%;
-  max-width: 400px;
+  max-width: 500px;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -72,4 +72,34 @@
 
 .add-review button:hover {
   background-color: #0056b3;
+}
+
+/* Медиа-запрос для мобильных устройств (до 480px) */
+@media (max-width: 480px) {
+  .add-review {
+    padding: 10px; /* Уменьшенные отступы */
+    height: auto; /* Убираем фиксированную высоту */
+  }
+
+  .add-review h2 {
+    margin-bottom: 15px;
+    font-size: 20px; /* Немного уменьшаем размер заголовка */
+  }
+
+  .add-review .form-group {
+    margin-bottom: 10px; /* Уменьшаем отступы между полями */
+  }
+
+  .add-review .form-group input,
+  .add-review .form-group select,
+  .add-review .form-group textarea {
+    padding: 8px; /* Уменьшаем отступы внутри полей */
+    font-size: 14px;
+  }
+
+  .add-review button {
+    padding: 8px 16px; /* Уменьшаем отступы для кнопки */
+    font-size: 14px; /* Уменьшаем размер шрифта для кнопки */
+    margin-top: 8px; /* Уменьшаем отступ сверху кнопки */
+  }
 }

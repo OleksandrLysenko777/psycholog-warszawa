@@ -19,9 +19,10 @@ const ReviewCardTeam = ({ review }) => {
           activeColor="#ffd700"
         />
       </div>
-      <p>{review.reviewText}</p>
+      <p className="review-text-team">{review.reviewText}</p>
       <div className="read-more-team">
-        <Link to="/reviews">{t('reviews.readMore')}</Link>
+        {/* Переходим на страницу ReviewsPage с якорем, содержащим префикс "review-" */}
+        <Link to={`/reviews#review-${review.id}`}>{t('reviews.readMore')}</Link>
       </div>
     </div>
   );

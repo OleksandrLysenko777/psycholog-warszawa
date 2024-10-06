@@ -8,7 +8,6 @@ import './Footer.css';
 
 function Footer() {
     const { t } = useTranslation();
-   
 
     const scrollToTop = () => {
         window.scrollTo(0, 0);
@@ -43,13 +42,17 @@ function Footer() {
                     <img src={process.env.PUBLIC_URL + '/images/logo.png'} alt="Логотип" />
                 </div>
                 <nav className="footer-nav">
-                    <li><Link to="/start" onClick={scrollToTop}>{t('menu.start')}</Link></li>
-                    <li><Link to="/team" onClick={scrollToTop}>{t('menu.team')}</Link></li>
-                    <li><Link to="/how-we-work" onClick={scrollToTop}>{t('menu.howWeWork')}</Link></li>
-                    <li><Link to="/price" onClick={scrollToTop}>{t('menu.price')}</Link></li>
-                    <li><Link to="/offer" onClick={scrollToTop}>{t('menu.offer')}</Link></li>
-                    <li><Link to="/contact" onClick={scrollToTop}>{t('menu.contact')}</Link></li>
-                    <li><Link to="/reviews" onClick={scrollToTop}>{t('menu.reviews')}</Link></li>
+                    <div className="footer-nav-row">
+                        <li><Link to="/start" onClick={scrollToTop}>{t('menu.start')}</Link></li>
+                        <li><Link to="/team" onClick={scrollToTop}>{t('menu.team')}</Link></li>
+                        <li><Link to="/how-we-work" onClick={scrollToTop}>{t('menu.howWeWork')}</Link></li>
+                    </div>
+                    <div className="footer-nav-row">
+                        <li><Link to="/price" onClick={scrollToTop}>{t('menu.price')}</Link></li>
+                        <li><Link to="/offer" onClick={scrollToTop}>{t('menu.offer')}</Link></li>
+                        <li><Link to="/contact" onClick={scrollToTop}>{t('menu.contact')}</Link></li>
+                        <li><Link to="/reviews" onClick={scrollToTop}>{t('menu.reviews')}</Link></li>
+                    </div>
                 </nav>
             </div>
             <div className="footer-bottom">

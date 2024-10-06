@@ -5,7 +5,8 @@ import { useTranslation } from 'react-i18next';
 import './ReviewCard.css';
 
 const ReviewCard = ({ review, specialist }) => {
-    const { t } = useTranslation();
+  const { t } = useTranslation();
+
   return (
     <div className="review-card">
       <div className="specialist-name">
@@ -23,7 +24,8 @@ const ReviewCard = ({ review, specialist }) => {
       </div>
       <p>{review.reviewText}</p>
       <div className="read-more">
-        <Link to="/reviews">{t('reviews.readMore')}</Link>
+        {/* Формируем ссылку с якорем на конкретный отзыв */}
+        <Link to={`/reviews#review-${review.id}`}>{t('reviews.readMore')}</Link>
       </div>
     </div>
   );

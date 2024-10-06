@@ -1,32 +1,112 @@
+/* Общие стили для хедера */
 .header {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   padding: 20px;
   background-color: #2c3e50;
   color: #ecf0f1;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  position: fixed; /* Фиксируем хедер */
+  position: fixed;
   top: 0;
   left: 0;
-  width: 100%; /* Хедер занимает всю ширину окна */
-  z-index: 1000; /* Хедер будет сверху других элементов */
+  width: 100%;
+  z-index: 1000;
 }
 
+/* Логотип */
 .logo img {
   width: 500px;
   height: auto;
 }
 
+@media (max-width: 1024px) {
+  .logo img {
+    width: 300px;
+    height: auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .logo img {
+    width: 150px;
+    height: auto;
+  }
+}
+
+/* Центрируем бургер-меню */
+.mobile-menu-toggle {
+  display: none;
+  cursor: pointer;
+  width: 35px;
+  height: 35px;
+  margin: 0 auto;
+  position: relative; /* Для абсолютного позиционирования полосок */
+  justify-content: center; /* Центрируем по горизонтали */
+  align-items: center; /* Центрируем по вертикали */
+}
+
+@media (max-width: 1024px) {
+  .mobile-menu-toggle {
+    display: block;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-100%);
+  }
+}
+
+.mobile-menu-toggle .bar {
+  width: 35px;
+  height: 4px;
+  background-color: #ecf0f1;
+  margin: 6px 0;
+  transition: all 0.3s ease;
+  border-radius: 2px; /* Скругляем углы */
+}
+
+.mobile-menu-toggle.open .bar:nth-child(1),
+.mobile-menu-toggle.open .bar:nth-child(3) {
+  position: absolute;
+  top: 30%;
+  left: 0;
+  transform-origin: center; /* Центрируем вращение */
+}
+
+.mobile-menu-toggle.open .bar:nth-child(1) {
+  transform: rotate(45deg) translate(0, -50%);
+}
+
+.mobile-menu-toggle.open .bar:nth-child(3) {
+  transform: rotate(-45deg) translate(0, -50%);
+}
+
+.mobile-menu-toggle .bar:nth-child(2) {
+  opacity: 1;
+}
+
+.mobile-menu-toggle.open .bar:nth-child(2) {
+  opacity: 0; /* Скрываем среднюю полоску */
+}
+
+/* Анимация появления крестика */
+.mobile-menu-toggle .bar {
+  transition: transform 0.3s ease, opacity 0.3s ease, background-color 0.3s ease;
+}
+
+/* Навигационное меню */
 .nav-container {
-  flex-grow: 1;
   display: flex;
-  margin-left: 50px;
+  justify-content: center;
+  align-items: center;
+  flex-grow: 1;
+  transition: all 0.5s ease;
 }
 
 .nav-links {
   list-style: none;
   display: flex;
   gap: 20px;
+  align-items: center;
 }
 
 .nav-links li {
@@ -36,7 +116,9 @@
 .nav-links a {
   text-decoration: none;
   color: #ecf0f1;
-  font-size: 18px;
+  font-size: 16px;
+  font-weight: bold;
+  letter-spacing: 1px;
   transition: color 0.3s ease;
 }
 
@@ -44,27 +126,96 @@
   color: #3498db;
 }
 
+/* Стили для мобильного меню */
+@media (max-width: 1024px) {
+  .nav-container {
+    display: none;
+    flex-direction: column;
+    position: fixed; /* Меняем на fixed для полной центрированности */
+    top: 100px; /* Отступ сверху для выравнивания */
+    left: 50%;
+    transform: translateX(-50%); /* Центрирование по горизонтали */
+    width: 85%;
+    background-color: #34495e;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    max-height: 400px; /* Установим максимальную высоту */
+    overflow-y: auto; /* Добавляем прокрутку при переполнении */
+    text-align: center; /* Выравнивание текста по центру */
+  }
+
+  .nav-container.open {
+    display: flex;
+  }
+
+  .nav-links {
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    padding-left: 0;
+  }
+
+  .nav-links a {
+    font-size: 16px;
+    padding: 10px;
+    width: 100%;
+    text-align: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  .nav-links a:hover {
+    background-color: #2980b9;
+    color: #fff;
+  }
+}
+
+@media (min-width: 769px) {
+  .nav-container.open {
+    display: flex;
+    margin-top: 10px;
+  }
+}
+@media (min-width: 1024px) {
+  .nav-container.open {
+    display: flex;
+    margin-top: 0;
+  }
+}
+/* Переключатель языка */
 .language-switcher {
-  margin-right: 35px;
   display: flex;
   align-items: center;
   gap: 10px;
+  margin-right: 20px;
+  transform: translateY(3px);
 }
 
-body {
-  margin-top: 180px; /* Добавляем отступ для основного контента, чтобы он не перекрывался хедером */
-}
-
-.logout-button {
-  background-color: #dc3545;
-  color: white;
+.lang-button {
+  background: none;
   border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
   cursor: pointer;
-  margin-left: 10px;
+  transition: transform 0.3s ease;
+}
+
+.lang-button:hover {
+  transform: scale(1.1);
+}
+
+.lang-button svg {
+  width: 32px;
+  height: 32px;
+}
+.logout-button {
+  background-color: red;
 }
 
 .logout-button:hover {
-  background-color: #c82333;
+  background-color: #2980b9;
+}
+
+/* Отступ для основного контента */
+body {
+  margin-top: 150px; /* Добавляем отступ для основного контента */
 }
