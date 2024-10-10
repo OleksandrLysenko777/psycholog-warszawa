@@ -12,6 +12,7 @@ import ContactPage from '../ContactPage/ContactPage';
 import ReviewsPage from '../ReviewsPage/ReviewsPage';
 import AdminLogin from '../AdminLogin/AdminLogin';
 
+
 function App() {
   const [reviews, setReviews] = useState([]);
   const [isAdmin, setIsAdmin] = useState(false); // Состояние для отслеживания логина администратора
@@ -106,8 +107,8 @@ function App() {
         <div className="content-wrap">
           <Routes>
             <Route path="/" element={<Navigate to="/start" />} />
-            <Route path="/start" element={<StartPage reviews={reviews} specialists={specialists} />} />
-            <Route path="/team" element={<TeamPage reviews={reviews} isAdmin={isAdmin}/>} />
+            <Route path="/start" element={<StartPage reviews={reviews} specialists={specialists} addReview={addReview}/>} />
+            <Route path="/team" element={<TeamPage reviews={reviews} isAdmin={isAdmin} addReview={addReview}/>} />
             <Route path="/how-we-work" element={<HowWeWorkPage />} />
             <Route path="/price" element={<PricePage isAdmin={isAdmin} />} />
             <Route path="/offer" element={<OfferPage />} />

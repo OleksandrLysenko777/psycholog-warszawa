@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import ReactStars from 'react-rating-stars-component';
 import { useTranslation } from 'react-i18next';
 import './AddReview.css';
+import io from 'socket.io-client'; 
+
+const socket = io('http://localhost:3001'); 
 
 const AddReview = ({ specialists, onReviewAdded }) => {
   const { t } = useTranslation();
@@ -56,7 +59,7 @@ const AddReview = ({ specialists, onReviewAdded }) => {
       setError('');
 
       // Обновляем список отзывов на странице
-      onReviewAdded(newReview);
+       socket.emit('new_review', newReview); 
     } catch (err) {
       console.error('Error submitting review:', err);
       setError(t('reviews.errorSaving')); // Отображаем сообщение об ошибке
@@ -69,17 +72,17 @@ const AddReview = ({ specialists, onReviewAdded }) => {
       <div className="form-group">
         <label htmlFor="specialist">{t('reviews.selectSpecialist')}</label>
         <select
-          id="specialist"
-          value={selectedSpecialist}
-          onChange={e => setSelectedSpecialist(e.target.value)}
-        >
-          <option value="">{t('reviews.selectSpecialist')}</option>
-          {specialists.map((specialist, index) => (
-            <option key={index} value={specialist.id}>
-              {specialist.name}
-            </option>
-          ))}
-        </select>
+  id="specialist"
+  value={selectedSpecialist}
+  onChange={e => setSelectedSpecialist(e.target.value)}
+>
+  <option value="">{t('reviews.selectSpecialist')}</option>
+  {specialists.map((specialist) => (
+    <option key={specialist.id} value={specialist.id}>
+      {specialist.name}
+    </option>
+  ))}
+</select>
       </div>
       <div className="form-group">
         <label htmlFor="name">{t('reviews.name')}</label>

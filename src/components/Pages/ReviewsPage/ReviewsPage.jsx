@@ -3,9 +3,12 @@ import AddReview from './AddReview';
 import { useTranslation } from 'react-i18next';
 import StarRatings from 'react-star-ratings';
 import { useLocation } from 'react-router-dom';
+import io from 'socket.io-client'; 
 import './ReviewsPage.css';
 
-const ReviewsPage = ({ specialists, isAdmin }) => {
+const socket = io('http://localhost:3001');
+
+const ReviewsPage = ({ specialists, isAdmin, addReview }) => {
   const { t } = useTranslation();
   const [localReviews, setLocalReviews] = useState([]);
   const [isLoading, setIsLoading] = useState(true); // Флаг для отслеживания загрузки данных
@@ -34,6 +37,25 @@ const ReviewsPage = ({ specialists, isAdmin }) => {
 
     fetchReviews();
   }, [t]);
+
+ useEffect(() => {
+    socket.on('new_review', (newReview) => {
+      console.log('Новый отзыв получен через WebSocket:', newReview);
+      setLocalReviews((prevReviews) => [newReview, ...prevReviews]);
+      addReview(newReview);
+    });
+
+    socket.on('review_deleted', (deletedReviewId) => {
+      console.log('Отзыв удалён через WebSocket:', deletedReviewId);
+      setLocalReviews((prevReviews) => prevReviews.filter((review) => review.id !== deletedReviewId));
+    });
+
+    return () => {
+      socket.off('new_review');
+      socket.off('review_deleted');
+    };
+  }, [addReview]);
+
 
  useEffect(() => {
     // Прокрутка к выбранному отзыву
@@ -77,10 +99,15 @@ const ReviewsPage = ({ specialists, isAdmin }) => {
   };
 
   const handleDeleteReview = (reviewId) => {
-    const updatedReviews = localReviews.filter((review) => review.id !== reviewId);
-    setLocalReviews(updatedReviews);
-    handleSaveChanges(updatedReviews);
-  };
+  const updatedReviews = localReviews.filter((review) => review.id !== reviewId);
+  setLocalReviews(updatedReviews);
+
+  // Отправляем событие удаления на сервер
+  socket.emit('delete_review', reviewId);
+
+  // Сохраняем изменения на сервере
+  handleSaveChanges(updatedReviews);
+};
 
   const handleSaveChanges = async (updatedReviews) => {
     try {
@@ -124,32 +151,32 @@ const ReviewsPage = ({ specialists, isAdmin }) => {
       <AddReview specialists={specialists} onReviewAdded={handleReviewAdded} />
       <div className="reviews-list">
         <h1>{t('reviews.title')}</h1>
-        {sortedReviews.map((review) => (
-          <div key={review.id} id={`review-${review.id}`} className="review">
-            <div className="review-header">
-              <h3>{specialists.find(spec => spec.id === review.specialistId)?.name || review.specialistName}</h3>
-              <StarRatings
-                rating={review.rating}
-                starRatedColor="#ffd700"
-                numberOfStars={5}
-                name='rating'
-                starDimension="20px"
-                starSpacing="2px"
-              />
-              {isAdmin && (
-                <button
-                  onClick={() => handleDeleteReview(review.id)}
-                  className="delete-review-button"
-                >
-                  {t('reviews.deleteButton')}
-                </button>
-              )}
-            </div>
-            <p><strong>{review.name}</strong></p>
-            <p>{review.reviewText}</p>
-            <p className="review-date">{formatDate(review.date)}</p>
-          </div>
-        ))}
+       {sortedReviews.map((review, index) => (
+  <div key={`${review.id}-${index}`} id={`review-${review.id}`} className="review">
+    <div className="review-header">
+      <h3>{specialists.find(spec => spec.id === review.specialistId)?.name || review.specialistName}</h3>
+      <StarRatings
+        rating={review.rating}
+        starRatedColor="#ffd700"
+        numberOfStars={5}
+        name="rating"
+        starDimension="20px"
+        starSpacing="2px"
+      />
+      {isAdmin && (
+        <button
+          onClick={() => handleDeleteReview(review.id)}
+          className="delete-review-button"
+        >
+          {t('reviews.deleteButton')}
+        </button>
+      )}
+    </div>
+    <p><strong>{review.name}</strong></p>
+    <p>{review.reviewText}</p>
+    <p className="review-date">{formatDate(review.date)}</p>
+  </div>
+))}
       </div>
     </div>
   );

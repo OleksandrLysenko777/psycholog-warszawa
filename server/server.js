@@ -7,13 +7,52 @@ const nodemailer = require('nodemailer');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const { Server } = require('socket.io'); 
+const http = require('http');
 
 const app = express();
 const port = 3001;
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: 'http://localhost:3000', // Измените на ваш фронтенд URL
+    methods: ['GET', 'POST'],
+  },
+});
+
+io.on('connection', (socket) => {
+  console.log('A user connected');
+
+  socket.on('new_review', (newReview) => {
+    console.log('New review received:', newReview);
+    io.emit('new_review', newReview);
+  });
+
+ socket.on('delete_review', (reviewId) => {
+  console.log('Review deleted with id:', reviewId);
+
+  // Удаляем отзыв из массива
+  reviews = reviews.filter((review) => review.id !== reviewId);
+
+  // Сохраняем обновленный список отзывов в файл
+  fs.writeFileSync(reviewsFilePath, JSON.stringify(reviews, null, 2));
+
+  // Отправляем сообщение об удалении всем подключенным клиентам
+  io.emit('review_deleted', reviewId);
+  console.log('Review deletion event emitted to all clients');
+});
+
+
+  socket.on('disconnect', () => {
+    console.log('A user disconnected');
+  });
+});
+
 
 const certificatesFilePath = path.join(__dirname, 'certificates.json');
 const avatarsFilePath = path.join(__dirname, 'avatars.json');  // Новый файл для хранения аватаров
 const pricesFilePath = path.join(__dirname, 'prices.json');
+
 
 // Настройка хранения файлов с помощью multer
 const storage = multer.diskStorage({
@@ -205,6 +244,9 @@ app.post('/add-review', (req, res) => {
   // Сохранение отзывов в файл
   fs.writeFileSync(reviewsFilePath, JSON.stringify(reviews, null, 2));
   console.log('Review added and saved to file successfully');
+
+  // Отправляем обновленные отзывы всем подключенным клиентам через WebSocket
+  io.emit('load_reviews', reviews);
 
   res.send({ success: true });
 });
@@ -404,6 +446,6 @@ app.post('/update-content', checkAdminLoggedIn, (req, res) => {
 // Статический маршрут для загрузки файлов
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-app.listen(port, () => {
+server.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });

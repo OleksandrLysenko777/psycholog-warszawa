@@ -12,11 +12,22 @@ const Accordion = ({ items }) => {
       {items.map((item, index) => (
         <div key={index} className="tab">
           <button onClick={() => handleClick(index)}>{item.title}</button>
-          {activeIndex === index && <div className="content">{item.content}</div>}
+          {activeIndex === index && (
+            <div className="content">
+              {Array.isArray(item.content)
+                ? item.content.map((paragraph, i) => (
+                    <div key={i} dangerouslySetInnerHTML={{ __html: paragraph }} />
+                  ))
+                : <p>{item.content}</p>
+              }
+            </div>
+          )}
         </div>
       ))}
     </div>
   );
 };
+
+
 
 export default Accordion;

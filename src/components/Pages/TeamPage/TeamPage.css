@@ -38,7 +38,7 @@
 .specialist-info {
   display: flex;
   align-items: flex-start;
-  justify-content: center; /* Центрируем содержимое */
+  justify-content: center;
   width: 100%;
   gap: 40px;
 }
@@ -53,45 +53,110 @@
 .specialist-description {
   font-size: 18px;
   color: #333;
-  max-width: 600px; /* Ограничиваем ширину описания */
+  max-width: 600px;
 }
 
-.accordion {
+/* Accordion Styles */
+.team-page .accordion {
   width: 100%;
   margin-top: 20px;
 }
 
-.accordion .tab {
+.team-page .accordion .tab {
   margin-bottom: 10px;
 }
 
-.accordion .tab button {
+.team-page .accordion .tab button {
   background-color: #f9f9f9;
   border: 1px solid #ddd;
   cursor: pointer;
   padding: 10px;
   width: 100%;
-  text-align: center;   
+  text-align: center;
   font-size: 18px;
   border-radius: 4px;
   transition: background-color 0.3s;
   color: #2c3e50;
 }
 
-.accordion .tab button:hover {
+.team-page .accordion .tab button:hover {
   background-color: #e9e9e9;
 }
 
-.accordion .content {
-  padding: 10px;
-  background-color: #f1f1f1;
-  border: 1px solid #ddd;
-   text-align: center;  
-  border-top: none;
-  border-radius: 0 0 4px 4px;
-  color: #2c3e50;
+.team-page .accordion .tab .content p {
+  margin: 10px 0 !important; /* Единый отступ между абзацами */
+  padding: 0 !important;
+  line-height: 1.5 !important; /* Оптимальная высота строки */
+  font-size: 16px !important;
+  color: #333 !important;
+  text-align: justify; /* Выравнивание по ширине для аккуратного отображения */
 }
 
+.team-page .accordion .tab .content {
+  padding: 15px !important; /* Увеличиваем внутренние отступы */
+  background-color: #f9f9f9 !important; /* Нежный фон для контента */
+  border: 1px solid #ddd !important;
+  text-align: justify !important; /* Выравнивание по ширине */
+  border-radius: 0 0 4px 4px !important;
+  gap: 0;
+}
+
+/* Adjusting styles for tablets */
+@media (max-width: 1024px) {
+  .team-page .accordion .tab .content {
+    padding: 10px !important;
+    font-size: 14px !important; /* Размер шрифта для планшетов */
+    line-height: 1.4 !important; /* Высота строки для планшетов */
+  }
+
+  .specialist-photo {
+    width: 200px;
+    height: 280px;
+  }
+
+  .specialist h2 {
+    font-size: 30px;
+  }
+
+  .specialist-description {
+    font-size: 16px;
+    max-width: 100%;
+  }
+
+  .specialist-info {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+/* Adjusting styles for mobile devices */
+@media (max-width: 600px) {
+   .team-page .accordion .tab .content {
+    padding: 8px !important;
+    font-size: 12px !important; /* Шрифт для мобильных */
+    line-height: 1.3 !important; /* Высота строки для мобильных */
+  }
+
+  .specialist-photo {
+    width: 150px;
+    height: 200px;
+  }
+
+  .specialist h2 {
+    font-size: 24px;
+  }
+
+  .specialist-description {
+    font-size: 14px;
+    text-align: center;
+  }
+
+  .specialist-info {
+    gap: 20px;
+  }
+}
+
+/* Review Cards */
 .specialist-reviews {
   width: 100%;
   margin-top: 20px;
@@ -107,7 +172,7 @@
   box-sizing: border-box;
   text-align: left;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  min-height: 150px; /* Для минимальной высоты, чтобы карточки были одинаковыми */
+  min-height: 150px;
 }
 
 .review-header {
@@ -168,7 +233,7 @@
   padding: 5px 10px;
   cursor: pointer;
   display: block;
-  margin: 10px auto; /* Центрируем кнопку удаления */
+  margin: 10px auto;
 }
 
 .carousel .slide img {
@@ -183,55 +248,8 @@
   object-fit: contain;
 }
 
-/* Медиазапросы для планшетов и мобильных устройств */
-@media (max-width: 1024px) {
-  .specialist-photo {
-    width: 200px;
-    height: 280px;
-  }
-
-  .specialist h2 {
-    font-size: 30px;
-  }
-
-  .specialist-description {
-    font-size: 16px;
-    max-width: 100%; /* На планшетах описание будет занимать всю ширину */
-  }
-
-  .specialist-info {
-    flex-direction: column; /* Вертикальное расположение для планшетов */
-    align-items: center;
-  }
-
-  .specialist-reviews {
-    width: 100%;
-  }
-
-  .review-card {
-    height: auto; /* Делаем карточку отзывов адаптивной по высоте */
-  }
-}
-
+/* Mobile-specific review card adjustments */
 @media (max-width: 600px) {
-  .specialist-photo {
-    width: 150px;
-    height: 200px;
-  }
-
-  .specialist h2 {
-    font-size: 24px;
-  }
-
-  .specialist-description {
-    font-size: 14px;
-    text-align: center; /* На мобильных устройствах текст центрируется */
-  }
-
-  .specialist-info {
-    gap: 20px; /* Уменьшаем отступы на мобильных устройствах */
-  }
-
   .review-card {
     padding: 10px;
     margin: 5px;

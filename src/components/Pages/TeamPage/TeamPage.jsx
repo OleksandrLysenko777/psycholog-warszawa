@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import Slider from 'react-slick';
+import io from 'socket.io-client';
 import Accordion from './Accordion';
 import ReviewCardTeam from './ReviewCardTeam';
 import CustomArrow from '../App/Svg/CustomArrow';
@@ -14,7 +15,11 @@ import { Carousel } from 'react-responsive-carousel';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
 import AvatarUploader from './AvatarUploader/AvatarUploader'; // Импорт компонента для загрузки аватара
 
-function TeamPage({ reviews, isAdmin }) {
+
+
+const socket = io('http://localhost:3001'); 
+
+function TeamPage({ reviews, isAdmin, addReview }) {
   const { t } = useTranslation();
 
   const [nataliaCertificates, setNataliaCertificates] = useState([]);
@@ -23,6 +28,29 @@ function TeamPage({ reviews, isAdmin }) {
   const [sebastianAvatar, setSebastianAvatar] = useState(null); // Состояние для аватара Себастьяна
   const [currentIndex, setCurrentIndex] = useState(0);
   const [changesMade, setChangesMade] = useState(false); // Состояние для отслеживания изменений
+ const [liveReviews, setLiveReviews] = useState(reviews); 
+
+  // Загрузка отзывов из пропсов при монтировании
+  useEffect(() => {
+    setLiveReviews(reviews);
+  }, [reviews]);
+
+  useEffect(() => {
+  socket.on('new_review', (newReview) => {
+    console.log('Новый отзыв получен через WebSocket:', newReview);
+    setLiveReviews((prevReviews) => [...prevReviews, newReview]);
+  });
+
+  socket.on('review_deleted', (deletedReviewId) => {
+    console.log('Отзыв удалён через WebSocket с id:', deletedReviewId);
+    setLiveReviews((prevReviews) => prevReviews.filter(review => review.id !== deletedReviewId));
+  });
+
+  return () => {
+    socket.off('new_review');
+    socket.off('review_deleted');
+  };
+}, []);
 
   // Загрузка существующих сертификатов при загрузке компонента
   useEffect(() => {
@@ -162,10 +190,10 @@ function TeamPage({ reviews, isAdmin }) {
         <p><strong>${t('specialist1.description.location')}</strong></p>
       `,
       details: [
-        { title: t('specialist1.details.0.title'), content: t('specialist1.details.0.content') },
-        { title: t('specialist1.details.1.title'), content: t('specialist1.details.1.content') },
-        { title: t('specialist1.details.2.title'), content: t('specialist1.details.2.content') },
-        { title: t('specialist1.details.3.title'), content: t('specialist1.details.3.content') },
+        { title: t('specialist1.details.0.title'), content: t('specialist1.details.0.content', { returnObjects: true })  },
+        { title: t('specialist1.details.1.title'), content: t('specialist1.details.1.content', { returnObjects: true })},
+        { title: t('specialist1.details.2.title'), content: t('specialist1.details.2.content', { returnObjects: true })  },
+        { title: t('specialist1.details.3.title'), content: t('specialist1.details.3.content', { returnObjects: true }) },
         { 
           title: t('specialist1.details.4.title'), 
           content: (
@@ -269,25 +297,25 @@ function TeamPage({ reviews, isAdmin }) {
   ];
 
   const settings = {
-    dots: reviews.length > 1, // Показываем точки только если больше одного отзыва
-    infinite: reviews.length > 1,
+    dots: liveReviews.length > 1, // Показываем точки только если больше одного отзыва
+    infinite: liveReviews.length > 1,
     speed: 500,
     slidesToShow: 3, // Всегда показываем ровно 3 слайда
     slidesToScroll: 1,
     arrows: true, // Всегда показываем стрелки
     autoplay: true, // Добавлено для автоматического переключения
     autoplaySpeed: 3000, // Интервал переключения в миллисекундах (2000 = 2 секунды)
-    prevArrow: reviews.length > 0 ? <CustomArrow icon={leftArrow} /> : null,
-    nextArrow: reviews.length > 0 ? <CustomArrow icon={rightArrow} /> : null,
+    prevArrow: liveReviews.length > 0 ? <CustomArrow icon={leftArrow} /> : null,
+    nextArrow: liveReviews.length > 0 ? <CustomArrow icon={rightArrow} /> : null,
     responsive: [
       {
         breakpoint: 1024,
         settings: {
           slidesToShow: 2, // Для планшетов показываем 2 слайда
           slidesToScroll: 1,
-          infinite: reviews.length > 1,
-          dots: reviews.length > 1,
-          arrows: reviews.length > 2, // Стрелки отображаются, если отзывов больше 2
+          infinite: liveReviews.length > 1,
+          dots: liveReviews.length > 1,
+          arrows: liveReviews.length > 2, // Стрелки отображаются, если отзывов больше 2
         },
       },
       {
@@ -295,8 +323,8 @@ function TeamPage({ reviews, isAdmin }) {
         settings: {
           slidesToShow: 1, // Для мобильных устройств показываем 1 слайд
           slidesToScroll: 1,
-          infinite: reviews.length > 1,
-          dots: reviews.length > 1,
+          infinite: liveReviews.length > 1,
+          dots: liveReviews.length > 1,
           arrows: false, // На мобильных устройствах стрелки отключены
         },
       },
@@ -320,15 +348,13 @@ function TeamPage({ reviews, isAdmin }) {
           <Accordion items={specialist.details} />
           <div className="specialist-reviews">
             <h3>{t('reviews.title')}</h3>
-            {reviews.length > 0 && (
-              <Slider {...settings}>
-                {reviews
-                  .filter((review) => review.specialistId === specialist.id)
-                  .map((review, index) => (
-                    <ReviewCardTeam key={index} review={review} />
-                  ))}
-              </Slider>
-            )}
+            {liveReviews.length > 0 && (
+  <Slider {...settings}>
+    {liveReviews.map((review, index) => (
+      <ReviewCardTeam key={`${review.id}-${index}`} review={review} />
+    ))}
+  </Slider>
+)}
           </div>
         </div>
       ))}

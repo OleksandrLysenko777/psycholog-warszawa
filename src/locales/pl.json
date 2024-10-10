@@ -20,12 +20,46 @@
       "location": "Przyjmuję stacjonarnie w Warszawie. Pracuję również online."
     },
     "details": [
-      { "title": "Jak zmieniła mnie psychoterapia", "content": "Psychoterapia jest moim niezastąpionym narzędziem samopomocy, samopoznania oraz odnalezienia siły w trudnych momentach życia.  Jest dla mnie spotkaniem ze sobą w prawdzie i niesamowicie ciekawą drogą do poznania swojego wewnętrznego świata. Dzięki terapeutycznej pracy idę swoją własną, świadomą  i odpowiedzialną drogą życia, z poczuciem wdzięczności i samorealizacji." },
-      { "title": "O mnie", "content": "Jestem psychologiem praktykiem, psychotraumatologiem. Specjalizuje się w pracy z traumą.  Człowiek jest dla mnie tajemnicą, którą lubię poznawać. Pracuje z dorosłymi i dziećmi od 12 roku życia. Kocham góry, poznawanie nowych miejsc, kultur i smaków. Siłę czerpie na łonie natury, cenię ciszę i własny rozwój. Rozmawiam w języku polskim, ukraińskim i rosyjskim."},
-      { "title": "Z czym pracuję", "content": "Zaburzenia psychiczne, depresja, kryzys tożsamości, problemy adaptacyjne, utrata bliskich, żałoba, samouszkodzenia. Pracuję z osobami w kryzysie rozwodowym, zagrożonymi samobójstwem, ofiarami przemocy, migrantami, ofiarami wojny. Pomagam w odbudowaniu równowagi życiowej, pogłębianiu samoświadomości, samo empatii i dokonywaniu świadomych i odpowiedzialnych wyborów życiowych." },
-      { "title": "Wykształcenie", "content": "Wyższe magisterskie. W 2009 roku Ukończyłam stacjonarne studia magisterskie z psychologii na Uniwersytecie Kardynała Stefana Wyszyńskiego w Warszawie oraz dwuletnie Studia Podyplomowe na Uniwersytecie Warszawskim z Diagnozy Klinicznej Dziecka i Jego Rodziny. Dodatkowo ukończyłam wiele kursów i szkoleń przygotowujących mnie do pracy terapeutycznej z traumą oraz klientem w szeroko rozumianym kryzysie. Pracuję interwencyjnie, terapeutycznie, konsultacyjnie. Swoją pracę poddaje superwizji i interwizji koleżeńskiej." },
-      { "title": "Certyfikaty", "content": "Jestem certyfikowanym terapeutą poznawczo-behawioralnym" }
-    ]
+  { 
+    "title": "Jak zmieniła mnie psychoterapia", 
+    "content": [
+      "Psychoterapia jest moim niezastąpionym narzędziem samopomocy, samopoznania oraz odnalezienia siły w trudnych momentach życia.",
+      "Jest dla mnie spotkaniem ze sobą w prawdzie i niesamowicie ciekawą drogą do poznania swojego wewnętrznego świata.",
+      "Dzięki terapeutycznej pracy idę swoją własną, świadomą i odpowiedzialną drogą życia, z poczuciem wdzięczności i samorealizacji."
+    ] 
+  },
+  { 
+    "title": "O mnie", 
+    "content": [
+      "<p>Jestem psychologiem praktykiem, psychotraumatologiem. Specjalizuje się w pracy z traumą.</p>",
+      "<p>Człowiek jest dla mnie tajemnicą, którą lubię poznawać. Pracuje z dorosłymi i dziećmi od 12 roku życia.</p>",
+      "<p>Kocham góry, poznawanie nowych miejsc, kultur i smaków. Siłę czerpie na łonie natury, cenię ciszę i własny rozwój.</p>",
+      "<p>Rozmawiam w języku polskim, ukraińskim i rosyjskim.</p>"
+    ] 
+  },
+  { 
+    "title": "Z czym pracuję", 
+    "content": [
+      "Zaburzenia psychiczne, depresja, kryzys tożsamości, problemy adaptacyjne, utrata bliskich, żałoba, samouszkodzenia.",
+      "Pracuję z osobami w kryzysie rozwodowym, zagrożonymi samobójstwem, ofiarami przemocy, migrantami, ofiarami wojny.",
+      "Pomagam w odbudowaniu równowagi życiowej, pogłębianiu samoświadomości, samo empatii i dokonywaniu świadomych i odpowiedzialnych wyborów życiowych."
+    ] 
+  },
+  { 
+    "title": "Wykształcenie", 
+    "content": [
+      "Wyższe magisterskie. W 2009 roku Ukończyłam stacjonarne studia magisterskie z psychologii na Uniwersytecie Kardynała Stefana Wyszyńskiego w Warszawie oraz dwuletnie Studia Podyplomowe na Uniwersytecie Warszawskim z Diagnozy Klinicznej Dziecka i Jego Rodziny.",
+      "Dodatkowo ukończyłam wiele kursów i szkoleń przygotowujących mnie do pracy terapeutycznej z traumą oraz klientem w szeroko rozumianym kryzysie.",
+      "Pracuję interwencyjnie, terapeutycznie, konsultacyjnie. Swoją pracę poddaje superwizji i interwizji koleżeńskiej."
+    ] 
+  },
+  { 
+    "title": "Certyfikaty", 
+    "content": [
+      "Jestem certyfikowanym terapeutą poznawczo-behawioralnym"
+    ] 
+  }
+]
   },
   "specialist2": {
     "name": "Sebastian Chmeliński",
