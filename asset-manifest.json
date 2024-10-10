@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/psycholog-warszawa/static/css/main.597393ba.css",
-    "main.js": "/psycholog-warszawa/static/js/main.de109243.js",
+    "main.css": "/psycholog-warszawa/static/css/main.964cb180.css",
+    "main.js": "/psycholog-warszawa/static/js/main.8cca916e.js",
     "static/media/13.jpg": "/psycholog-warszawa/static/media/13.96f3367e3cc1213c1818.jpg",
     "static/media/slick.svg": "/psycholog-warszawa/static/media/slick.2630a3e3eab21c607e21.svg",
     "static/media/slick.eot": "/psycholog-warszawa/static/media/slick.a4e97f5a2a64f0ab1323.eot",
@@ -10,11 +10,11 @@
     "index.html": "/psycholog-warszawa/index.html",
     "static/media/leftArrow.svg": "/psycholog-warszawa/static/media/leftArrow.0e8ecd51ddef1e62a0213c567bf6a1a2.svg",
     "static/media/rightArrow.svg": "/psycholog-warszawa/static/media/rightArrow.4187c67daa22a91c045a7a0ff95c836f.svg",
-    "main.597393ba.css.map": "/psycholog-warszawa/static/css/main.597393ba.css.map",
-    "main.de109243.js.map": "/psycholog-warszawa/static/js/main.de109243.js.map"
+    "main.964cb180.css.map": "/psycholog-warszawa/static/css/main.964cb180.css.map",
+    "main.8cca916e.js.map": "/psycholog-warszawa/static/js/main.8cca916e.js.map"
   },
   "entrypoints": [
-    "static/css/main.597393ba.css",
-    "static/js/main.de109243.js"
+    "static/css/main.964cb180.css",
+    "static/js/main.8cca916e.js"
   ]
 }
