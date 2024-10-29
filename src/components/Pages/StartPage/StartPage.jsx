@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import ReactStars from 'react-rating-stars-component';
 import { useTranslation } from 'react-i18next';
@@ -10,7 +10,7 @@ import './StartPage.css';
 import './ReviewCard.css';
 
 const ReviewCard = ({ review, specialist }) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation();  
   return (
     <div className="review-card">
       <div className="specialist-name">
@@ -40,6 +40,11 @@ const ReviewCard = ({ review, specialist }) => {
 
 const StartPage = ({ reviews, specialists }) => {
   const { t } = useTranslation();
+  const [activeSection, setActiveSection] = useState(null);
+  
+    const handleSectionClick = (id) => {
+    setActiveSection(prev => (prev === id ? null : id));
+  };
 
   const sections = [
     {
@@ -149,7 +154,11 @@ const StartPage = ({ reviews, specialists }) => {
       </div>
       <div className="content">
         {sections.map(section => (
-          <div key={section.id} className="section">
+          <div
+            key={section.id}
+            className={`section ${activeSection === section.id ? 'active' : ''}`} // Добавляем класс для активной карточки
+            onClick={() => handleSectionClick(section.id)} // Логика клика для открытия карточки
+          >
             <div className="section-image">
               <img src={section.image} alt={section.title} />
             </div>
@@ -158,34 +167,36 @@ const StartPage = ({ reviews, specialists }) => {
                 <img src={section.icon} alt="icon" className="icon" />
                 <h2>{section.title}</h2>
               </div>
-              <div className="section-content">
-                {section.content.map((paragraph, index) => (
-                  <p key={index}>{paragraph}</p>
-                ))}
-                {section.list && (
-                  <ul>
-                    {section.list.map((item, index) => (
-                      <li key={index}>{item}</li>
-                    ))}
-                  </ul>
-                )}
-                {section.contentAfterList && <p>{section.contentAfterList}</p>}
-              </div>
+               {activeSection === section.id && ( // Показываем контент только если карточка активна
+                <div className="section-content">
+                  {section.content.map((paragraph, index) => (
+                    <p key={index}>{paragraph}</p>
+                  ))}
+                  {section.list && (
+                    <ul>
+                      {section.list.map((item, index) => (
+                        <li key={index}>{item}</li>
+                      ))}
+                    </ul>
+                  )}
+                  {section.contentAfterList && <p>{section.contentAfterList}</p>}
+                </div>
+              )}
             </div>
           </div>
         ))}
       </div>
       <div className="reviews-section">
-        <Slider {...sliderSettings}>
-          {reviews.map((review, index) => {
-            const specialist = specialists.find(
-              spec => spec.id === review.specialistId
-            );
-            return (
-              <ReviewCard key={index} review={review} specialist={specialist} />
-            );
-          })}
-        </Slider>
+        {reviews.length > 0 && (
+  <Slider {...sliderSettings}>
+    {reviews.map((review, index) => {
+      const specialist = specialists.find(spec => spec.id === review.specialistId);
+      return (
+        <ReviewCard key={index} review={review} specialist={specialist} />
+      );
+    })}
+  </Slider>
+)}
       </div>
     </div>
   );

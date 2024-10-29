@@ -12,59 +12,37 @@ const AddReview = ({ specialists, onReviewAdded }) => {
   const [name, setName] = useState('');
   const [reviewText, setReviewText] = useState('');
   const [rating, setRating] = useState(0);
-  const [ratingKey, setRatingKey] = useState(Date.now()); 
+  const [ratingKey] = useState(Date.now()); 
   const [error, setError] = useState('');
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = (e) => {
+  e.preventDefault();
 
-    // Проверка на неполное заполнение формы
-    if (rating === 0) {
-      setError(t('reviews.errorNoRating'));
-      return;
-    }
-    if (!selectedSpecialist || !name || !reviewText) {
-      setError(t('reviews.errorIncomplete'));
-      return;
-    }
+  // Проверка на неполное заполнение формы
+  if (!selectedSpecialist || !name || !reviewText || rating === 0) {
+    setError(t('reviews.errorIncomplete'));
+    return;
+  }
 
-    try {
-      const newReview = {
-        id: Date.now(), // Генерация уникального ID
-        specialistId: selectedSpecialist,
-        name,
-        reviewText,
-        rating,
-        date: new Date().toISOString(), 
-      };
-
-      const response = await fetch('http://localhost:3001/add-review', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(newReview),
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      // Очищаем форму только после успешного сохранения
-      setSelectedSpecialist('');
-      setName('');
-      setReviewText('');
-      setRating(0);
-      setRatingKey(Date.now());
-      setError('');
-
-      // Обновляем список отзывов на странице
-       socket.emit('new_review', newReview); 
-    } catch (err) {
-      console.error('Error submitting review:', err);
-      setError(t('reviews.errorSaving')); // Отображаем сообщение об ошибке
-    }
+  const newReview = {
+    id: Date.now(),  // Генерация уникального ID
+    specialistId: selectedSpecialist,
+    name,
+    reviewText,
+    rating,
+    date: new Date().toISOString(),
   };
+
+  // Отправляем отзыв на сервер через WebSocket
+  socket.emit('add_review', newReview);
+
+  // Очищаем форму после отправки
+  setSelectedSpecialist('');
+  setName('');
+  setReviewText('');
+  setRating(0);
+  setError('');
+};
 
   return (
     <form onSubmit={handleSubmit} className="add-review">

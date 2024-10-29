@@ -11,16 +11,15 @@ const socket = io('http://localhost:3001');
 const ReviewsPage = ({ specialists, isAdmin, addReview }) => {
   const { t } = useTranslation();
   const [localReviews, setLocalReviews] = useState([]);
-  const [isLoading, setIsLoading] = useState(true); // Флаг для отслеживания загрузки данных
+  const [isLoading, setIsLoading] = useState(true);
   const location = useLocation();
 
   useEffect(() => {
-        // Прокрутка страницы к верху при её загрузке
-        window.scrollTo({
-            top: 0,
-            behavior: 'smooth',
-        });
-    }, []);
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    });
+  }, []);
 
   useEffect(() => {
     const fetchReviews = async () => {
@@ -28,17 +27,18 @@ const ReviewsPage = ({ specialists, isAdmin, addReview }) => {
         const response = await fetch('http://localhost:3001/reviews');
         const data = await response.json();
         setLocalReviews(Array.isArray(data) ? data : []);
-        setIsLoading(false); // Данные загружены
+        setIsLoading(false);
       } catch (error) {
         console.error(t('reviews.updateFailure'), error);
-        setIsLoading(false); // В случае ошибки также снимаем флаг загрузки
+        setIsLoading(false);
       }
     };
 
     fetchReviews();
   }, [t]);
 
- useEffect(() => {
+  useEffect(() => {
+    // Обработка события добавления и удаления отзывов через WebSocket
     socket.on('new_review', (newReview) => {
       console.log('Новый отзыв получен через WebSocket:', newReview);
       setLocalReviews((prevReviews) => [newReview, ...prevReviews]);
@@ -46,7 +46,7 @@ const ReviewsPage = ({ specialists, isAdmin, addReview }) => {
     });
 
     socket.on('review_deleted', (deletedReviewId) => {
-      console.log('Отзыв удалён через WebSocket:', deletedReviewId);
+      console.log('Получен отзыв для удаления через WebSocket:', deletedReviewId);
       setLocalReviews((prevReviews) => prevReviews.filter((review) => review.id !== deletedReviewId));
     });
 
@@ -56,81 +56,32 @@ const ReviewsPage = ({ specialists, isAdmin, addReview }) => {
     };
   }, [addReview]);
 
-
- useEffect(() => {
-    // Прокрутка к выбранному отзыву
+  useEffect(() => {
     if (!isLoading) {
-        const hash = location.hash;
-        if (hash && hash.startsWith('#review-')) {
-            const reviewElement = document.querySelector(hash);
-            const reviewsContainer = document.querySelector('.reviews-list'); // Контейнер с отзывами
-            if (reviewElement && reviewsContainer) {
-                setTimeout(() => {
-                    const reviewOffset = reviewElement.offsetTop - reviewsContainer.offsetTop; // Позиция отзыва относительно контейнера
-                    reviewsContainer.scrollTo({
-                        top: reviewOffset - 20, // Отступ внутри контейнера
-                        behavior: 'smooth',
-                    });
-
-                    // Проверяем, если элемент находится ниже зоны видимости
-                    const reviewRect = reviewElement.getBoundingClientRect();
-                    const windowHeight = window.innerHeight;
-
-                    if (reviewRect.bottom > windowHeight) {
-                        window.scrollTo({
-                            top: window.scrollY + reviewRect.bottom - windowHeight,
-                            behavior: 'smooth',
-                        });
-                    } else if (reviewRect.top < 0) {
-                        window.scrollTo({
-                            top: window.scrollY + reviewRect.top,
-                            behavior: 'smooth',
-                        });
-                    }
-
-                }, 300); // Добавляем задержку для полной загрузки страницы
-            }
+      const hash = location.hash;
+      if (hash && hash.startsWith('#review-')) {
+        const reviewElement = document.querySelector(hash);
+        const reviewsContainer = document.querySelector('.reviews-list');
+        if (reviewElement && reviewsContainer) {
+          setTimeout(() => {
+            const reviewOffset = reviewElement.offsetTop - reviewsContainer.offsetTop;
+            reviewsContainer.scrollTo({
+              top: reviewOffset - 20,
+              behavior: 'smooth',
+            });
+          }, 300);
         }
+      }
     }
-}, [location, isLoading]);
-  
+  }, [location, isLoading]);
+
   const handleReviewAdded = (newReview) => {
     setLocalReviews(prevReviews => [newReview, ...prevReviews]);
   };
 
   const handleDeleteReview = (reviewId) => {
-  const updatedReviews = localReviews.filter((review) => review.id !== reviewId);
-  setLocalReviews(updatedReviews);
-
-  // Отправляем событие удаления на сервер
-  socket.emit('delete_review', reviewId);
-
-  // Сохраняем изменения на сервере
-  handleSaveChanges(updatedReviews);
-};
-
-  const handleSaveChanges = async (updatedReviews) => {
-    try {
-      const response = await fetch('http://localhost:3001/update-reviews', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ reviews: updatedReviews }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      if (!data.success) {
-        alert('Failed to save changes');
-      }
-    } catch (error) {
-      console.error('Error saving changes:', error);
-      alert(`Error: ${error.message}`);
-    }
+    console.log('Отправка события удаления через WebSocket:', reviewId);
+    socket.emit('delete_review', reviewId);
   };
 
   const formatDate = (dateString) => {
@@ -152,31 +103,31 @@ const ReviewsPage = ({ specialists, isAdmin, addReview }) => {
       <div className="reviews-list">
         <h1>{t('reviews.title')}</h1>
        {sortedReviews.map((review, index) => (
-  <div key={`${review.id}-${index}`} id={`review-${review.id}`} className="review">
-    <div className="review-header">
-      <h3>{specialists.find(spec => spec.id === review.specialistId)?.name || review.specialistName}</h3>
-      <StarRatings
-        rating={review.rating}
-        starRatedColor="#ffd700"
-        numberOfStars={5}
-        name="rating"
-        starDimension="20px"
-        starSpacing="2px"
-      />
-      {isAdmin && (
-        <button
-          onClick={() => handleDeleteReview(review.id)}
-          className="delete-review-button"
-        >
-          {t('reviews.deleteButton')}
-        </button>
-      )}
-    </div>
-    <p><strong>{review.name}</strong></p>
-    <p>{review.reviewText}</p>
-    <p className="review-date">{formatDate(review.date)}</p>
-  </div>
-))}
+          <div key={review.id} id={`review-${review.id}`} className="review">
+            <div className="review-header">
+              <h3>{specialists.find(spec => spec.id === review.specialistId)?.name || review.specialistName}</h3>
+              <StarRatings
+                rating={review.rating}
+                starRatedColor="#ffd700"
+                numberOfStars={5}
+                name="rating"
+                starDimension="20px"
+                starSpacing="2px"
+              />
+              {isAdmin && (
+                <button
+                  onClick={() => handleDeleteReview(review.id)}
+                  className="delete-review-button"
+                >
+                  {t('reviews.deleteButton')}
+                </button>
+              )}
+            </div>
+            <p><strong>{review.name}</strong></p>
+            <p>{review.reviewText}</p>
+            <p className="review-date">{formatDate(review.date)}</p>
+          </div>
+        ))}
       </div>
     </div>
   );

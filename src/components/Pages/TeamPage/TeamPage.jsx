@@ -35,7 +35,7 @@ function TeamPage({ reviews, isAdmin, addReview }) {
     setLiveReviews(reviews);
   }, [reviews]);
 
-  useEffect(() => {
+ useEffect(() => {
   socket.on('new_review', (newReview) => {
     console.log('Новый отзыв получен через WebSocket:', newReview);
     setLiveReviews((prevReviews) => [...prevReviews, newReview]);
@@ -51,6 +51,7 @@ function TeamPage({ reviews, isAdmin, addReview }) {
     socket.off('review_deleted');
   };
 }, []);
+
 
   // Загрузка существующих сертификатов при загрузке компонента
   useEffect(() => {
@@ -348,11 +349,13 @@ function TeamPage({ reviews, isAdmin, addReview }) {
           <Accordion items={specialist.details} />
           <div className="specialist-reviews">
             <h3>{t('reviews.title')}</h3>
-            {liveReviews.length > 0 && (
+            {liveReviews.filter((review) => review.specialistId === specialist.id).length > 0 && (
   <Slider {...settings}>
-    {liveReviews.map((review, index) => (
-      <ReviewCardTeam key={`${review.id}-${index}`} review={review} />
-    ))}
+    {liveReviews
+      .filter((review) => review.specialistId === specialist.id) // Фильтрация по specialistId
+      .map((review, index) => (
+        <ReviewCardTeam key={`${review.id}-${index}`} review={review} />
+      ))}
   </Slider>
 )}
           </div>

@@ -14,23 +14,37 @@
   z-index: 1000;
 }
 
+.logo {
+  flex: 1; /* Позволяет лого занимать центр, отодвигая другие элементы */
+  left: 20px;
+  display: flex;
+  justify-content: center;
+  padding-left: 40px;
+}
 /* Логотип */
 .logo img {
   width: 500px;
   height: auto;
+}
+@media (min-width: 1025px) {
+  .logo {
+    padding-left: 0;
+  }
 }
 
 @media (max-width: 1024px) {
   .logo img {
     width: 300px;
     height: auto;
+    padding-left: 20px; /* Уменьшаем отступ на меньших экранах */
   }
 }
 
 @media (max-width: 768px) {
   .logo img {
-    width: 150px;
+    width: 250px;
     height: auto;
+    padding-left: 10px; /* Еще меньше отступ на мобильных */
   }
 }
 
@@ -50,7 +64,7 @@
   .mobile-menu-toggle {
     display: block;
     position: absolute;
-    left: 50%;
+    left: 50px; /* Убираем центрирование */
     transform: translateX(-100%);
   }
 }

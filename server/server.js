@@ -23,30 +23,37 @@ const io = new Server(server, {
 io.on('connection', (socket) => {
   console.log('A user connected');
 
-  socket.on('new_review', (newReview) => {
-    console.log('New review received:', newReview);
+  // Обработка добавления нового отзыва
+  socket.on('add_review', (newReview) => {
+    reviews.push(newReview);
+    fs.writeFileSync(reviewsFilePath, JSON.stringify(reviews, null, 2));
+
+    // Отправляем новый отзыв всем подключённым клиентам
     io.emit('new_review', newReview);
   });
 
+  // Обработка удаления отзыва
  socket.on('delete_review', (reviewId) => {
   console.log('Review deleted with id:', reviewId);
 
-  // Удаляем отзыв из массива
   reviews = reviews.filter((review) => review.id !== reviewId);
-
-  // Сохраняем обновленный список отзывов в файл
   fs.writeFileSync(reviewsFilePath, JSON.stringify(reviews, null, 2));
 
-  // Отправляем сообщение об удалении всем подключенным клиентам
+  // Отправляем обновлённый список отзывов всем подключённым клиентам
   io.emit('review_deleted', reviewId);
-  console.log('Review deletion event emitted to all clients');
 });
-
 
   socket.on('disconnect', () => {
-    console.log('A user disconnected');
+    console.log('User disconnected');
   });
 });
+
+
+
+
+
+
+
 
 
 const certificatesFilePath = path.join(__dirname, 'certificates.json');
@@ -232,45 +239,14 @@ app.get('/reviews', (req, res) => {
   res.json(reviews);
 });
 
-// Новый эндпоинт для добавления отзывов (доступен всем пользователям)
-app.post('/add-review', (req, res) => {
-  console.log('Received a POST request on /add-review');
 
-  const newReview = req.body;
-  console.log('New review received:', newReview);
 
-  reviews.push(newReview);
 
-  // Сохранение отзывов в файл
-  fs.writeFileSync(reviewsFilePath, JSON.stringify(reviews, null, 2));
-  console.log('Review added and saved to file successfully');
 
-  // Отправляем обновленные отзывы всем подключенным клиентам через WebSocket
-  io.emit('load_reviews', reviews);
 
-  res.send({ success: true });
-});
 
-// Эндпоинт для обновления отзывов (требует авторизации)
-app.post('/update-reviews', checkAdminLoggedIn, (req, res) => {
-  console.log('Received a POST request on /update-reviews');
 
-  const { reviews: newReviews } = req.body;
-  console.log('Data received:', newReviews);
 
-  if (!Array.isArray(newReviews)) {
-    console.log('Invalid data format received');
-    return res.status(400).send({ success: false, message: 'Invalid reviews data' });
-  }
-
-  reviews = newReviews;
-
-  // Сохранение отзывов в файл
-  fs.writeFileSync(reviewsFilePath, JSON.stringify(reviews, null, 2));
-  console.log('Reviews saved to file successfully');
-
-  res.send({ success: true });
-});
 
 // Эндпоинт для получения цен
 app.get('/prices', (req, res) => {
