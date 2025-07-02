@@ -43,3 +43,49 @@
   margin-bottom: 1em;
   text-indent: 40px; /* Отступ для первой строки абзаца */
 }
+
+
+
+
+
+
+/* Responsive Typography for How We Work Page */
+
+/* Мобильные устройства (до 600px) */
+@media (max-width: 600px) {
+  .how-we-work-page h1 {
+    font-size: 28px;
+  }
+  .how-we-work-page h2 {
+    font-size: 20px;
+  }
+  .how-we-work-page p {
+    font-size: 16px;
+  }
+}
+
+/* Планшеты (от 601px до 1024px) */
+@media (min-width: 601px) and (max-width: 1024px) {
+  .how-we-work-page h1 {
+    font-size: 32px;
+  }
+  .how-we-work-page h2 {
+    font-size: 24px;
+  }
+  .how-we-work-page p {
+    font-size: 17px;
+  }
+}
+
+/* Настольные устройства (от 1025px) */
+@media (min-width: 1025px) {
+  .how-we-work-page h1 {
+    font-size: 36px;
+  }
+  .how-we-work-page h2 {
+    font-size: 28px;
+  }
+  .how-we-work-page p {
+    font-size: 18px;
+  }
+}

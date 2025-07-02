@@ -32,7 +32,7 @@ const ContactPage = () => {
           allowFullScreen=""
           loading="lazy"
           referrerPolicy="no-referrer-when-downgrade"
-          sandbox="allow-same-origin allow-scripts allow-popups"
+          sandbox="allow-same-origin allow-scripts allow-popups allow-popups-to-escape-sandbox"
         ></iframe>
       </div>
     </div>

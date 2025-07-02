@@ -2,8 +2,8 @@
   "menu": {
     "start": "START",
     "news": "AKTUALNOŚCI",
-    "team": "ZESPÓŁ",
-    "howWeWork": "JAK PRACUJEMY",
+    "team": "O MNIE",
+    "howWeWork": "ZASADY WSPÓŁPRACY",
     "price": "CENNIK",
     "offer": "OFERTA",
     "contact": "KONTAKT",
@@ -15,7 +15,7 @@
   "specialist1": {
      "name": "Natalia Basko",
     "description": {
-      "therapy": "Terapia indywidualna: 200zł (50min)",
+      "therapy": "Terapia indywidualna: 250zł (50min)",
       "experience": "Staż pracy: 15 lat",    
       "location": "Przyjmuję stacjonarnie w Warszawie. Pracuję również online."
     },
@@ -154,7 +154,7 @@
    
   },
   "howWeWork": {
-    "title": "Jak pracujemy",
+    "title": "Jak pracuję",
     "introduction": "Nasza główna metoda terapeutyczna opiera się na relacji między terapeutą a pacjentem, tworząc więź opartą na zaufaniu. Pomoc psychologiczna ma na celu uświadomienie pacjentowi zasobów wewnętrznych i zewnętrznych, które pomogą w rozwiązaniu problemów.",
     "therapyPrinciples": {
       "title": "Zasady terapii",

@@ -246,10 +246,10 @@ function TeamPage({ reviews, isAdmin, addReview }) {
       photo: `http://localhost:3001${sebastianAvatar}`, // Используем загруженный аватар или дефолтное изображение
       description: t('specialist2.description'),
       details: [
-        { title: t('specialist2.details.0.title'), content: t('specialist2.details.0.content') },
-        { title: t('specialist2.details.1.title'), content: t('specialist2.details.1.content') },
-        { title: t('specialist2.details.2.title'), content: t('specialist2.details.2.content') },
-        { title: t('specialist2.details.3.title'), content: t('specialist2.details.3.content') },
+        { title: t('specialist2.details.0.title'), content: t('specialist2.details.0.content', { returnObjects: true }) },
+        { title: t('specialist2.details.1.title'), content: t('specialist2.details.1.content', { returnObjects: true }) },
+        { title: t('specialist2.details.2.title'), content: t('specialist2.details.2.content', { returnObjects: true }) },
+        { title: t('specialist2.details.3.title'), content: t('specialist2.details.3.content', { returnObjects: true }) },
         { 
           title: t('specialist2.details.4.title'), 
           content: (

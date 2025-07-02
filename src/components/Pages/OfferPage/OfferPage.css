@@ -44,3 +44,72 @@
   margin-bottom: 1em;
   text-indent: 40px; /* Отступ для первой строки абзаца */
 }
+
+
+
+
+
+/* Responsive Typography for OfferPage */
+
+/* Мобильные устройства (до 600px) */
+@media (max-width: 600px) {
+  .offer-page {
+    font-size: 20px; /* базовый размер шрифта для мобильных */
+    padding: 15px;
+  }
+  .offer-page h1 {
+    font-size: 28px;
+    margin-bottom: 30px;
+  }
+  .offer-page h2 {
+    font-size: 22px;
+    margin-bottom: 8px;
+  }
+  .offer-page p {
+    font-size: 16px;
+    margin-bottom: 0.8em;
+    text-indent: 30px; /* уменьшаем отступ для первой строки */
+  }
+}
+
+/* Планшеты (от 601px до 1024px) */
+@media (min-width: 601px) and (max-width: 1024px) {
+  .offer-page {
+    font-size: 22px;
+    padding: 18px;
+  }
+  .offer-page h1 {
+    font-size: 32px;
+    margin-bottom: 35px;
+  }
+  .offer-page h2 {
+    font-size: 26px;
+    margin-bottom: 9px;
+  }
+  .offer-page p {
+    font-size: 17px;
+    margin-bottom: 0.9em;
+    text-indent: 35px;
+  }
+}
+
+/* Настольные устройства (от 1025px) */
+@media (min-width: 1025px) {
+  .offer-page {
+    font-size: 25px;
+    padding: 20px;
+  }
+  .offer-page h1 {
+    font-size: 36px;
+    margin-bottom: 40px;
+  }
+  .offer-page h2 {
+    font-size: 28px;
+    margin-bottom: 10px;
+  }
+  .offer-page p {
+    font-size: 18px;
+    margin-bottom: 1em;
+    text-indent: 40px;
+  }
+}
