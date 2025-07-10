@@ -34,6 +34,9 @@ function AvatarUploader({ specialistId, onSave }) {
       const response = await fetch('http://localhost:3001/upload-avatar', {
         method: 'POST',
         body: formData,
+        headers: {
+          Authorization: 'Bearer admin-token-123', 
+        },
       });
 
       const data = await response.json();

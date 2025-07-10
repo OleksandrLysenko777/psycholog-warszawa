@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './PricePage.css';
 import { useTranslation } from 'react-i18next';
-import SaveButton from '../../SaveButton/SaveButton';  // Импорт кнопки сохранения
+import SaveButton from '../../SaveButton/SaveButton'; // Импорт кнопки сохранения
 
 const PricePage = ({ isAdmin }) => {
   const { t } = useTranslation();
@@ -27,9 +27,9 @@ const PricePage = ({ isAdmin }) => {
     fetchPrices();
   }, [t]);
 
-  const handleChange = (e) => {
+  const handleChange = e => {
     const { name, value } = e.target;
-    setPrices((prevPrices) => ({
+    setPrices(prevPrices => ({
       ...prevPrices,
       [name]: value,
     }));
@@ -41,6 +41,8 @@ const PricePage = ({ isAdmin }) => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+
+          Authorization: 'Bearer admin-token-123',
         },
         body: JSON.stringify(prices),
       });

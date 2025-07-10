@@ -80,6 +80,7 @@
   border-radius: 4px;
   transition: background-color 0.3s;
   color: #2c3e50;
+  font-weight: bold !important;
 }
 
 .team-page .accordion .tab button:hover {
@@ -314,4 +315,257 @@
     padding: 5px;
     font-size: 14px;
   }
+}
+/* Кастомна карусель сертифікатів */
+.custom-carousel {
+  position: relative;
+  max-width: 600px;
+  margin: 20px auto;
+  user-select: none;
+}
+
+.carousel-main {
+  width: 100%;
+  height: 400px;
+  cursor: zoom-in;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.certificate-image {
+  max-height: 100%;
+  max-width: 100%;
+  object-fit: contain;
+  transition: transform 0.3s ease;
+}
+
+.carousel-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: #34495e;
+  border: none;
+  color: white;
+  font-size: 2rem;
+  padding: 8px 14px;
+  cursor: pointer;
+  border-radius: 50%;
+  opacity: 0.8;
+  transition: opacity 0.3s ease;
+  z-index: 10;
+}
+
+.carousel-arrow:hover {
+  opacity: 1;
+}
+
+.carousel-arrow.left {
+  left: -40px;
+}
+
+.carousel-arrow.right {
+  right: -40px;
+}
+
+.carousel-thumbs {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+.thumb-image {
+  width: 60px;
+  height: 40px;
+  object-fit: cover;
+  cursor: pointer;
+  border: 2px solid transparent;
+  border-radius: 4px;
+  transition: border-color 0.3s ease;
+}
+
+.thumb-image.active,
+.thumb-image:hover {
+  border-color: #34495e;
+}
+
+.delete-button {
+  margin-top: 10px;
+  background-color: red;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 8px 14px;
+  cursor: pointer;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Модалка */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  background-color: rgba(0, 0, 0, 0.75);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  padding: 20px;
+}
+
+.modal-content {
+  position: relative; /* для абсолютного позиционирования крестика */
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow: hidden;
+}
+
+.close-button {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  width: 36px;
+  height: 36px;
+  background-color: #34495e; /* такой же, как у кнопок зума */
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 24px;
+  font-weight: bold;
+  line-height: 36px;
+  text-align: center;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  padding: 0;
+}
+.close-button:hover {
+  background-color: #2c3e50; /* чуть темнее при наведении */
+}
+
+.zoom-controls {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.zoom-controls button {
+  background-color: #34495e;
+  color: white;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 4px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.zoom-controls button:disabled {
+  background-color: #7f8c8d;
+  cursor: default;
+}
+
+.modal-image-container {
+  overflow: hidden;
+  width: 100%;
+  height: 80vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: grab;
+  user-select: none;
+}
+
+.modal-image-zoomable {
+  will-change: transform;
+  -webkit-user-drag: none; /* для Safari */
+  user-select: none; /* заборона виділення */
+  max-width: none;
+  max-height: none;
+}
+
+
+
+/* Адаптація для планшетів */
+@media (max-width: 1024px) {
+  .custom-carousel .thumb {
+    width: 70px;
+    height: 50px;
+  }
+
+  .custom-carousel .carousel-main img {
+    max-height: 400px;
+  }
+}
+
+/* Адаптація для мобільних */
+@media (max-width: 600px) {
+  .custom-carousel .carousel-main img {
+    max-height: 300px;
+  }
+
+  .custom-carousel .thumb {
+    width: 60px;
+    height: 45px;
+  }
+}
+
+.team-page .accordion .tab .content {
+  font-family: 'Arial', sans-serif;
+  font-size: 18px;
+  color: #000000;
+  line-height: 1.6;
+  text-align: justify;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+}
+
+
+.team-page .accordion .tab .content div,
+.team-page .accordion .tab .content span,
+.team-page .accordion .tab .content li {
+  margin-bottom: 0; /* 🔽 уменьшаем отступ */
+  text-indent: 40px;
+}
+.team-page .accordion .tab .content p {
+  margin: 0; /* 🔽 уменьшен нижний отступ между абзацами */
+}
+
+.team-page .accordion .tab .content ul {
+  padding-left: 30px;
+  margin-bottom: 1.2em;
+}
+
+.team-page .accordion .tab .content strong {
+  font-weight: bold;
+  color: #2c3e50;
+}
+
+.team-page .accordion .tab .content em {
+  font-style: italic;
+  color: #666;
+}
+.accordion .tab .content * {
+  color: #666 !important;
+  font-family: 'Arial', sans-serif !important;
+  font-size: 18px !important;
+  line-height: 1.4 !important;
 }

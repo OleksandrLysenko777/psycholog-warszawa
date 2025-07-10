@@ -55,7 +55,7 @@ const AddReview = ({ specialists, onReviewAdded }) => {
   onChange={e => setSelectedSpecialist(e.target.value)}
 >
   <option value="">{t('reviews.selectSpecialist')}</option>
-  {specialists.map((specialist) => (
+  {specialists.filter(s => !s.hiddenInReviewForm).map((specialist) => (
     <option key={specialist.id} value={specialist.id}>
       {specialist.name}
     </option>

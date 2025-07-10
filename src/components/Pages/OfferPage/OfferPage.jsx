@@ -7,7 +7,7 @@ const OfferPage = () => {
 
   return (
     <div className="offer-page">
-      <h1>{t('offer.title')}</h1>      
+      <h1>{t('offer.title')}</h1>
 
       <section className="individual-psychotherapy">
         <h2>{t('offer.individualPsychotherapy.title')}</h2>
@@ -37,16 +37,6 @@ const OfferPage = () => {
         <h2>{t('offer.cancellationPolicy.title')}</h2>
         <p>{t('offer.cancellationPolicy.content1')}</p>
         <p>{t('offer.cancellationPolicy.content2')}</p>
-      </section>
-
-      <section className="work-psychology">
-        <h2>{t('offer.workPsychology.title')}</h2>
-        <p>{t('offer.workPsychology.description')}</p>
-      </section>
-
-       <section className="group-therapy">
-        <h2>{t('offer.groupTherapy.title')}</h2>
-        <p>{t('offer.groupTherapy.description')}</p>
       </section>
     </div>
   );

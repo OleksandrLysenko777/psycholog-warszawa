@@ -7,7 +7,7 @@ const nodemailer = require('nodemailer');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
-const { Server } = require('socket.io'); 
+const { Server } = require('socket.io');
 const http = require('http');
 
 const app = express();
@@ -17,14 +17,15 @@ const io = new Server(server, {
   cors: {
     origin: 'http://localhost:3000', // Измените на ваш фронтенд URL
     methods: ['GET', 'POST'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
   },
 });
 
-io.on('connection', (socket) => {
+io.on('connection', socket => {
   console.log('A user connected');
 
   // Обработка добавления нового отзыва
-  socket.on('add_review', (newReview) => {
+  socket.on('add_review', newReview => {
     reviews.push(newReview);
     fs.writeFileSync(reviewsFilePath, JSON.stringify(reviews, null, 2));
 
@@ -33,33 +34,29 @@ io.on('connection', (socket) => {
   });
 
   // Обработка удаления отзыва
- socket.on('delete_review', (reviewId) => {
-  console.log('Review deleted with id:', reviewId);
+  socket.on('delete_review', reviewId => {
+    console.log('Review deleted with id:', reviewId);
 
-  reviews = reviews.filter((review) => review.id !== reviewId);
-  fs.writeFileSync(reviewsFilePath, JSON.stringify(reviews, null, 2));
+    reviews = reviews.filter(review => review.id !== reviewId);
+    fs.writeFileSync(reviewsFilePath, JSON.stringify(reviews, null, 2));
 
-  // Отправляем обновлённый список отзывов всем подключённым клиентам
-  io.emit('review_deleted', reviewId);
-});
+    // Отправляем обновлённый список отзывов всем подключённым клиентам
+    io.emit('review_deleted', reviewId);
+  });
 
   socket.on('disconnect', () => {
     console.log('User disconnected');
   });
 });
 
-
-
-
-
-
-
-
+const translationFiles = {
+  pl: path.join(__dirname, '../src/locales/pl.json'),
+  ua: path.join(__dirname, '../src/locales/ua.json'),
+};
 
 const certificatesFilePath = path.join(__dirname, 'certificates.json');
-const avatarsFilePath = path.join(__dirname, 'avatars.json');  // Новый файл для хранения аватаров
+const avatarsFilePath = path.join(__dirname, 'avatars.json'); // Новый файл для хранения аватаров
 const pricesFilePath = path.join(__dirname, 'prices.json');
-
 
 // Настройка хранения файлов с помощью multer
 const storage = multer.diskStorage({
@@ -72,10 +69,10 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage: storage }).array('certificates', 10);
-const uploadAvatar = multer({ storage: storage }).single('avatar');  // Новый загрузчик для аватара
+const uploadAvatar = multer({ storage: storage }).single('avatar'); // Новый загрузчик для аватара
 
 let verificationCode = null;
-let isAdminLoggedIn = false;
+
 const adminData = {
   username: 'admin',
   password: 'password',
@@ -87,7 +84,7 @@ let prices = {};
 
 let reviews = [];
 let certificates = {};
-let avatars = {};  // Добавляем пустой объект для аватаров
+let avatars = {}; // Добавляем пустой объект для аватаров
 
 if (fs.existsSync(pricesFilePath)) {
   try {
@@ -99,7 +96,7 @@ if (fs.existsSync(pricesFilePath)) {
   }
 } else {
   // Если файл не существует, создаем его пустым
-  prices = {};  // Пустой объект, так как дефолтные цены не нужны
+  prices = {}; // Пустой объект, так как дефолтные цены не нужны
   try {
     fs.writeFileSync(pricesFilePath, JSON.stringify(prices, null, 2));
     console.log('Empty prices.json created');
@@ -107,7 +104,7 @@ if (fs.existsSync(pricesFilePath)) {
     console.error('Error creating prices.json:', err);
   }
 }
- 
+
 // Загрузка сертификатов из файла при старте сервера
 if (fs.existsSync(certificatesFilePath)) {
   const data = fs.readFileSync(certificatesFilePath);
@@ -181,7 +178,9 @@ async function sendMail(email, code) {
 app.post('/send-verification-code', async (req, res) => {
   const { email } = req.body;
   verificationCode = Math.floor(100000 + Math.random() * 900000); // Генерируем код только один раз
-  console.log(`Generated verification code: ${verificationCode} for email: ${email}`);
+  console.log(
+    `Generated verification code: ${verificationCode} for email: ${email}`
+  );
 
   try {
     const mailResult = await sendMail(email, verificationCode);
@@ -202,7 +201,7 @@ app.post('/verify-code', (req, res) => {
   console.log(`Current verification code: ${verificationCode}`);
   if (parseInt(code, 10) === verificationCode) {
     console.log('Verification successful');
-    isAdminLoggedIn = true;
+
     res.send({ success: true });
   } else {
     console.log('Verification failed');
@@ -215,7 +214,7 @@ app.post('/login', (req, res) => {
   console.log(`Login attempt with username: ${username}`);
   if (username === adminData.username && password === adminData.password) {
     console.log('Login successful');
-    isAdminLoggedIn = true;
+
     res.send({ success: true, email: adminData.email });
   } else {
     console.log('Login failed');
@@ -225,11 +224,15 @@ app.post('/login', (req, res) => {
 
 // Middleware для проверки, что админ залогинен
 function checkAdminLoggedIn(req, res, next) {
-  if (!isAdminLoggedIn) {
+  const authHeader = req.headers.authorization;
+  console.log('Authorization Header:', authHeader); // временно для отладки
+
+  if (!authHeader || authHeader !== 'Bearer admin-token-123') {
     console.log('Unauthorized access attempt');
     return res.status(401).send({ success: false, message: 'Unauthorized' });
   }
-  console.log('Admin is logged in, proceeding with the request');
+
+  console.log('Admin authenticated');
   next();
 }
 
@@ -238,15 +241,6 @@ app.get('/reviews', (req, res) => {
   console.log('Fetching all reviews');
   res.json(reviews);
 });
-
-
-
-
-
-
-
-
-
 
 // Эндпоинт для получения цен
 app.get('/prices', (req, res) => {
@@ -264,25 +258,27 @@ app.post('/update-prices', checkAdminLoggedIn, (req, res) => {
     prices = { ...prices, ...req.body };
 
     // Записываем обновленные цены в файл JSON
-    fs.writeFile(pricesFilePath, JSON.stringify(prices, null, 2), (err) => {
+    fs.writeFile(pricesFilePath, JSON.stringify(prices, null, 2), err => {
       if (err) {
         console.error('Ошибка при записи в файл prices.json:', err);
-        return res.status(500).json({ success: false, message: 'Ошибка при сохранении цен' });
+        return res
+          .status(500)
+          .json({ success: false, message: 'Ошибка при сохранении цен' });
       }
       console.log('Цены успешно обновлены и сохранены в prices.json');
       res.json({ success: true });
     });
   } catch (error) {
     console.error('Ошибка при обновлении цен:', error);
-    res.status(500).json({ success: false, message: 'Внутренняя ошибка сервера' });
+    res
+      .status(500)
+      .json({ success: false, message: 'Внутренняя ошибка сервера' });
   }
 });
 
-
-
 // Эндпоинт для загрузки сертификатов
 app.post('/upload-certificate', checkAdminLoggedIn, (req, res) => {
-  upload(req, res, (err) => {
+  upload(req, res, err => {
     console.log('Request received:', req.body, req.files);
 
     if (err instanceof multer.MulterError) {
@@ -295,7 +291,9 @@ app.post('/upload-certificate', checkAdminLoggedIn, (req, res) => {
 
     if (!req.files || req.files.length === 0) {
       console.warn('No files uploaded');
-      return res.status(400).json({ success: false, message: 'No files uploaded' });
+      return res
+        .status(400)
+        .json({ success: false, message: 'No files uploaded' });
     }
 
     const { specialistId } = req.body;
@@ -304,20 +302,26 @@ app.post('/upload-certificate', checkAdminLoggedIn, (req, res) => {
       certificates[specialistId] = [];
     }
 
-    req.files.forEach((file) => {
+    req.files.forEach(file => {
       certificates[specialistId].push(file.filename);
     });
 
     // Сохранение сертификатов в файл
-    fs.writeFileSync(certificatesFilePath, JSON.stringify(certificates, null, 2));
+    fs.writeFileSync(
+      certificatesFilePath,
+      JSON.stringify(certificates, null, 2)
+    );
 
-    res.json({ success: true, filePaths: req.files.map((file) => `/uploads/${file.filename}`) });
+    res.json({
+      success: true,
+      filePaths: req.files.map(file => `/uploads/${file.filename}`),
+    });
   });
 });
 
 // Эндпоинт для загрузки аватара
 app.post('/upload-avatar', checkAdminLoggedIn, (req, res) => {
-  uploadAvatar(req, res, (err) => {
+  uploadAvatar(req, res, err => {
     console.log('Request received for avatar upload:', req.body, req.file);
 
     if (err instanceof multer.MulterError) {
@@ -330,7 +334,9 @@ app.post('/upload-avatar', checkAdminLoggedIn, (req, res) => {
 
     if (!req.file) {
       console.warn('No file uploaded');
-      return res.status(400).json({ success: false, message: 'No file uploaded' });
+      return res
+        .status(400)
+        .json({ success: false, message: 'No file uploaded' });
     }
 
     const { specialistId } = req.body;
@@ -340,12 +346,18 @@ app.post('/upload-avatar', checkAdminLoggedIn, (req, res) => {
 
     // Удаление предыдущего аватара
     if (avatars[specialistId]) {
-      const previousAvatarPath = path.join(__dirname, 'uploads', avatars[specialistId]);
-      fs.unlink(previousAvatarPath, (err) => {
+      const previousAvatarPath = path.join(
+        __dirname,
+        'uploads',
+        avatars[specialistId]
+      );
+      fs.unlink(previousAvatarPath, err => {
         if (err) {
           console.error('Ошибка при удалении предыдущего аватара:', err);
         } else {
-          console.log(`Предыдущий аватар ${avatars[specialistId]} успешно удален`);
+          console.log(
+            `Предыдущий аватар ${avatars[specialistId]} успешно удален`
+          );
         }
       });
     }
@@ -366,22 +378,29 @@ app.post('/delete-certificate', checkAdminLoggedIn, (req, res) => {
   const { filePath, specialistId } = req.body;
 
   if (!filePath || !specialistId) {
-    return res.status(400).send({ success: false, message: 'Invalid filePath or specialistId' });
+    return res
+      .status(400)
+      .send({ success: false, message: 'Invalid filePath or specialistId' });
   }
 
   const fullPath = path.join(__dirname, 'uploads', path.basename(filePath)); // Используйте path.basename для корректного извлечения имени файла
 
-  fs.unlink(fullPath, (err) => {
+  fs.unlink(fullPath, err => {
     if (err) {
-      return res.status(500).send({ success: false, message: 'File deletion error' });
+      return res
+        .status(500)
+        .send({ success: false, message: 'File deletion error' });
     }
 
     certificates[specialistId] = certificates[specialistId].filter(
-      (cert) => cert !== path.basename(filePath)
+      cert => cert !== path.basename(filePath)
     );
 
     // Сохранение сертификатов в файл
-    fs.writeFileSync(certificatesFilePath, JSON.stringify(certificates, null, 2));
+    fs.writeFileSync(
+      certificatesFilePath,
+      JSON.stringify(certificates, null, 2)
+    );
 
     res.send({ success: true });
   });
@@ -396,12 +415,76 @@ app.get('/certificates/:specialistId', (req, res) => {
 // Эндпоинт для получения аватара
 app.get('/avatar/:specialistId', (req, res) => {
   const { specialistId } = req.params;
-  const avatar = avatars[specialistId];  // Используем avatars.json для получения пути к аватару
+  const avatar = avatars[specialistId]; // Используем avatars.json для получения пути к аватару
 
   if (avatar) {
     res.json({ success: true, avatar: `/uploads/${avatar}` });
   } else {
     res.json({ success: true, avatar: '/uploads/default-avatar.jpg' }); // Если аватара нет, возвращаем дефолтное изображение
+  }
+});
+
+app.get('/specialist/:lang', (req, res) => {
+  const lang = req.params.lang;
+  const filePath = translationFiles[lang];
+  if (!filePath || !fs.existsSync(filePath)) {
+    return res
+      .status(404)
+      .json({ success: false, message: 'Language not found' });
+  }
+
+  try {
+    const data = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+    const result = {
+      description: data.specialist1?.description || {},
+      details: data.specialist1?.details?.slice(0, 4) || [],
+    };
+    res.json({ success: true, data: result });
+  } catch (error) {
+    console.error('Ошибка чтения specialist JSON:', error);
+    res.status(500).json({ success: false, message: 'Read error' });
+  }
+});
+
+app.post('/specialist/:lang', checkAdminLoggedIn, (req, res) => {
+  const lang = req.params.lang;
+  const { description, details } = req.body;
+  const filePath = translationFiles[lang];
+
+  if (!filePath || !fs.existsSync(filePath)) {
+    return res
+      .status(404)
+      .json({ success: false, message: 'Language not found' });
+  }
+
+  try {
+    const data = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+
+    if (!data.specialist1) data.specialist1 = {};
+
+    // Обновить description
+    data.specialist1.description = description;
+
+    // Сохраняем существующий 5-й элемент, если есть
+    const existingDetails = Array.isArray(data.specialist1.details)
+      ? data.specialist1.details
+      : [];
+
+    // Объединяем: новые 4 + существующий 5-й (если был)
+    const updatedDetails = [...details];
+
+    // сохраняем 5-й блок, если он был
+    if (existingDetails.length > 4) {
+      updatedDetails.push(existingDetails[4]);
+    }
+
+    data.specialist1.details = updatedDetails;
+
+    fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf-8');
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Ошибка записи specialist JSON:', error);
+    res.status(500).json({ success: false, message: 'Write error' });
   }
 });
 

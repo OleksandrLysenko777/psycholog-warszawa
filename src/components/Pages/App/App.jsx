@@ -97,7 +97,7 @@ function App() {
 
   const specialists = [
     { id: 'natalia', name: 'Natalia Basko' },
-    { id: 'sebastian', name: 'Sebastian Chmieliński' },
+    { id: 'sebastian', name: 'Sebastian Chmieliński', hiddenInReviewForm: true },
   ];
 
   return (
