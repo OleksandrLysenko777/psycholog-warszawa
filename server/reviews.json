@@ -1,26 +1,34 @@
 [
   {
-    "id": 1751752422499,
+    "id": 1755802976818,
     "specialistId": "natalia",
-    "name": "цуаца",
-    "reviewText": "уацу",
-    "rating": 5,
-    "date": "2025-07-05T21:53:42.499Z"
+    "name": "у5ну5",
+    "reviewText": "унун",
+    "rating": 3,
+    "date": "2025-08-21T19:02:56.818Z"
   },
   {
-    "id": 1752166567441,
+    "id": 1755803074007,
     "specialistId": "natalia",
-    "name": "укутн",
-    "reviewText": "ктнкен",
-    "rating": 5,
-    "date": "2025-07-10T16:56:07.441Z"
+    "name": "гглрг",
+    "reviewText": "лгпдп",
+    "rating": 4,
+    "date": "2025-08-21T19:04:34.007Z"
   },
   {
-    "id": 1752175386544,
+    "id": 1755803083653,
     "specialistId": "natalia",
-    "name": "івяв а",
-    "reviewText": "вапвап",
+    "name": "щгрг",
+    "reviewText": "нпдп",
     "rating": 5,
-    "date": "2025-07-10T19:23:06.544Z"
+    "date": "2025-08-21T19:04:43.653Z"
+  },
+  {
+    "id": 1755803420810,
+    "specialistId": "natalia",
+    "name": "oleksandr lysenko",
+    "reviewText": "дллгпдгп",
+    "rating": 4,
+    "date": "2025-08-21T19:10:20.810Z"
   }
 ]

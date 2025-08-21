@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import './PricePage.css';
 import { useTranslation } from 'react-i18next';
-import SaveButton from '../../SaveButton/SaveButton'; // Импорт кнопки сохранения
+import SaveButton from '../../SaveButton/SaveButton';
+
+const API_BASE = process.env.REACT_APP_API_BASE || 'http://localhost:3001';
 
 const PricePage = ({ isAdmin }) => {
   const { t } = useTranslation();
@@ -12,49 +15,58 @@ const PricePage = ({ isAdmin }) => {
     interventionConsultationsForCouples: '',
     onlineConsultation: '',
   });
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     const fetchPrices = async () => {
       try {
-        const response = await fetch('http://localhost:3001/prices');
-        const data = await response.json();
-        setPrices(data);
+        const { data } = await axios.get(`${API_BASE}/prices`);
+        // data ожидается объектом вида { key: value }
+        if (data && typeof data === 'object') {
+          setPrices(prev => ({ ...prev, ...data }));
+        }
       } catch (error) {
         console.error(t('prices.updateFailure'), error);
       }
     };
-
     fetchPrices();
   }, [t]);
 
-  const handleChange = e => {
+  const handleChange = (e) => {
     const { name, value } = e.target;
-    setPrices(prevPrices => ({
-      ...prevPrices,
-      [name]: value,
-    }));
+    setPrices(prev => ({ ...prev, [name]: value }));
   };
 
   const handleSave = async () => {
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+      alert(t('common.authRequired') || 'Требуется авторизация. Войдите как админ.');
+      return;
+    }
+
+    setSaving(true);
     try {
-      const response = await fetch('http://localhost:3001/update-prices', {
-        method: 'POST',
+      const { data } = await axios.post(`${API_BASE}/update-prices`, prices, {
         headers: {
           'Content-Type': 'application/json',
-
-          Authorization: 'Bearer admin-token-123',
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(prices),
       });
 
-      const data = await response.json();
-      if (data.success) {
+      if (data?.success) {
         alert(t('prices.updateSuccess'));
       } else {
         alert(t('prices.updateFailure'));
       }
     } catch (error) {
-      console.error(t('prices.updateFailure'), error);
+      if (error?.response?.status === 401) {
+        alert(t('common.authExpired') || 'Сессия истекла. Войдите снова.');
+      } else {
+        console.error(t('prices.updateFailure'), error);
+        alert(t('prices.updateFailure'));
+      }
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -132,7 +144,9 @@ const PricePage = ({ isAdmin }) => {
         </tbody>
       </table>
 
-      {isAdmin && <SaveButton onClick={handleSave} />}
+      {isAdmin && (
+        <SaveButton onClick={handleSave} disabled={saving} title={saving ? t('common.saving') || 'Сохранение…' : undefined} />
+      )}
     </div>
   );
 };

@@ -1,510 +1,461 @@
 require('dotenv').config({ path: '../.env' });
 
-const express = require('express');
-const bodyParser = require('body-parser');
-const cors = require('cors');
-const nodemailer = require('nodemailer');
-const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
-const { Server } = require('socket.io');
-const http = require('http');
+const express   = require('express');
+const bodyParser= require('body-parser');
+const cors      = require('cors');
+const nodemailer= require('nodemailer');
+const multer    = require('multer');
+const path      = require('path');
+const fs        = require('fs');
+const { Server }= require('socket.io');
+const http      = require('http');
+const jwt       = require('jsonwebtoken');
 
-const app = express();
-const port = 3001;
+/* ===================== ENV ===================== */
+const PORT           = Number(process.env.PORT || 3001);
+const CLIENT_ORIGIN  = process.env.CLIENT_ORIGIN || 'http://localhost:3000';
+
+const ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'admin';
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'password';
+const ADMIN_EMAIL    = process.env.ADMIN_EMAIL    || 'admin@example.com';
+
+const JWT_SECRET     = process.env.JWT_SECRET     || 'dev-secret-change-me';
+const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
+
+/* ================== APP / SOCKET ================= */
+const app    = express();
 const server = http.createServer(app);
-const io = new Server(server, {
+const io     = new Server(server, {
   cors: {
-    origin: 'http://localhost:3000', // Измените на ваш фронтенд URL
+    origin: CLIENT_ORIGIN,
     methods: ['GET', 'POST'],
     allowedHeaders: ['Content-Type', 'Authorization'],
   },
 });
 
-io.on('connection', socket => {
-  console.log('A user connected');
+/* =================== MIDDLEWARES ================= */
+app.use(cors({
+  origin: CLIENT_ORIGIN,
+  methods: ['GET', 'POST'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}));
+app.use(bodyParser.json());
 
-  // Обработка добавления нового отзыва
-  socket.on('add_review', newReview => {
-    reviews.push(newReview);
-    fs.writeFileSync(reviewsFilePath, JSON.stringify(reviews, null, 2));
+/* uploads dir (гарантируем наличие) */
+const uploadsDir = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
 
-    // Отправляем новый отзыв всем подключённым клиентам
-    io.emit('new_review', newReview);
-  });
+/* Раздача /uploads (расположить высоко) */
+app.use('/uploads', express.static(uploadsDir));
 
-  // Обработка удаления отзыва
-  socket.on('delete_review', reviewId => {
-    console.log('Review deleted with id:', reviewId);
-
-    reviews = reviews.filter(review => review.id !== reviewId);
-    fs.writeFileSync(reviewsFilePath, JSON.stringify(reviews, null, 2));
-
-    // Отправляем обновлённый список отзывов всем подключённым клиентам
-    io.emit('review_deleted', reviewId);
-  });
-
-  socket.on('disconnect', () => {
-    console.log('User disconnected');
-  });
-});
-
+/* ===================== FILE PATHS ===================== */
 const translationFiles = {
   pl: path.join(__dirname, '../src/locales/pl.json'),
   ua: path.join(__dirname, '../src/locales/ua.json'),
 };
 
 const certificatesFilePath = path.join(__dirname, 'certificates.json');
-const avatarsFilePath = path.join(__dirname, 'avatars.json'); // Новый файл для хранения аватаров
-const pricesFilePath = path.join(__dirname, 'prices.json');
+const avatarsFilePath      = path.join(__dirname, 'avatars.json');
+const pricesFilePath       = path.join(__dirname, 'prices.json');
+const reviewsFilePath      = path.join(__dirname, 'reviews.json');
+const sectionsFilePath     = path.join(__dirname, 'sections.json');
 
-// Настройка хранения файлов с помощью multer
+/* ===================== MULTER ===================== */
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'uploads/');
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + path.extname(file.originalname));
-  },
+  destination: (req, file, cb) => cb(null, uploadsDir),
+  filename: (req, file, cb) => cb(null, Date.now() + path.extname(file.originalname)),
 });
+const upload        = multer({ storage }).array('certificates', 10);
+const uploadAvatar  = multer({ storage }).single('avatar');
+const uploadSection = multer({ storage }).single('image');
 
-const upload = multer({ storage: storage }).array('certificates', 10);
-const uploadAvatar = multer({ storage: storage }).single('avatar'); // Новый загрузчик для аватара
-
+/* ===================== IN-MEMORY ===================== */
 let verificationCode = null;
 
-const adminData = {
-  username: 'admin',
-  password: 'password',
-  email: 'direst2010@gmail.com',
-};
+let siteContent   = { welcomeMessage: 'Welcome to our site!' };
+let prices        = {};
+let reviews       = [];
+let certificates  = {};
+let avatars       = {};
+let sectionImages = [];
 
-let siteContent = { welcomeMessage: 'Welcome to our site!' };
-let prices = {};
-
-let reviews = [];
-let certificates = {};
-let avatars = {}; // Добавляем пустой объект для аватаров
-
-if (fs.existsSync(pricesFilePath)) {
-  try {
-    const data = fs.readFileSync(pricesFilePath, 'utf8');
-    prices = JSON.parse(data);
-    console.log('Prices loaded successfully from prices.json:', prices);
-  } catch (err) {
-    console.error('Error reading prices.json:', err);
+/* ===================== LOAD DATA ===================== */
+function safeLoadJSON(file, fallback) {
+  if (!fs.existsSync(file)) {
+    fs.writeFileSync(file, JSON.stringify(fallback, null, 2));
+    return fallback;
   }
-} else {
-  // Если файл не существует, создаем его пустым
-  prices = {}; // Пустой объект, так как дефолтные цены не нужны
-  try {
-    fs.writeFileSync(pricesFilePath, JSON.stringify(prices, null, 2));
-    console.log('Empty prices.json created');
-  } catch (err) {
-    console.error('Error creating prices.json:', err);
+  try { return JSON.parse(fs.readFileSync(file, 'utf8')); }
+  catch (e) {
+    console.error(`Error reading ${path.basename(file)}:`, e);
+    return fallback;
   }
 }
 
-// Загрузка сертификатов из файла при старте сервера
-if (fs.existsSync(certificatesFilePath)) {
-  const data = fs.readFileSync(certificatesFilePath);
-  certificates = JSON.parse(data);
-} else {
-  // Если файл не существует, создаем его
-  fs.writeFileSync(certificatesFilePath, JSON.stringify(certificates, null, 2));
+prices        = safeLoadJSON(pricesFilePath, {});
+certificates  = safeLoadJSON(certificatesFilePath, {});
+avatars       = safeLoadJSON(avatarsFilePath, {});
+reviews       = safeLoadJSON(reviewsFilePath, []);
+sectionImages = safeLoadJSON(sectionsFilePath, []);
+
+/* ===================== HELPERS: FILES & CLEANUP ===================== */
+function fileExistsSafe(absPath) {
+  try { fs.accessSync(absPath, fs.constants.F_OK); return true; }
+  catch { return false; }
 }
 
-// Загрузка аватаров из файла при старте сервера
-if (fs.existsSync(avatarsFilePath)) {
-  const data = fs.readFileSync(avatarsFilePath);
-  avatars = JSON.parse(data);
-} else {
-  // Если файл не существует, создаем его
-  fs.writeFileSync(avatarsFilePath, JSON.stringify(avatars, null, 2));
-}
-
-const reviewsFilePath = path.join(__dirname, 'reviews.json');
-if (!fs.existsSync(reviewsFilePath)) {
-  fs.writeFileSync(reviewsFilePath, JSON.stringify([], null, 2));
-  console.log('reviews.json created with an empty array');
-} else {
-  const data = fs.readFileSync(reviewsFilePath, 'utf8');
-  try {
-    reviews = JSON.parse(data);
-  } catch (err) {
-    console.error('Error parsing reviews.json:', err);
+/** Удаляет «висячие» записи из certificates.json; возвращает отчёт по удалённым позициям */
+function reconcileCertificates() {
+  const report = { changed: false, removedBySpecialist: {} };
+  for (const [specId, files] of Object.entries(certificates)) {
+    const original = Array.isArray(files) ? files : [];
+    const filtered = original.filter(name => fileExistsSafe(path.join(uploadsDir, name)));
+    const removed  = original.length - filtered.length;
+    if (removed > 0) {
+      certificates[specId] = filtered;
+      report.changed = true;
+      report.removedBySpecialist[specId] = removed;
+    }
   }
+  if (report.changed) {
+    fs.writeFileSync(certificatesFilePath, JSON.stringify(certificates, null, 2));
+    console.log('[certificates] cleaned dangling entries:', report.removedBySpecialist);
+  }
+  return report;
 }
+// Разовая чистка на старте
+reconcileCertificates();
 
-app.use(bodyParser.json());
-app.use(cors());
-
-// Логирование и проверка переменных окружения
-console.log('Email:', process.env.EMAIL);
-console.log('Email Password:', process.env.EMAIL_PASSWORD);
-
+/* ===================== EMAIL (опционально) ===================== */
 if (!process.env.EMAIL || !process.env.EMAIL_PASSWORD) {
-  console.error('Missing environment variables. Please check your .env file.');
-  process.exit(1);
+  console.warn('[WARN] EMAIL / EMAIL_PASSWORD не заданы. Почтовые функции работать не будут.');
 }
 
-// Функция для отправки email
 async function sendMail(email, code) {
   try {
     const transporter = nodemailer.createTransport({
       service: 'gmail',
-      auth: {
-        user: process.env.EMAIL,
-        pass: process.env.EMAIL_PASSWORD,
-      },
+      auth: { user: process.env.EMAIL, pass: process.env.EMAIL_PASSWORD },
     });
-
-    const mailOptions = {
+    return await transporter.sendMail({
       from: process.env.EMAIL,
       to: email,
       subject: 'Your Verification Code',
       text: `Your verification code is ${code}`,
-    };
-
-    const result = await transporter.sendMail(mailOptions);
-    console.log('Email sent:', result);
-    return result;
+    });
   } catch (error) {
     console.error('Error sending email:', error);
     return error;
   }
 }
 
-app.post('/send-verification-code', async (req, res) => {
-  const { email } = req.body;
-  verificationCode = Math.floor(100000 + Math.random() * 900000); // Генерируем код только один раз
-  console.log(
-    `Generated verification code: ${verificationCode} for email: ${email}`
-  );
+/* ===================== AUTH HELPERS ===================== */
+const signAdminToken = () =>
+  jwt.sign({ role: 'admin', username: ADMIN_USERNAME }, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
 
+const extractBearer = (req) => {
+  const h = req.headers.authorization || '';
+  const m = h.match(/^Bearer\s+(.+)$/i);
+  return m ? m[1] : null;
+};
+
+/* dev-фолбэк: поддержка старого admin-token-123, чтобы не ломать процесс миграции */
+function checkAdminLoggedIn(req, res, next) {
+  const authHeader = req.headers.authorization || '';
+  if (authHeader === 'Bearer admin-token-123') {
+    console.warn('[AUTH] Using legacy admin-token-123 (dev fallback).');
+    return next();
+  }
+  const token = extractBearer(req);
+  if (!token) return res.status(401).json({ success: false, message: 'Unauthorized' });
+  try {
+    const payload = jwt.verify(token, JWT_SECRET);
+    if (payload.role !== 'admin') throw new Error('Bad role');
+    req.user = payload;
+    return next();
+  } catch {
+    return res.status(401).json({ success: false, message: 'Unauthorized' });
+  }
+}
+
+/* ===================== SOCKET.IO ===================== */
+io.on('connection', (socket) => {
+  socket.on('add_review', (newReview) => {
+    reviews.push(newReview);
+    fs.writeFileSync(reviewsFilePath, JSON.stringify(reviews, null, 2));
+    io.emit('new_review', newReview);
+  });
+
+  socket.on('delete_review', (reviewId) => {
+    reviews = reviews.filter((r) => r.id !== reviewId);
+    fs.writeFileSync(reviewsFilePath, JSON.stringify(reviews, null, 2));
+    io.emit('review_deleted', reviewId);
+  });
+});
+
+/* ===================== AUTH API ===================== */
+app.post('/login', (req, res) => {
+  const { username, password } = req.body || {};
+  if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
+    const token = signAdminToken(); // выдаём сразу (обратная совместимость)
+    return res.json({ success: true, email: ADMIN_EMAIL, token });
+  }
+  res.json({ success: false });
+});
+
+app.post('/send-verification-code', async (req, res) => {
+  const { email } = req.body || {};
+  verificationCode = Math.floor(100000 + Math.random() * 900000);
   try {
     const mailResult = await sendMail(email, verificationCode);
-    if (mailResult instanceof Error) {
-      throw mailResult;
-    }
-    console.log(`Verification code sent to ${email}: ${verificationCode}`);
-    res.send({ success: true });
-  } catch (error) {
-    console.error('Error sending email:', error);
-    res.send({ success: false });
+    if (mailResult instanceof Error) throw mailResult;
+    res.json({ success: true });
+  } catch (e) {
+    console.error('Error sending email:', e);
+    res.json({ success: false });
   }
 });
 
 app.post('/verify-code', (req, res) => {
-  const { code } = req.body;
-  console.log(`Verification code received: ${code}`);
-  console.log(`Current verification code: ${verificationCode}`);
+  const { code } = req.body || {};
   if (parseInt(code, 10) === verificationCode) {
-    console.log('Verification successful');
-
-    res.send({ success: true });
-  } else {
-    console.log('Verification failed');
-    res.send({ success: false });
+    // предпочтительно выдавать токен здесь — после 2FA
+    return res.json({ success: true, token: signAdminToken() });
   }
+  res.json({ success: false });
 });
 
-app.post('/login', (req, res) => {
-  const { username, password } = req.body;
-  console.log(`Login attempt with username: ${username}`);
-  if (username === adminData.username && password === adminData.password) {
-    console.log('Login successful');
-
-    res.send({ success: true, email: adminData.email });
-  } else {
-    console.log('Login failed');
-    res.send({ success: false });
-  }
+/* ===================== SECTIONS ===================== */
+app.get('/sections', (req, res) => {
+  res.json({ success: true, sections: sectionImages });
 });
 
-// Middleware для проверки, что админ залогинен
-function checkAdminLoggedIn(req, res, next) {
-  const authHeader = req.headers.authorization;
-  console.log('Authorization Header:', authHeader); // временно для отладки
+app.post('/upload-section-image', checkAdminLoggedIn, (req, res) => {
+  uploadSection(req, res, (err) => {
+    if (err instanceof multer.MulterError || err) {
+      console.error('Section upload error:', err);
+      return res.status(500).json({ success: false, message: err.message || 'Upload error' });
+    }
 
-  if (!authHeader || authHeader !== 'Bearer admin-token-123') {
-    console.log('Unauthorized access attempt');
-    return res.status(401).send({ success: false, message: 'Unauthorized' });
-  }
+    const { sectionId } = req.body || {};
+    if (!req.file || !sectionId) {
+      return res.status(400).json({ success: false, message: 'Invalid data' });
+    }
 
-  console.log('Admin authenticated');
-  next();
-}
+    const tempPath  = path.join(uploadsDir, req.file.filename);
+    const ext       = path.extname(req.file.originalname) || '.jpg';
+    const finalName = `${sectionId}${ext}`;
+    const finalPath = path.join(uploadsDir, finalName);
 
-// Эндпоинт для получения отзывов
-app.get('/reviews', (req, res) => {
-  console.log('Fetching all reviews');
-  res.json(reviews);
-});
+    let oldImageAbsPath = null;
+    let found = false;
 
-// Эндпоинт для получения цен
-app.get('/prices', (req, res) => {
-  console.log('Fetching prices:', prices);
-  res.json(prices);
-});
-
-// Эндпоинт для обновления цен
-app.post('/update-prices', checkAdminLoggedIn, (req, res) => {
-  console.log('Получен POST-запрос на /update-prices');
-  console.log('Полученные данные:', req.body);
-
-  try {
-    // Обновляем объект с ценами
-    prices = { ...prices, ...req.body };
-
-    // Записываем обновленные цены в файл JSON
-    fs.writeFile(pricesFilePath, JSON.stringify(prices, null, 2), err => {
-      if (err) {
-        console.error('Ошибка при записи в файл prices.json:', err);
-        return res
-          .status(500)
-          .json({ success: false, message: 'Ошибка при сохранении цен' });
+    sectionImages = sectionImages.map((s) => {
+      if (s.id === sectionId) {
+        found = true;
+        if (s.image && s.image.startsWith('/uploads/')) {
+          oldImageAbsPath = path.join(__dirname, s.image);
+        }
+        return { ...s, image: `/uploads/${finalName}` };
       }
-      console.log('Цены успешно обновлены и сохранены в prices.json');
-      res.json({ success: true });
+      return s;
     });
-  } catch (error) {
-    console.error('Ошибка при обновлении цен:', error);
-    res
-      .status(500)
-      .json({ success: false, message: 'Внутренняя ошибка сервера' });
-  }
-});
+    if (!found) sectionImages.push({ id: sectionId, image: `/uploads/${finalName}` });
 
-// Эндпоинт для загрузки сертификатов
-app.post('/upload-certificate', checkAdminLoggedIn, (req, res) => {
-  upload(req, res, err => {
-    console.log('Request received:', req.body, req.files);
-
-    if (err instanceof multer.MulterError) {
-      console.error('Multer error:', err);
-      return res.status(500).json({ success: false, message: err.message });
-    } else if (err) {
-      console.error('Unknown error:', err);
-      return res.status(500).json({ success: false, message: 'Unknown error' });
+    try {
+      fs.renameSync(tempPath, finalPath);
+    } catch (e) {
+      console.error('Rename error:', e);
+      try { fs.unlinkSync(tempPath); } catch {}
+      return res.status(500).json({ success: false, message: 'File save error' });
     }
 
-    if (!req.files || req.files.length === 0) {
-      console.warn('No files uploaded');
-      return res
-        .status(400)
-        .json({ success: false, message: 'No files uploaded' });
+    if (oldImageAbsPath && path.normalize(oldImageAbsPath) !== path.normalize(finalPath)) {
+      try { if (fs.existsSync(oldImageAbsPath)) fs.unlinkSync(oldImageAbsPath); }
+      catch (e) { console.warn('Cleanup old section image failed:', e.message); }
     }
 
-    const { specialistId } = req.body;
-
-    if (!certificates[specialistId]) {
-      certificates[specialistId] = [];
-    }
-
-    req.files.forEach(file => {
-      certificates[specialistId].push(file.filename);
-    });
-
-    // Сохранение сертификатов в файл
-    fs.writeFileSync(
-      certificatesFilePath,
-      JSON.stringify(certificates, null, 2)
-    );
-
-    res.json({
-      success: true,
-      filePaths: req.files.map(file => `/uploads/${file.filename}`),
-    });
+    fs.writeFileSync(sectionsFilePath, JSON.stringify(sectionImages, null, 2), 'utf-8');
+    res.json({ success: true, imagePath: `/uploads/${finalName}` });
   });
 });
 
-// Эндпоинт для загрузки аватара
-app.post('/upload-avatar', checkAdminLoggedIn, (req, res) => {
-  uploadAvatar(req, res, err => {
-    console.log('Request received for avatar upload:', req.body, req.file);
+app.post('/update-sections', checkAdminLoggedIn, (req, res) => {
+  const { sections } = req.body || {};
+  if (!Array.isArray(sections)) {
+    return res.status(400).json({ success: false, message: 'Invalid sections data' });
+  }
+  sectionImages = sections;
+  fs.writeFileSync(sectionsFilePath, JSON.stringify(sectionImages, null, 2));
+  res.json({ success: true });
+});
 
+/* ===================== REVIEWS / PRICES / CONTENT ===================== */
+app.get('/reviews', (req, res) => res.json(reviews));
+
+app.get('/prices',  (req, res) => res.json(prices));
+
+app.post('/update-prices', checkAdminLoggedIn, (req, res) => {
+  try {
+    prices = { ...prices, ...req.body };
+    fs.writeFile(pricesFilePath, JSON.stringify(prices, null, 2), (err) => {
+      if (err) return res.status(500).json({ success: false, message: 'Ошибка при сохранении цен' });
+      res.json({ success: true });
+    });
+  } catch {
+    res.status(500).json({ success: false, message: 'Внутренняя ошибка сервера' });
+  }
+});
+
+/* ===================== CERTIFICATES ===================== */
+app.get('/certificates/:specialistId', (req, res) => {
+  const { specialistId } = req.params;
+  // На лету фильтруем «мертвые» ссылки
+  const list = (certificates[specialistId] || []);
+  const filtered = list.filter(name => fileExistsSafe(path.join(uploadsDir, name)));
+  if (filtered.length !== list.length) {
+    certificates[specialistId] = filtered;
+    fs.writeFileSync(certificatesFilePath, JSON.stringify(certificates, null, 2));
+    console.log(`[certificates] cleaned ${specialistId}: ${list.length - filtered.length} missing file(s)`);
+  }
+  res.json({ success: true, certificates: filtered });
+});
+
+app.post('/upload-certificate', checkAdminLoggedIn, (req, res) => {
+  upload(req, res, (err) => {
     if (err instanceof multer.MulterError) {
-      console.error('Multer error:', err);
       return res.status(500).json({ success: false, message: err.message });
     } else if (err) {
-      console.error('Unknown error:', err);
       return res.status(500).json({ success: false, message: 'Unknown error' });
     }
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).json({ success: false, message: 'No files uploaded' });
+    }
 
+    const { specialistId } = req.body || {};
+    if (!certificates[specialistId]) certificates[specialistId] = [];
+    req.files.forEach((f) => certificates[specialistId].push(f.filename));
+    fs.writeFileSync(certificatesFilePath, JSON.stringify(certificates, null, 2));
+
+    res.json({ success: true, filePaths: req.files.map((f) => `/uploads/${f.filename}`) });
+  });
+});
+
+app.post('/delete-certificate', checkAdminLoggedIn, (req, res) => {
+  const { filePath, specialistId } = req.body || {};
+  if (!filePath || !specialistId) {
+    return res.status(400).json({ success: false, message: 'Invalid filePath or specialistId' });
+  }
+
+  const filename = path.basename(filePath);
+  const absPath  = path.join(uploadsDir, filename);
+
+  // Пытаемся удалить физический файл, но если его уже нет — всё равно считаем операцию успешной
+  try {
+    if (fileExistsSafe(absPath)) fs.unlinkSync(absPath);
+  } catch (e) {
+    if (e.code !== 'ENOENT') {
+      console.error('File deletion error:', e);
+      return res.status(500).json({ success: false, message: 'File deletion error' });
+    }
+  }
+
+  // В любом случае удаляем запись из JSON
+  certificates[specialistId] = (certificates[specialistId] || []).filter((c) => c !== filename);
+  fs.writeFileSync(certificatesFilePath, JSON.stringify(certificates, null, 2));
+
+  return res.json({ success: true });
+});
+
+/* ---- ручной maintenance-роут для чистки dangling-ссылок ---- */
+app.post('/admin/cleanup-certificates', checkAdminLoggedIn, (req, res) => {
+  const report = reconcileCertificates();
+  res.json({ success: true, ...report, certificates });
+});
+
+/* ===================== AVATAR ===================== */
+app.get('/avatar/:specialistId', (req, res) => {
+  const { specialistId } = req.params;
+  const avatar = avatars[specialistId];
+  if (avatar) res.json({ success: true, avatar: `/uploads/${avatar}` });
+  else        res.json({ success: true, avatar: '/uploads/default-avatar.jpg' });
+});
+
+app.post('/upload-avatar', checkAdminLoggedIn, (req, res) => {
+  uploadAvatar(req, res, (err) => {
+    if (err instanceof multer.MulterError) {
+      return res.status(500).json({ success: false, message: err.message });
+    } else if (err) {
+      return res.status(500).json({ success: false, message: 'Unknown error' });
+    }
     if (!req.file) {
-      console.warn('No file uploaded');
-      return res
-        .status(400)
-        .json({ success: false, message: 'No file uploaded' });
+      return res.status(400).json({ success: false, message: 'No file uploaded' });
     }
 
-    const { specialistId } = req.body;
-
-    // Логируем имя файла перед сохранением
-    console.log('Filename with extension:', req.file.filename);
-
-    // Удаление предыдущего аватара
+    const { specialistId } = req.body || {};
     if (avatars[specialistId]) {
-      const previousAvatarPath = path.join(
-        __dirname,
-        'uploads',
-        avatars[specialistId]
-      );
-      fs.unlink(previousAvatarPath, err => {
-        if (err) {
-          console.error('Ошибка при удалении предыдущего аватара:', err);
-        } else {
-          console.log(
-            `Предыдущий аватар ${avatars[specialistId]} успешно удален`
-          );
-        }
-      });
+      const prev = path.join(uploadsDir, avatars[specialistId]);
+      fs.unlink(prev, () => {}); // best-effort
     }
-
-    // Загрузка аватара для специалиста
     avatars[specialistId] = req.file.filename;
-
-    // Сохранение изменений в avatars.json
     fs.writeFileSync(avatarsFilePath, JSON.stringify(avatars, null, 2));
 
-    // Ответ с путём к загруженному аватару
     res.json({ success: true, avatarPath: `/uploads/${req.file.filename}` });
   });
 });
 
-// Эндпоинт для удаления сертификатов
-app.post('/delete-certificate', checkAdminLoggedIn, (req, res) => {
-  const { filePath, specialistId } = req.body;
-
-  if (!filePath || !specialistId) {
-    return res
-      .status(400)
-      .send({ success: false, message: 'Invalid filePath or specialistId' });
-  }
-
-  const fullPath = path.join(__dirname, 'uploads', path.basename(filePath)); // Используйте path.basename для корректного извлечения имени файла
-
-  fs.unlink(fullPath, err => {
-    if (err) {
-      return res
-        .status(500)
-        .send({ success: false, message: 'File deletion error' });
-    }
-
-    certificates[specialistId] = certificates[specialistId].filter(
-      cert => cert !== path.basename(filePath)
-    );
-
-    // Сохранение сертификатов в файл
-    fs.writeFileSync(
-      certificatesFilePath,
-      JSON.stringify(certificates, null, 2)
-    );
-
-    res.send({ success: true });
-  });
-});
-
-// Предоставление списка сертификатов для всех пользователей
-app.get('/certificates/:specialistId', (req, res) => {
-  const { specialistId } = req.params;
-  res.send({ success: true, certificates: certificates[specialistId] || [] });
-});
-
-// Эндпоинт для получения аватара
-app.get('/avatar/:specialistId', (req, res) => {
-  const { specialistId } = req.params;
-  const avatar = avatars[specialistId]; // Используем avatars.json для получения пути к аватару
-
-  if (avatar) {
-    res.json({ success: true, avatar: `/uploads/${avatar}` });
-  } else {
-    res.json({ success: true, avatar: '/uploads/default-avatar.jpg' }); // Если аватара нет, возвращаем дефолтное изображение
-  }
-});
-
+/* ===================== SPECIALIST TEXT ===================== */
 app.get('/specialist/:lang', (req, res) => {
-  const lang = req.params.lang;
-  const filePath = translationFiles[lang];
+  const filePath = translationFiles[req.params.lang];
   if (!filePath || !fs.existsSync(filePath)) {
-    return res
-      .status(404)
-      .json({ success: false, message: 'Language not found' });
+    return res.status(404).json({ success: false, message: 'Language not found' });
   }
-
   try {
     const data = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
-    const result = {
-      description: data.specialist1?.description || {},
-      details: data.specialist1?.details?.slice(0, 4) || [],
-    };
-    res.json({ success: true, data: result });
-  } catch (error) {
-    console.error('Ошибка чтения specialist JSON:', error);
+    res.json({
+      success: true,
+      data: {
+        description: data.specialist1?.description || {},
+        details:     data.specialist1?.details?.slice(0, 4) || [],
+      },
+    });
+  } catch (e) {
+    console.error('Read specialist JSON error:', e);
     res.status(500).json({ success: false, message: 'Read error' });
   }
 });
 
 app.post('/specialist/:lang', checkAdminLoggedIn, (req, res) => {
-  const lang = req.params.lang;
-  const { description, details } = req.body;
-  const filePath = translationFiles[lang];
-
+  const filePath = translationFiles[req.params.lang];
+  const { description, details } = req.body || {};
   if (!filePath || !fs.existsSync(filePath)) {
-    return res
-      .status(404)
-      .json({ success: false, message: 'Language not found' });
+    return res.status(404).json({ success: false, message: 'Language not found' });
   }
-
   try {
     const data = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
-
     if (!data.specialist1) data.specialist1 = {};
-
-    // Обновить description
+    const existingDetails = Array.isArray(data.specialist1.details) ? data.specialist1.details : [];
+    const updatedDetails  = [...details];
+    if (existingDetails.length > 4) updatedDetails.push(existingDetails[4]); // сохраняем 5-й блок (сертификаты)
     data.specialist1.description = description;
-
-    // Сохраняем существующий 5-й элемент, если есть
-    const existingDetails = Array.isArray(data.specialist1.details)
-      ? data.specialist1.details
-      : [];
-
-    // Объединяем: новые 4 + существующий 5-й (если был)
-    const updatedDetails = [...details];
-
-    // сохраняем 5-й блок, если он был
-    if (existingDetails.length > 4) {
-      updatedDetails.push(existingDetails[4]);
-    }
-
-    data.specialist1.details = updatedDetails;
-
+    data.specialist1.details     = updatedDetails;
     fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf-8');
     res.json({ success: true });
-  } catch (error) {
-    console.error('Ошибка записи specialist JSON:', error);
+  } catch (e) {
+    console.error('Write specialist JSON error:', e);
     res.status(500).json({ success: false, message: 'Write error' });
   }
 });
 
-// Эндпоинт для получения контента сайта
-app.get('/content', (req, res) => {
-  console.log('Content requested');
-  res.send(siteContent);
-});
-
-// Эндпоинт для обновления контента сайта
+/* ===================== CONTENT ===================== */
+app.get('/content', (req, res) => res.send(siteContent));
 app.post('/update-content', checkAdminLoggedIn, (req, res) => {
-  const { content } = req.body;
-  console.log('Content update:', content);
-  siteContent = content;
-  res.send({ success: true });
+  siteContent = req.body?.content;
+  res.json({ success: true });
 });
 
-// Статический маршрут для загрузки файлов
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-
-server.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
+/* ===================== START ===================== */
+server.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+  console.log(`CORS origin: ${CLIENT_ORIGIN}`);
 });

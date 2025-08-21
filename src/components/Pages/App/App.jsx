@@ -12,46 +12,88 @@ import ContactPage from '../ContactPage/ContactPage';
 import ReviewsPage from '../ReviewsPage/ReviewsPage';
 import AdminLogin from '../AdminLogin/AdminLogin';
 
+// ===== helpers =====
+function parseJwt(token) {
+  try {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const json = decodeURIComponent(
+      atob(base64)
+        .split('')
+        .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+        .join('')
+    );
+    return JSON.parse(json);
+  } catch {
+    return null;
+  }
+}
+function isTokenValid(token) {
+  const payload = parseJwt(token);
+  if (!payload?.exp) return false;
+  return Date.now() < payload.exp * 1000; // exp в секундах
+}
+
+// ВАЖНО: вынесли константу за пределы компонента
+const TIMEOUT_DURATION = 15 * 60 * 1000; // 15 минут
 
 function App() {
   const [reviews, setReviews] = useState([]);
-  const [isAdmin, setIsAdmin] = useState(false); // Состояние для отслеживания логина администратора
-  const logoutTimerRef = useRef(null); // Ссылка для отслеживания таймера
-  const TIMEOUT_DURATION = 15 * 60 * 1000; // 15 минут
+  const [isAdmin, setIsAdmin] = useState(false);
+  const logoutTimerRef = useRef(null);
 
-  // Функция для начала таймера выхода, обернута в useCallback
+  const handleLogout = useCallback(() => {
+    localStorage.removeItem('authToken');
+    setIsAdmin(false);
+    clearTimeout(logoutTimerRef.current);
+  }, []);
+
   const startLogoutTimer = useCallback(() => {
-    clearTimeout(logoutTimerRef.current); // Очищаем предыдущий таймер
-    logoutTimerRef.current = setTimeout(() => {
-      handleLogout(); // Автоматический logout через 15 минут
-    }, TIMEOUT_DURATION);
-  }, [TIMEOUT_DURATION]);
+    clearTimeout(logoutTimerRef.current);
+    logoutTimerRef.current = setTimeout(handleLogout, TIMEOUT_DURATION);
+  }, [handleLogout]); // TIMEOUT_DURATION вне компонента — в deps не нужен
 
-  // Обработчики событий активности пользователя, обернуты в useCallback
   const resetTimer = useCallback(() => {
-    if (isAdmin) {
-      startLogoutTimer(); // Сбрасываем таймер при активности
-    }
+    if (isAdmin) startLogoutTimer();
   }, [isAdmin, startLogoutTimer]);
 
-  // Проверка состояния входа при первой загрузке
+  // Админ-состояние из JWT на старте
   useEffect(() => {
-    const storedAdminStatus = localStorage.getItem('isAdmin');
-    if (storedAdminStatus === 'true') {
+    const token = localStorage.getItem('authToken');
+    if (token && isTokenValid(token)) {
       setIsAdmin(true);
-      startLogoutTimer(); // Запускаем таймер при загрузке, если админ залогинен
+      startLogoutTimer();
+    } else {
+      localStorage.removeItem('authToken');
+      setIsAdmin(false);
     }
   }, [startLogoutTimer]);
 
+  // Синхронизация между вкладками (login/logout)
   useEffect(() => {
-    // Слушаем события активности пользователя
+    const onStorage = (e) => {
+      if (e.key === 'authToken') {
+        const token = e.newValue;
+        if (token && isTokenValid(token)) {
+          setIsAdmin(true);
+          startLogoutTimer();
+        } else {
+          setIsAdmin(false);
+          clearTimeout(logoutTimerRef.current);
+        }
+      }
+    };
+    window.addEventListener('storage', onStorage);
+    return () => window.removeEventListener('storage', onStorage);
+  }, [startLogoutTimer]);
+
+  // Слушатели активности
+  useEffect(() => {
     window.addEventListener('mousemove', resetTimer);
     window.addEventListener('keydown', resetTimer);
     window.addEventListener('click', resetTimer);
     window.addEventListener('touchstart', resetTimer);
-
     return () => {
-      // Очищаем слушатели при размонтировании компонента
       window.removeEventListener('mousemove', resetTimer);
       window.removeEventListener('keydown', resetTimer);
       window.removeEventListener('click', resetTimer);
@@ -59,40 +101,27 @@ function App() {
     };
   }, [resetTimer]);
 
-  // Загрузка отзывов с сервера при монтировании компонента
+  // Отзывы
   useEffect(() => {
-    const fetchReviews = async () => {
+    (async () => {
       try {
-        const response = await fetch('http://localhost:3001/reviews');
-        const data = await response.json();
-        setReviews(data); // Установка полученных отзывов в состояние
-      } catch (error) {
-        console.error('Ошибка при загрузке отзывов:', error);
+        const r = await fetch('http://localhost:3001/reviews');
+        const data = await r.json();
+        setReviews(Array.isArray(data) ? data : []);
+      } catch (e) {
+        console.error('Ошибка при загрузке отзывов:', e);
       }
-    };
-
-    fetchReviews();
+    })();
   }, []);
 
-  const addReview = (review) => {
-    setReviews([...reviews, review]);
-  };
+  const addReview = (review) => setReviews(prev => [...prev, review]);
+  const deleteReview = (index) => setReviews(prev => prev.filter((_, i) => i !== index));
 
-  const deleteReview = (index) => {
-    const updatedReviews = reviews.filter((_, i) => i !== index);
-    setReviews(updatedReviews);
-  };
-
+  // вызывается после успешной верификации в AdminLogin (токен уже сохранён)
   const handleLogin = () => {
-    setIsAdmin(true);
-    localStorage.setItem('isAdmin', 'true'); // Сохранение состояния в localStorage
-    startLogoutTimer(); // Запускаем таймер после логина
-  };
-
-  const handleLogout = () => {
-    setIsAdmin(false);
-    localStorage.removeItem('isAdmin'); // Удаление состояния из localStorage
-    clearTimeout(logoutTimerRef.current); // Очищаем таймер при выходе
+    const token = localStorage.getItem('authToken');
+    setIsAdmin(!!token && isTokenValid(token));
+    startLogoutTimer();
   };
 
   const specialists = [
@@ -103,30 +132,39 @@ function App() {
   return (
     <Router basename="/psycholog-warszawa">
       <div className="page-container">
-        <Header isAdmin={isAdmin} onLogout={handleLogout} />  {/* Передаем состояние и функцию выхода */}
+        <Header isAdmin={isAdmin} onLogout={handleLogout} />
         <div className="content-wrap">
           <Routes>
             <Route path="/" element={<Navigate to="/start" />} />
-            <Route path="/start" element={<StartPage reviews={reviews} specialists={specialists} addReview={addReview}/>} />
-            <Route path="/team" element={<TeamPage reviews={reviews} isAdmin={isAdmin} addReview={addReview}/>} />
+            <Route
+              path="/start"
+              element={
+                <StartPage
+                  reviews={reviews}
+                  isAdmin={isAdmin}
+                  specialists={specialists}
+                  addReview={addReview}
+                />
+              }
+            />
+            <Route path="/team" element={<TeamPage reviews={reviews} isAdmin={isAdmin} addReview={addReview} />} />
             <Route path="/how-we-work" element={<HowWeWorkPage />} />
             <Route path="/price" element={<PricePage isAdmin={isAdmin} />} />
             <Route path="/offer" element={<OfferPage />} />
             <Route path="/contact" element={<ContactPage />} />
-            <Route 
-              path="/reviews" 
-              element={<ReviewsPage 
-                specialists={specialists} 
-                addReview={addReview} 
-                deleteReview={deleteReview} 
-                reviews={reviews} 
-                isAdmin={isAdmin} 
-              />} 
+            <Route
+              path="/reviews"
+              element={
+                <ReviewsPage
+                  specialists={specialists}
+                  addReview={addReview}
+                  deleteReview={deleteReview}
+                  reviews={reviews}
+                  isAdmin={isAdmin}
+                />
+              }
             />
-            <Route 
-              path="/admin-login" 
-              element={<AdminLogin onLogin={handleLogin} />} 
-            />
+            <Route path="/admin-login" element={<AdminLogin onLogin={handleLogin} />} />
           </Routes>
         </div>
         <Footer />

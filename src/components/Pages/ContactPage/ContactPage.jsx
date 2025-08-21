@@ -13,7 +13,7 @@ const ContactPage = () => {
           <p><strong>{t('contact.addressTitle')}:</strong> {t('contact.address')}</p>
           <p><strong>{t('contact.phoneTitle')}:</strong> {t('contact.phone')}</p>
           <p><strong>{t('contact.emailTitle')}:</strong> {t('contact.email')}</p>
-          <p><strong>{t('contact.skypeTitle')}:</strong> {t('contact.skype')}</p>
+         
           <p><strong>{t('contact.hoursTitle')}:</strong> {t('contact.hours')}</p>
         </div>
         <div className="resignation-info">
@@ -25,7 +25,7 @@ const ContactPage = () => {
       <div className="map-container">
         <iframe
           title="Google Map of Aleja Stanów Zjednoczonych 51, Warszawa"
-          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2443.3370331695746!2d21.076433876210405!3d52.237261657124776!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x471ecdbcdff37f29%3A0x916437b73de028d0!2sAleja%20Stan%C3%B3w%20Zjednoczonych%2051%2C%2004-028%20Warszawa!5e0!3m2!1sru!2spl!4v1718485191361!5m2!1sru!2spl"
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2444.6733531386058!2d21.1860303120842!3d52.2129832587982!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x471ed3a50b2c9c27%3A0xc1fed08185ec83ed!2sCzarno%C5%82%C4%99cka%2026D%2C%2004-740%20Warszawa!5e0!3m2!1sru!2spl!4v1755802082494!5m2!1sru!2spl"
           width="800"
           height="600"
           style={{ border: 0 }}

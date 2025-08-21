@@ -7,12 +7,12 @@
   box-sizing: border-box;
   text-align: left;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  height: 220px; /* Увеличиваем высоту карточки */
+  height: 160px; /* Увеличиваем высоту карточки */
   position: relative;
   overflow: hidden;
-  transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease,
+    background-color 0.3s ease, border-color 0.3s ease;
   z-index: 0; /* Добавляем z-index */
-  
 }
 
 .review-card:hover {
@@ -51,9 +51,9 @@
   margin: 0;
 }
 
-.review-card p {  
+.review-card p {
   margin-bottom: 10px; /* Оставляем место для ссылки */
-   margin-top: 5px; 
+  margin-top: 5px;
   display: -webkit-box;
   -webkit-line-clamp: 2; /* Ограничиваем текст тремя строками для Webkit */
   -webkit-box-orient: vertical;

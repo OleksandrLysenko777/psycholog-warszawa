@@ -24,7 +24,6 @@ const ReviewCard = ({ review, specialist }) => {
       </div>
       <p>{review.reviewText}</p>
       <div className="read-more">
-        {/* Формируем ссылку с якорем на конкретный отзыв */}
         <Link to={`/reviews#review-${review.id}`}>{t('reviews.readMore')}</Link>
       </div>
     </div>

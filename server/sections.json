@@ -1,0 +1,30 @@
+[
+  {
+    "id": "section1",
+    "image": "/uploads/section1.JPG"
+  },
+  {
+    "id": "section2",
+    "image": "/uploads/section2.jpg"
+  },
+  {
+    "id": "section3",
+    "image": "/uploads/section3.JPG"
+  },
+  {
+    "id": "section4",
+    "image": "/uploads/section4.png"
+  },
+  {
+    "id": "section5",
+    "image": "/uploads/section5.JPG"
+  },
+  {
+    "id": "section6",
+    "image": "/uploads/section6.png"
+  },
+  {
+    "id": "section7",
+    "image": "/uploads/section7.jpg"
+  }
+]

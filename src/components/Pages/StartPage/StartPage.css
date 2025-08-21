@@ -6,22 +6,20 @@
   padding: 20px;
 }
 
+/* ---------- заголовки/интро ---------- */
 .header {
   text-align: center;
   margin-bottom: 40px;
 }
-
 .header h1 {
   font-size: 36px;
   margin-bottom: 20px;
   color: #2c3e50;
 }
-
 .subheader {
   text-align: center;
   margin-bottom: 20px;
 }
-
 .subheader h2 {
   font-size: 28px;
   margin-bottom: 10px;
@@ -35,24 +33,21 @@
   margin-bottom: 40px;
   gap: 20px;
 }
-
 .intro-card {
-  background-color: #fff;
+  background: #fff;
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
   width: 100%;
   max-width: 1200px;
   border: 2px solid #2c3e50;
-  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+  transition: 0.3s;
 }
-
 .intro-card:hover {
   transform: scale(1.05);
   box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
   border-color: #34495e;
 }
-
 .intro-card p {
   font-size: 18px;
   line-height: 1.8;
@@ -61,42 +56,34 @@
   text-align: center;
 }
 
-.content {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 20px;
-}
-
+/* ---------- БАЗОВАЯ карточка (используется в слайдере) ---------- */
 .section {
   position: relative;
-  width: calc(33.33% - 20px);
+  width: 100%;
+  max-width: 560px;
+  margin: 0 auto;
   border: 1px solid #ddd;
   border-radius: 8px;
-  background-color: #fff;
+  background: #fff;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-  overflow: visible;
+  overflow: hidden;
   text-align: center;
-  transition: transform 0.3s ease, background-color 0.3s ease, z-index 0.3s ease;
-  z-index: 0;
-  margin-bottom: 40px;
-  border-radius: 10px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  will-change: transform;
 }
-
-.section:hover {
-  background-color: #f9f9f9;
-  transform: scale(1.05);
-  z-index: 10;
+.section.is-hovered {
+  transform: translateZ(0) scale(1.03);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.18);
 }
 
 .section-image {
   width: 100%;
-  height: 400px;
+  height: 300px;
   overflow: hidden;
-  border-radius: 10px;
+  border-radius: 8px 8px 0 0;
 }
-
 .section-image img {
+  display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -104,113 +91,135 @@
 }
 
 .section-text {
-  padding: 10px;
-  background-color: #fff;
-  position: relative;
-  z-index: 2;
-  transform: translateY(-15px);
+  padding: 20px;
+  background: #fff;
 }
-
 .section-header {
   display: flex;
   flex-direction: column;
   align-items: center;
   margin-bottom: 10px;
 }
-
 .section-header .icon {
   width: 35px;
   height: auto;
   margin-bottom: 10px;
 }
-
 .section-header h2 {
   font-size: 24px;
-  margin-bottom: 10px;
+  margin: 0;
   color: #2c3e50;
-  position: relative;
-  z-index: 10;
-  background-color: #fff;
-  margin-top: 5px;
 }
 
 .section-content {
-  display: none;
-  position: absolute;
-  top: -100%;
-  left: 0;
-  width: 100%;
-  background-color: rgba(255, 255, 255, 0.95);
-  padding: 20px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  z-index: 1;
-  opacity: 0;
-  transition: opacity 0.3s ease, top 0.3s ease;
-  box-sizing: border-box;
-  border-radius: 10px;
+  margin-top: 10px;
 }
-.start-page .content .section .section-text .section-content p {
-  margin-bottom: 1em !important;
-  text-indent: 40px;
+.section-content p {
+  margin-bottom: 1em;
+  text-indent: 2em;
 }
-
 .section-content ul {
-  padding-left: 0; /* Удаление отступа слева для всего списка */
-  list-style: none; /* Удаление стандартных маркеров */
-  margin: 0; /* Удаление внешних отступов */
+  padding-left: 1.5em;
+  margin: 1em 0;
+  list-style: none;
+  text-align: left;
 }
-
 .section-content ul li {
-  display: flex; /* Использование flexbox для выравнивания */
-  align-items: flex-start; /* Выравнивание элементов по началу */
-  margin-bottom: 0.75em; /* Нижний отступ между элементами списка */
-  font-size: 1em; /* Размер шрифта */
-  line-height: 1.5em; /* Высота строки */
+  position: relative;
+  padding-left: 1.5em;
+  margin-bottom: 0.5em;
+  font-size: 1em;
+  line-height: 1.5em;
 }
-
 .section-content ul li::before {
-  content: '✔'; /* Задает галочку как маркер */
-  margin-right: 10px; /* Отступ справа от маркера */
-  font-size: 1.2em; /* Размер маркера */
-  color: #4caf50; /* Цвет маркера */
-  line-height: 1.5em; /* Высота строки маркера */
+  content: '\2022';
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: #4caf50;
+  font-size: 1.2em;
+  line-height: 1.5em;
 }
-
-.section:hover .section-content {
-  display: block;
-  opacity: 1;
-  top: 100%;
+.section-content p:last-child {
+  margin-bottom: 0;
 }
-
 .section p {
   font-size: 16px;
   line-height: 1.6;
   color: #666;
-  margin: 0;
-  text-align: justify;
+  margin: 0 0 1em 0;
+  text-align: left;
 }
 
+/* ---------- СЕТКА: только для блока .content.desktop (не влияет на слайдер) ---------- */
+.content.desktop {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+}
+.content.mobile {
+  display: none;
+}
+
+.content.desktop .section {
+  width: calc(33.33% - 20px);
+  max-width: none;
+}
 @media (max-width: 1024px) {
-  .section {
+  .content.desktop .section {
     width: calc(50% - 20px);
   }
 }
-
-@media (max-width: 600px) {
-  .section {
-    width: 100%;
-  }
-}
-
 @media (max-width: 768px) {
-  .intro-section {
-    flex-direction: column;
+  .content.desktop {
+    display: none;
+  }
+  .content.mobile {
+    display: block;
+  }
+  .content.desktop .section {
+    width: 100% !important;
   }
 }
 
+/* ---------- slick карусель ---------- */
 .reviews-section {
   width: 100%;
   margin-top: 40px;
+}
+.review-slide {
+  display: flex;
+  justify-content: center;
+}
+
+.slick-list {
+  overflow: hidden;
+}
+
+/* БАЗА: для всех слайдеров клики разрешены */
+.slick-slide {
+  display: flex;
+  justify-content: center;
+  box-sizing: border-box;
+  padding: 0 12px;
+  pointer-events: auto; /* <— больше НЕ блокируем глобально */
+}
+.slick-slide > div {
+  width: 100%;
+}
+
+/* СКОПИЛИ ПРАВИЛО: только для карусели секций (оберни Slider в .sections-carousel) */
+.sections-carousel .slick-slide {
+  pointer-events: none;
+}
+.sections-carousel .section {
+  pointer-events: auto;
+}
+
+/* на всякий: отзывы на стартовой точно кликабельны */
+.reviews-section .slick-slide {
+  pointer-events: auto;
 }
 
 .slick-prev,
@@ -219,34 +228,49 @@
   height: 40px;
   z-index: 10;
 }
-
 .slick-prev:before,
 .slick-next:before {
   display: none;
 }
-
 .slick-prev {
   left: -20px;
 }
-
 .slick-next {
   right: -20px;
 }
-
 .slick-dots li button:before {
   font-size: 10px;
   color: #007bff;
 }
 
+/* ---------- overlay "Заменить" ---------- */
+.section-image-editable {
+  position: relative;
+}
+.section-image-editable .edit-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+  z-index: 2;
+}
+.section-image-editable:hover .edit-overlay {
+  opacity: 1;
+  pointer-events: auto;
+}
+.edit-button {
+  background: #2c3e50;
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 14px;
+}
 
-
-
-
-
-
-/* Responsive Typography */
-
-/* Мобильные устройства (до 600px) */
+/* ---------- типографика адаптив ---------- */
 @media (max-width: 600px) {
   .header h1 {
     font-size: 28px;
@@ -264,8 +288,6 @@
     font-size: 14px;
   }
 }
-
-/* Планшеты (от 601px до 1024px) */
 @media (min-width: 601px) and (max-width: 1024px) {
   .header h1 {
     font-size: 32px;
@@ -283,10 +305,6 @@
     font-size: 15px;
   }
 }
-
-
-/* Настольные устройства (от 1025px) */
-/* Эти значения соответствуют исходным, можно настроить по необходимости */
 @media (min-width: 1025px) {
   .header h1 {
     font-size: 36px;

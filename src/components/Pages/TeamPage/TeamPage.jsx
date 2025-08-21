@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import axios from 'axios';
 import Slider from 'react-slick';
 import io from 'socket.io-client';
+
 import Accordion from './Accordion';
 import ReviewCardTeam from './ReviewCardTeam';
 import CustomArrow from '../App/Svg/CustomArrow';
@@ -15,10 +16,33 @@ import './TeamPage.css';
 import AvatarUploader from './AvatarUploader/AvatarUploader';
 import TiptapEditor from '../../TiptapEditor/TiptapEditor';
 
-const socket = io('http://localhost:3001');
+const API_BASE = 'http://localhost:3001';
+const socket = io(API_BASE);
+
+/* ------------ auth helpers ------------ */
+const getToken = () => localStorage.getItem('authToken');
+const authHeader = () => {
+  const token = getToken();
+  return token ? { Authorization: `Bearer ${token}` } : {};
+};
+const ensureAuthOrRedirect = () => {
+  const token = getToken();
+  if (!token) {
+    alert('Сессия истекла. Пожалуйста, войдите заново.');
+    window.location.href = '/admin';
+    return null;
+  }
+  return token;
+};
+const handleUnauthorized = () => {
+  localStorage.removeItem('authToken');
+  alert('Сессия истекла. Пожалуйста, войдите заново.');
+  window.location.href = '/admin';
+};
+/* ------------------------------------- */
 
 function TeamPage({ reviews, isAdmin, addReview }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const [nataliaCertificates, setNataliaCertificates] = useState([]);
   const [nataliaAvatar, setNataliaAvatar] = useState(null);
@@ -36,8 +60,6 @@ function TeamPage({ reviews, isAdmin, addReview }) {
   const modalImageRef = useRef(null);
   const modalContainerRef = useRef(null);
 
-  const { i18n } = useTranslation();
-
   const [contentSaved, setContentSaved] = useState(false);
 
   const [descriptionData, setDescriptionData] = useState({
@@ -52,28 +74,25 @@ function TeamPage({ reviews, isAdmin, addReview }) {
     { title: '', content: [''] },
   ]);
 
+  // загрузка текстового контента
   useEffect(() => {
-    const fetchContent = async () => {
+    (async () => {
       try {
         const lang = i18n.language || 'pl';
-        const res = await axios.get(`http://localhost:3001/specialist/${lang}`);
-        if (res.data.success) {
+        const res = await axios.get(`${API_BASE}/specialist/${lang}`);
+        if (res.data && res.data.success) {
           setDescriptionData(res.data.data.description);
           setDetailsData(res.data.data.details);
         }
-      } catch (error) {
-        console.error('Ошибка при загрузке контента:', error);
+      } catch (e) {
+        console.error('Ошибка при загрузке контента:', e);
       }
-    };
-    fetchContent();
+    })();
   }, [i18n.language]);
 
-  console.log('Отправляем на сервер:');
-  console.log('description:', descriptionData);
-  console.log('details:', detailsData);
-
-  // Сохранение на сервер
+  // сохранить текстовый контент
   const handleSaveTextChanges = async () => {
+    if (!ensureAuthOrRedirect()) return;
     try {
       const lang = i18n.language || 'pl';
 
@@ -84,7 +103,6 @@ function TeamPage({ reviews, isAdmin, addReview }) {
 
       const fullDetails = [...detailsData, certBlock];
 
-      // 🔧 Формируем только нужные поля для сохранения
       const cleanedDescription = {
         therapyLabel: descriptionData.therapyLabel,
         experienceLabel: descriptionData.experienceLabel,
@@ -92,161 +110,149 @@ function TeamPage({ reviews, isAdmin, addReview }) {
       };
 
       await axios.post(
-        `http://localhost:3001/specialist/${lang}`,
-        {
-          description: cleanedDescription,
-          details: fullDetails,
-        },
-        {
-          headers: {
-            Authorization: 'Bearer admin-token-123',
-          },
-        }
+        `${API_BASE}/specialist/${lang}`,
+        { description: cleanedDescription, details: fullDetails },
+        { headers: { ...authHeader() } }
       );
 
       setContentSaved(true);
       setTimeout(() => setContentSaved(false), 3000);
     } catch (error) {
+      if (error && error.response && error.response.status === 401) {
+        handleUnauthorized();
+        return;
+      }
       console.error('Ошибка при сохранении контента:', error);
     }
   };
 
-  useEffect(() => {
-    setLiveReviews(reviews);
-  }, [reviews]);
+  // live-отзывы
+  useEffect(() => setLiveReviews(reviews), [reviews]);
 
   useEffect(() => {
-    socket.on('new_review', newReview => {
-      setLiveReviews(prevReviews => [...prevReviews, newReview]);
+    socket.on('new_review', (newReview) => {
+      setLiveReviews((prev) => [...prev, newReview]);
+      if (typeof addReview === 'function') addReview(newReview);
     });
 
-    socket.on('review_deleted', deletedReviewId => {
-      setLiveReviews(prevReviews =>
-        prevReviews.filter(review => review.id !== deletedReviewId)
-      );
+    socket.on('review_deleted', (deletedReviewId) => {
+      setLiveReviews((prev) => prev.filter((r) => r.id !== deletedReviewId));
     });
 
     return () => {
       socket.off('new_review');
       socket.off('review_deleted');
     };
+  }, [addReview]);
+
+  // сертификаты
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await fetch(`${API_BASE}/certificates/natalia`);
+        const data = await res.json();
+        if (data.success) {
+          setNataliaCertificates(data.certificates || []);
+        }
+      } catch (e) {
+        console.error('Ошибка при загрузке сертификатов:', e);
+      }
+    })();
   }, []);
 
+  // аватар
   useEffect(() => {
-    const fetchCertificates = async (specialistId, setCertificates) => {
+    (async () => {
       try {
-        const response = await fetch(
-          `http://localhost:3001/certificates/${specialistId}`
-        );
-        const data = await response.json();
-        console.log('Certificates:', data);
+        const res = await fetch(`${API_BASE}/avatar/natalia`);
+        const data = await res.json();
         if (data.success) {
-          setCertificates(data.certificates);
+          setNataliaAvatar(`${API_BASE}${data.avatar}`);
         }
-      } catch (error) {
-        console.error('Ошибка при загрузке сертификатов:', error);
+      } catch (e) {
+        console.error('Ошибка при загрузке аватара:', e);
       }
-    };
-
-    fetchCertificates('natalia', setNataliaCertificates);
-  }, []);
-
-  useEffect(() => {
-    const fetchAvatar = async (specialistId, setAvatar) => {
-      try {
-        const response = await fetch(
-          `http://localhost:3001/avatar/${specialistId}`
-        );
-        const data = await response.json();
-        if (data.success) {
-          setAvatar(data.avatar);
-        }
-      } catch (error) {
-        console.error('Ошибка при загрузке аватара:', error);
-      }
-    };
-
-    fetchAvatar('natalia', setNataliaAvatar);
+    })();
   }, []);
 
   const handleAvatarSave = (avatarPath, specialistId) => {
     if (specialistId === 'natalia') {
-      setNataliaAvatar(avatarPath);
+      setNataliaAvatar(`${API_BASE}${avatarPath}`);
     }
   };
 
   const handleFileChange = async (event, specialistId) => {
-    const files = Array.from(event.target.files);
-    const formData = new FormData();
+    if (!ensureAuthOrRedirect()) return;
 
+    const files = Array.from(event.target.files || []);
+    if (!files.length) return;
+
+    const formData = new FormData();
     formData.append('specialistId', specialistId);
-    files.forEach(file => {
-      formData.append('certificates', file);
-    });
+    files.forEach((f) => formData.append('certificates', f));
 
     try {
-      const response = await fetch('http://localhost:3001/upload-certificate', {
+      const res = await fetch(`${API_BASE}/upload-certificate`, {
         method: 'POST',
+        headers: { ...authHeader() },
         body: formData,
-        headers: {
-          Authorization: 'Bearer admin-token-123', // ✅ только это!
-        },
       });
-      const data = await response.json();
 
+      if (res.status === 401) {
+        handleUnauthorized();
+        return;
+      }
+
+      const data = await res.json();
       if (data.success) {
-        const newCertificates = data.filePaths.map(path =>
-          path.split('/').pop()
+        const newNames = (data.filePaths || []).map((p) =>
+          (p || '').split('/').pop()
         );
         if (specialistId === 'natalia') {
-          setNataliaCertificates([...nataliaCertificates, ...newCertificates]);
+          setNataliaCertificates((prev) => [...prev, ...newNames]);
         }
         setChangesMade(true);
       } else {
         console.error('Ошибка при загрузке сертификатов на сервер.');
       }
-    } catch (error) {
-      console.error('Ошибка при загрузке сертификатов:', error);
+    } catch (e) {
+      console.error('Ошибка при загрузке сертификатов:', e);
     }
   };
 
   const handleDeleteCertificate = async (index, specialistId) => {
-    const certificates = specialistId === 'natalia' ? nataliaCertificates : [];
-    const filePath = certificates[index];
+    if (!ensureAuthOrRedirect()) return;
+
+    const list = specialistId === 'natalia' ? nataliaCertificates : [];
+    const filename = list[index];
+    if (!filename) return;
 
     try {
-      const response = await fetch('http://localhost:3001/delete-certificate', {
+      const res = await fetch(`${API_BASE}/delete-certificate`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: 'Bearer admin-token-123',
-        },
-        body: JSON.stringify({ filePath, specialistId }),
+        headers: { 'Content-Type': 'application/json', ...authHeader() },
+        body: JSON.stringify({ filePath: `/uploads/${filename}`, specialistId }),
       });
 
-      const data = await response.json();
+      if (res.status === 401) {
+        handleUnauthorized();
+        return;
+      }
 
+      const data = await res.json();
       if (data.success) {
-        let updatedCertificates;
-        if (specialistId === 'natalia') {
-          updatedCertificates = nataliaCertificates.filter(
-            (_, i) => i !== index
-          );
-          setNataliaCertificates(updatedCertificates);
-        }
+        const updated = list.filter((_, i) => i !== index);
+        if (specialistId === 'natalia') setNataliaCertificates(updated);
 
-        if (updatedCertificates.length === 0) {
-          setCurrentIndex(0);
-        } else if (currentIndex >= updatedCertificates.length) {
-          setCurrentIndex(updatedCertificates.length - 1);
-        }
+        if (updated.length === 0) setCurrentIndex(0);
+        else if (currentIndex >= updated.length) setCurrentIndex(updated.length - 1);
 
         setChangesMade(true);
       } else {
         console.error('Ошибка при удалении сертификата.');
       }
-    } catch (error) {
-      console.error('Ошибка при удалении сертификата:', error);
+    } catch (e) {
+      console.error('Ошибка при удалении сертификата:', e);
     }
   };
 
@@ -255,20 +261,14 @@ function TeamPage({ reviews, isAdmin, addReview }) {
     alert('Изменения успешно сохранены');
   };
 
+  // Esc для модалки
   useEffect(() => {
-    const handleEsc = event => {
-      if (event.key === 'Escape' && modalOpen) {
-        setModalOpen(false);
-      }
-    };
-
-    window.addEventListener('keydown', handleEsc);
-
-    return () => {
-      window.removeEventListener('keydown', handleEsc);
-    };
+    const onEsc = (e) => e.key === 'Escape' && setModalOpen(false);
+    window.addEventListener('keydown', onEsc);
+    return () => window.removeEventListener('keydown', onEsc);
   }, [modalOpen]);
 
+  // сброс при открытии
   useEffect(() => {
     if (modalOpen) {
       setZoomLevel(1);
@@ -276,131 +276,96 @@ function TeamPage({ reviews, isAdmin, addReview }) {
     }
   }, [modalOpen]);
 
-  // Блокировка скролла страницы при открытой модалке
+  // блокировка скролла под модалкой
   useEffect(() => {
-    if (modalOpen) document.body.style.overflow = 'hidden';
-    else document.body.style.overflow = '';
+    document.body.style.overflow = modalOpen ? 'hidden' : '';
     return () => {
       document.body.style.overflow = '';
     };
   }, [modalOpen]);
 
-  // Зум колесом мыши
+  // zoom колесом
   useEffect(() => {
     const container = document.querySelector('.modal-image-container');
     if (!container) return;
 
-    const handleWheel = e => {
+    const handleWheel = (e) => {
       e.preventDefault();
       const delta = e.deltaY > 0 ? -0.1 : 0.1;
-      setZoomLevel(prev => Math.min(Math.max(prev + delta, 1), 5));
+      setZoomLevel((prev) => Math.min(Math.max(prev + delta, 1), 5));
     };
 
     container.addEventListener('wheel', handleWheel, { passive: false });
-
     return () => container.removeEventListener('wheel', handleWheel);
   }, [modalOpen]);
 
-  // Обработчики перетаскивания
-
+  // drag для изображения
   useEffect(() => {
-    const handleMouseMove = e => {
+    const handleMouseMove = (e) => {
       if (!dragging) return;
-
-      // Задаём пределы сдвига, подбери значения под себя
       const maxOffsetX = 500;
       const maxOffsetY = 500;
-
       const newX = e.clientX - startPos.x;
       const newY = e.clientY - startPos.y;
-
       setPosition({
-        x: clamp(newX, -maxOffsetX, maxOffsetX),
-        y: clamp(newY, -maxOffsetY, maxOffsetY),
+        x: Math.max(-maxOffsetX, Math.min(maxOffsetX, newX)),
+        y: Math.max(-maxOffsetY, Math.min(maxOffsetY, newY)),
       });
     };
-
     const handleMouseUp = () => setDragging(false);
 
     if (dragging) {
       window.addEventListener('mousemove', handleMouseMove);
       window.addEventListener('mouseup', handleMouseUp);
     }
-
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseup', handleMouseUp);
     };
   }, [dragging, startPos]);
 
-  const handleMouseDown = e => {
-    if (e.button !== 0) return; // только левая кнопка
+  const handleMouseDown = (e) => {
+    if (e.button !== 0) return;
     setDragging(true);
     setStartPos({ x: e.clientX - position.x, y: e.clientY - position.y });
   };
 
-  // Ограничение позиции (например, чтоб нельзя было сильно сдвинуть картинку)
-  const clamp = (val, min, max) => Math.max(min, Math.min(max, val));
+  // helpers для URL
+  const nataliaPhoto = useMemo(
+    () => nataliaAvatar || `${API_BASE}/uploads/default-avatar.jpg`,
+    [nataliaAvatar]
+  );
+  const certUrlByIndex = (i) => `${API_BASE}/uploads/${nataliaCertificates[i]}`;
 
-  // Автоматический расчет начального зума при открытии модалки
-  useEffect(() => {
-    if (modalOpen && modalImageRef.current && modalContainerRef.current) {
-      const img = modalImageRef.current;
-      const container = modalContainerRef.current;
-
-      const containerWidth = container.clientWidth;
-      const containerHeight = container.clientHeight;
-
-      const imgNaturalWidth = img.naturalWidth;
-      const imgNaturalHeight = img.naturalHeight;
-
-      const scaleX = containerWidth / imgNaturalWidth;
-      const scaleY = containerHeight / imgNaturalHeight;
-
-      const fittedScale = Math.min(scaleX, scaleY, 2);
-
-      setZoomLevel(fittedScale);
-      setPosition({ x: 0, y: 0 });
-    }
-  }, [modalOpen, modalImage]);
-
+  // специалист
   const specialists = [
     {
       id: 'natalia',
       name: t('specialist1.name'),
-      photo: `http://localhost:3001${nataliaAvatar}`,
+      photo: nataliaPhoto,
       description: isAdmin ? (
         <div className="editable-description">
           <label>{t('specialist1.description.therapyLabel')}</label>
           <TiptapEditor
             content={descriptionData.therapyLabel}
-            onChange={val =>
-              setDescriptionData({
-                ...descriptionData,
-                therapyLabel: val,
-              })
+            onChange={(val) =>
+              setDescriptionData((p) => ({ ...p, therapyLabel: val }))
             }
           />
 
           <label>{t('specialist1.description.experienceLabel')}</label>
           <TiptapEditor
             content={descriptionData.experienceLabel}
-            onChange={val =>
-              setDescriptionData({
-                ...descriptionData,
-                experienceLabel: val,
-              })
+            onChange={(val) =>
+              setDescriptionData((p) => ({ ...p, experienceLabel: val }))
             }
           />
 
           <label>{t('specialist1.description.locationLabel')}</label>
           <TiptapEditor
             content={descriptionData.locationLabel}
-            onChange={val =>
-              setDescriptionData({
-                ...descriptionData,
-                locationLabel: val,
-              })
+            onChange={(val) =>
+              setDescriptionData((p) => ({ ...p, locationLabel: val }))
             }
           />
         </div>
@@ -408,17 +373,17 @@ function TeamPage({ reviews, isAdmin, addReview }) {
         <>
           <div
             dangerouslySetInnerHTML={{
-              __html: descriptionData.therapyLabel.replace(/<\/?p>/g, ''),
+              __html: (descriptionData.therapyLabel || '').replace(/<\/?p>/g, ''),
             }}
           />
           <div
             dangerouslySetInnerHTML={{
-              __html: descriptionData.experienceLabel.replace(/<\/?p>/g, ''),
+              __html: (descriptionData.experienceLabel || '').replace(/<\/?p>/g, ''),
             }}
           />
           <div
             dangerouslySetInnerHTML={{
-              __html: descriptionData.locationLabel.replace(/<\/?p>/g, ''),
+              __html: (descriptionData.locationLabel || '').replace(/<\/?p>/g, ''),
             }}
           />
         </>
@@ -430,7 +395,7 @@ function TeamPage({ reviews, isAdmin, addReview }) {
             <input
               type="text"
               value={detail.title}
-              onChange={e => {
+              onChange={(e) => {
                 const updated = [...detailsData];
                 updated[index].title = e.target.value;
                 setDetailsData(updated);
@@ -446,7 +411,7 @@ function TeamPage({ reviews, isAdmin, addReview }) {
                   <TiptapEditor
                     key={i}
                     content={para}
-                    onChange={val => {
+                    onChange={(val) => {
                       const updated = [...detailsData];
                       updated[index].content[i] = val;
                       setDetailsData(updated);
@@ -457,7 +422,7 @@ function TeamPage({ reviews, isAdmin, addReview }) {
             ) : (
               <TiptapEditor
                 content={detail.content}
-                onChange={val => {
+                onChange={(val) => {
                   const updated = [...detailsData];
                   updated[index].content = [val];
                   setDetailsData(updated);
@@ -469,7 +434,6 @@ function TeamPage({ reviews, isAdmin, addReview }) {
           ),
         })),
 
-        // Оставляем сертификаты без изменений
         {
           title: t('specialist1.details.4.title'),
           content: (
@@ -479,7 +443,7 @@ function TeamPage({ reviews, isAdmin, addReview }) {
                   type="file"
                   accept="image/*"
                   multiple
-                  onChange={e => handleFileChange(e, 'natalia')}
+                  onChange={(e) => handleFileChange(e, 'natalia')}
                   style={{ marginBottom: '10px' }}
                 />
               )}
@@ -489,30 +453,26 @@ function TeamPage({ reviews, isAdmin, addReview }) {
                   <div
                     className="carousel-main"
                     onClick={() => {
-                      setModalImage(
-                        `/uploads/${nataliaCertificates[currentIndex]}`
-                      );
+                      setModalImage(certUrlByIndex(currentIndex));
                       setModalOpen(true);
                       setZoomLevel(1);
                     }}
                     title="Нажмите для увеличения"
                   >
                     <img
-                      src={`/uploads/${nataliaCertificates[currentIndex]}`}
+                      src={certUrlByIndex(currentIndex)}
                       alt={`Certificate ${currentIndex + 1}`}
                       className="certificate-image"
                     />
                   </div>
 
                   <div className="carousel-thumbs">
-                    {nataliaCertificates.map((src, i) => (
+                    {nataliaCertificates.map((name, i) => (
                       <img
-                        key={i}
-                        src={`/uploads/${src}`}
+                        key={name + i}
+                        src={`${API_BASE}/uploads/${name}`}
                         alt={`Thumbnail ${i + 1}`}
-                        className={`thumb-image ${
-                          currentIndex === i ? 'active' : ''
-                        }`}
+                        className={`thumb-image ${currentIndex === i ? 'active' : ''}`}
                         onClick={() => setCurrentIndex(i)}
                       />
                     ))}
@@ -520,9 +480,7 @@ function TeamPage({ reviews, isAdmin, addReview }) {
 
                   {isAdmin && (
                     <button
-                      onClick={() =>
-                        handleDeleteCertificate(currentIndex, 'natalia')
-                      }
+                      onClick={() => handleDeleteCertificate(currentIndex, 'natalia')}
                       className="delete-button"
                     >
                       Удалить выбранное изображение
@@ -539,6 +497,7 @@ function TeamPage({ reviews, isAdmin, addReview }) {
     },
   ];
 
+  // слайдер отзывов
   const settings = {
     dots: liveReviews.length > 1,
     infinite: liveReviews.length > 1,
@@ -549,8 +508,7 @@ function TeamPage({ reviews, isAdmin, addReview }) {
     autoplay: true,
     autoplaySpeed: 3000,
     prevArrow: liveReviews.length > 0 ? <CustomArrow icon={leftArrow} /> : null,
-    nextArrow:
-      liveReviews.length > 0 ? <CustomArrow icon={rightArrow} /> : null,
+    nextArrow: liveReviews.length > 0 ? <CustomArrow icon={rightArrow} /> : null,
     responsive: [
       {
         breakpoint: 1024,
@@ -581,93 +539,69 @@ function TeamPage({ reviews, isAdmin, addReview }) {
         <div key={index} className="specialist">
           <h2 className="specialist-name">{specialist.name}</h2>
           <div className="specialist-info">
-            <img
-              src={specialist.photo}
-              alt={specialist.name}
-              className="specialist-photo"
-            />
-            <div className="specialist-description">
-              {specialist.description}
-            </div>
+            <img src={specialist.photo} alt={specialist.name} className="specialist-photo" />
+            <div className="specialist-description">{specialist.description}</div>
 
             {isAdmin && (
               <div className="avatar-uploader">
                 <AvatarUploader
                   specialistId={specialist.id}
-                  onSave={avatarPath =>
-                    handleAvatarSave(avatarPath, specialist.id)
-                  }
+                  onSave={(avatarPath) => handleAvatarSave(avatarPath, specialist.id)}
                 />
               </div>
             )}
           </div>
+
           <Accordion items={specialist.details} />
+
           <div className="specialist-reviews">
             <h3>{t('reviews.title')}</h3>
-            {liveReviews.filter(review => review.specialistId === specialist.id)
-              .length > 0 && (
+            {liveReviews.filter((r) => r.specialistId === specialist.id).length > 0 && (
               <Slider {...settings}>
                 {liveReviews
-                  .filter(review => review.specialistId === specialist.id)
-                  .map((review, index) => (
-                    <ReviewCardTeam
-                      key={`${review.id}-${index}`}
-                      review={review}
-                    />
+                  .filter((r) => r.specialistId === specialist.id)
+                  .map((review, idx) => (
+                    <ReviewCardTeam key={`${review.id}-${idx}`} review={review} />
                   ))}
               </Slider>
             )}
             {isAdmin && (
               <div className="save-changes-container">
                 <SaveButton onClick={handleSaveTextChanges} />
-                {contentSaved && (
-                  <p style={{ color: 'green', marginTop: '10px' }}>
-                    Зміни збережені
-                  </p>
-                )}
+                {contentSaved && <p style={{ color: 'green', marginTop: '10px' }}>Зміни збережені</p>}
               </div>
             )}
           </div>
         </div>
       ))}
+
       {isAdmin && changesMade && (
         <div className="save-changes-container">
           <SaveButton onClick={handleSaveChanges} />
         </div>
       )}
+
       {modalOpen && (
         <div className="modal-overlay" onClick={() => setModalOpen(false)}>
           <div
             className="modal-content"
-            onClick={e => e.stopPropagation()}
+            onClick={(e) => e.stopPropagation()}
             ref={modalContainerRef}
             style={{ maxWidth: '90vw', maxHeight: '90vh' }}
           >
-            <button
-              className="close-button"
-              onClick={() => setModalOpen(false)}
-            >
+            <button className="close-button" onClick={() => setModalOpen(false)}>
               ×
             </button>
 
             <div className="zoom-controls">
-              <button
-                onClick={() => setZoomLevel(z => Math.max(z - 0.25, 1))}
-                disabled={zoomLevel <= 1}
-              >
+              <button onClick={() => setZoomLevel((z) => Math.max(z - 0.25, 1))} disabled={zoomLevel <= 1}>
                 −
               </button>
               <span>{Math.round(zoomLevel * 100)}%</span>
-              <button onClick={() => setZoomLevel(z => Math.min(z + 0.25, 5))}>
-                +
-              </button>
+              <button onClick={() => setZoomLevel((z) => Math.min(z + 0.25, 5))}>+</button>
             </div>
 
-            <div
-              className="modal-image-container"
-              onMouseDown={handleMouseDown}
-              style={{ overflow: 'hidden' }}
-            >
+            <div className="modal-image-container" onMouseDown={handleMouseDown} style={{ overflow: 'hidden' }}>
               <img
                 src={modalImage}
                 alt="certificate"

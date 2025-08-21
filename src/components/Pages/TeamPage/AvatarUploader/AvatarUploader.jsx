@@ -3,73 +3,142 @@ import Cropper from 'react-easy-crop';
 import getCroppedImg from '../cropImage';
 import './AvatarUploader.css';
 
+const API_BASE = process.env.REACT_APP_API_BASE || 'http://localhost:3001';
+
 function AvatarUploader({ specialistId, onSave }) {
   const [imageSrc, setImageSrc] = useState(null);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
+  const [isSaving, setIsSaving] = useState(false);
 
-  const onCropComplete = useCallback((croppedArea, croppedAreaPixels) => {
-    setCroppedAreaPixels(croppedAreaPixels);
+  const onCropComplete = useCallback((_, area) => {
+    setCroppedAreaPixels(area);
   }, []);
 
   const handleFileChange = async (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        setImageSrc(reader.result);
-      };
-      reader.readAsDataURL(file);
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+
+    // простая валидация типа/размера
+    if (!file.type.startsWith('image/')) {
+      alert('Выберите файл изображения.');
+      return;
     }
+    if (file.size > 8 * 1024 * 1024) {
+      alert('Слишком большой файл (макс. 8MB).');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => setImageSrc(reader.result);
+    reader.readAsDataURL(file);
+    // сбрасываем input, чтобы можно было выбрать тот же файл повторно
+    e.target.value = '';
   };
 
   const handleSave = async () => {
-    try {
-      const croppedImage = await getCroppedImg(imageSrc, croppedAreaPixels);
-      const formData = new FormData();
-      formData.append('avatar', croppedImage, croppedImage.name);
-      formData.append('specialistId', specialistId);
+    if (!imageSrc || !croppedAreaPixels || !specialistId) return;
 
-      const response = await fetch('http://localhost:3001/upload-avatar', {
+    try {
+      setIsSaving(true);
+
+      // getCroppedImg может вернуть Blob или File — приводим к File
+      let cropped = await getCroppedImg(imageSrc, croppedAreaPixels);
+      if (!(cropped instanceof File)) {
+        // если Blob — оборачиваем в File
+        cropped = new File([cropped], 'avatar.jpg', { type: 'image/jpeg' });
+      }
+
+      const formData = new FormData();
+      formData.append('avatar', cropped, cropped.name || 'avatar.jpg');
+      formData.append('specialistId', String(specialistId));
+
+      const token = localStorage.getItem('authToken');
+      if (!token) {
+        alert('Нет токена. Войдите как администратор.');
+        setIsSaving(false);
+        return;
+      }
+
+      const res = await fetch(`${API_BASE}/upload-avatar`, {
         method: 'POST',
-        body: formData,
         headers: {
-          Authorization: 'Bearer admin-token-123', 
+          Authorization: `Bearer ${token}`, // JWT
+          // НЕ указывать 'Content-Type' — браузер сам выставит boundary для multipart/form-data
         },
+        body: formData,
       });
 
-      const data = await response.json();
-      if (data.success) {
-        onSave(data.avatarPath);  // Передаем путь к аватару в родительский компонент
+      const data = await res.json();
+      if (data?.success && data.avatarPath) {
+        // добавим cache-busting параметр, чтобы сразу увидеть новую картинку
+        const url = `${data.avatarPath}?v=${Date.now()}`;
+        onSave?.(url);
+        // сбросим кроппер
+        setImageSrc(null);
+        setZoom(1);
+        setCrop({ x: 0, y: 0 });
       } else {
-        console.error('Error uploading avatar');
+        console.error('Upload avatar error:', data);
+        alert('Не удалось загрузить аватар.');
       }
-    } catch (error) {
-      console.error('Error cropping image', error);
+    } catch (err) {
+      console.error('Error cropping/uploading avatar:', err);
+      alert('Ошибка при обработке изображения.');
+    } finally {
+      setIsSaving(false);
     }
   };
 
   return (
-    <div>
-      <input type="file" accept="image/*" onChange={handleFileChange} />
+    <div className="avatar-uploader">
+      <input
+        type="file"
+        accept="image/*"
+        onChange={handleFileChange}
+      />
+
       {imageSrc && (
-        <div className="crop-container">
-          <Cropper
-            image={imageSrc}
-            crop={crop}
-            zoom={zoom}
-            aspect={1}
-            onCropChange={setCrop}
-            onZoomChange={setZoom}
-            onCropComplete={onCropComplete}
-          />
-        </div>
-      )}
-      {imageSrc && (
-        <button onClick={handleSave} className="save-avatar-button">
-          Save Avatar
-        </button>
+        <>
+          <div className="crop-container">
+            <Cropper
+              image={imageSrc}
+              crop={crop}
+              zoom={zoom}
+              aspect={1}
+              onCropChange={setCrop}
+              onZoomChange={setZoom}
+              onCropComplete={onCropComplete}
+              zoomWithScroll
+              minZoom={1}
+              maxZoom={4}
+              restrictPosition={true}
+            />
+          </div>
+
+          <div className="controls">
+            <label className="zoom-label">
+              Zoom:
+              <input
+                type="range"
+                min={1}
+                max={4}
+                step={0.05}
+                value={zoom}
+                onChange={(e) => setZoom(Number(e.target.value))}
+              />
+            </label>
+
+            <button
+              onClick={handleSave}
+              className="save-avatar-button"
+              disabled={isSaving}
+            >
+              {isSaving ? 'Saving…' : 'Save Avatar'}
+            </button>
+          </div>
+        </>
       )}
     </div>
   );

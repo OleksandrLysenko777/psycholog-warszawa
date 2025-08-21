@@ -146,7 +146,7 @@
   }
 
   .review-header {
-    flex-direction: column;
+    flex-direction: flex;
     align-items: flex-start;
     gap: 5px;
   }

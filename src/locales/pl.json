@@ -14,20 +14,22 @@
   "specialist1": {
     "name": "Natalia Basko",
     "description": {
-      "therapyLabel": "<p>Terapia indywidualna: 100zł (60min)</p>",
+      "therapyLabel": "<p>Terapia indywidualna: 100zł (50min)</p>",
       "experienceLabel": "Staż pracy: 25 lat",
-      "locationLabel": "Przyjmuję stacjonarnie w Warszawie i okolicy. Pracuję również online."
+      "locationLabel": "<p>Przyjmuję stacjonarnie w Warszawie i okolicy. Pracuję również online. </p>"
     },
     "details": [
       {
         "title": "Jak zmieniła mnie psychoterapia",
         "content": [
-          "<p>Psychoterapia jest moim niezastąpionym narzędziem samopomocy, samopoznania oraz odnalezienia siły w trudnych momentach życia. Jest dla mnie spotkaniem ze sobą w prawdzie i niesamowicie ciekawą drogą do poznania swojego wewnętrznego świata. Dzięki terapeutycznej pracy idę swoją własną, świadomą i odpowiedzialną drogą życia, z poczuciem wdzięczności i samorealizacji.</p><p>Jak nie to nie. A jak tak to tak</p><p></p>"
+          "<p>Psychoterapia jest moim niezastąpionym narzędziem samopomocy, samopoznania oraz odnalezienia siły w trudnych momentach życia. Jest dla mnie spotkaniem ze sobą w prawdzie i niesamowicie ciekawą drogą do poznania swojego wewnętrznego świata. Dzięki terapeutycznej pracy idę swoją własną, świadomą i odpowiedzialną drogą życia, z poczuciem wdzięczności i samorealizacji.</p>"
         ]
       },
       {
         "title": "O mnie",
-        "content": "Jestem psychologiem praktykiem, psychotraumatologiem. Specjalizuje się w pracy z traumą. Człowiek jest dla mnie tajemnicą, którą lubię poznawać. Pracuje z dorosłymi i dziećmi od 12 roku życia. Kocham góry, poznawanie nowych miejsc, kultur i smaków. Siłę czerpie na łonie natury, cenię ciszę i własny rozwój. Rozmawiam w języku polskim, ukraińskim i rosyjskim."
+        "content": [
+          "<p>Jestem psychologiem praktykiem, psychotraumatologiem. Specjalizuje się w pracy z traumą. Człowiek jest dla mnie tajemnicą, którą lubię poznawać. Pracuje z dorosłymi i dziećmi od 12 roku życia. Kocham góry, poznawanie nowych miejsc, kultur i smaków. Siłę czerpie na łonie natury, cenię ciszę i własny rozwój. Rozmawiam w języku polskim, ukraińskim i rosyjskim.</p>"
+        ]
       },
       {
         "title": "Z czym pracuję",
@@ -36,6 +38,10 @@
       {
         "title": "Wykształcenie",
         "content": "Wyższe magisterskie. W 2009 roku Ukończyłam stacjonarne studia magisterskie z psychologii na Uniwersytecie Kardynała Stefana Wyszyńskiego w Warszawie oraz dwuletnie Studia Podyplomowe na Uniwersytecie Warszawskim z Diagnozy Klinicznej Dziecka i Jego Rodziny. Dodatkowo ukończyłam wiele kursów i szkoleń przygotowujących mnie do pracy terapeutycznej z traumą oraz klientem w szeroko rozumianym kryzysie. Pracuję interwencyjnie, terapeutycznie, konsultacyjnie. Swoją pracę poddaje superwizji i interwizji koleżeńskiej."
+      },
+      {
+        "title": "Certyfikaty",
+        "content": ""
       },
       {
         "title": "Certyfikaty",
@@ -135,15 +141,13 @@
   "contact": {
     "title": "Kontakt",
     "addressTitle": "Adres",
-    "address": "Aleja Stanów Zjednoczonych 51, 04-028 Warszawa",
+    "address": "Czarnołęcka 26D, 04-740 Warszawa",
     "phoneTitle": "Telefon",
-    "phone": "+48 794 555 809, +48 601 949 472",
+    "phone": "+48 794 555 809",
     "emailTitle": "E-mail",
     "email": "psycholog.basko@gmail.com",
-    "skypeTitle": "Skype",
-    "skype": "psycholog.waw",
     "hoursTitle": "Godziny pracy",
-    "hours": "Poniedziałek - Piątek: 8:00 - 20:00",
+    "hours": "Wtorek: 18:00 - 21:00, Piątek: 10:00 - 20:00, Sobota: 11:00 - 17:00",
     "resignationTitle": "Zasady odwoływania spotkań",
     "resignationText1": "Bezpłatne odwołanie wizyty jest możliwe nie później niż 24 godziny przed sesją."
   },
