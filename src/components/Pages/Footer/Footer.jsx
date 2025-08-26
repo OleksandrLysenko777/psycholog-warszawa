@@ -102,7 +102,7 @@ function Footer() {
       </div>
       <div className="footer-bottom">
         <p>{t('footer.cookiesInfo')}</p>
-        <p>&copy; 2024 - {t('footer.allRightsReserved')}</p>
+        <p>&copy; 2025 - {t('footer.allRightsReserved')}</p>
       </div>
     </footer>
   );

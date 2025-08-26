@@ -1,3 +1,21 @@
+/* высота вашей фикс-шапки + небольшой отступ */
+:root {
+  --header-offset: 140px; /* подстройте под вашу шапку */
+}
+
+/* каждый отзыв, чтобы scrollIntoView «останавливался» ниже шапки */
+.review {
+  scroll-margin-top: var(--header-offset);
+}
+
+/* (опционально) плавный скролл для контейнера/страницы */
+html,
+body,
+.reviews-page,
+.reviews-list {
+  scroll-behavior: smooth;
+}
+
 .reviews-page {
   display: flex;
   justify-content: center;
@@ -128,6 +146,13 @@
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   }
 
+  /* ReviewsPage.css */
+  .reviews-list {
+    max-height: 80vh; /* как тебе удобно */
+    overflow-y: auto;
+    scroll-behavior: smooth;
+  }
+
   .reviews-list h1 {
     font-size: 20px;
   }
@@ -151,3 +176,5 @@
     gap: 5px;
   }
 }
+
+

@@ -139,3 +139,35 @@
     font-size: 16px;
   }
 }
+
+/* --- ЕДИНЫЙ hover для пункта контактов --- */
+.footer-contact-item,
+.footer-phone-item {
+  position: relative;
+  color: #ecf0f1;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 6px;
+  border-radius: 6px;
+  transition: color 0.25s ease;
+  text-decoration: none;
+}
+
+/* Иконки внутри всегда берут цвет текста пункта */
+.footer-contact-item svg,
+.footer-contact-item svg *,
+.footer-phone-item svg,
+.footer-phone-item svg * {
+  fill: currentColor !important;
+  stroke: currentColor !important;
+  transition: fill 0.25s ease, stroke 0.25s ease;
+}
+
+/* Наведение на пункт (или на любой его дочерний элемент) */
+.footer-contact-item:hover,
+.footer-contact-item:focus-visible,
+.footer-phone-item:hover,
+.footer-phone-item:focus-visible {
+  color: #3498db; /* и текст, и иконка меняются одновременно */
+}

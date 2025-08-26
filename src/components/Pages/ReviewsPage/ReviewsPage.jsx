@@ -2,55 +2,57 @@ import React, { useState, useEffect, useRef } from 'react';
 import AddReview from './AddReview';
 import { useTranslation } from 'react-i18next';
 import StarRatings from 'react-star-ratings';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import io from 'socket.io-client';
 import './ReviewsPage.css';
 
 const API_BASE = process.env.REACT_APP_API_BASE || 'http://localhost:3001';
 
+
 const ReviewsPage = ({ specialists, isAdmin, addReview }) => {
   const { t } = useTranslation();
   const [localReviews, setLocalReviews] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+
   const location = useLocation();
-
-  // держим сокет в ref, чтобы не пересоздавать на каждый рендер
+  const navigate = useNavigate();
   const socketRef = useRef(null);
+  const scrolledOnceRef = useRef(false);
 
-  // Инициализация сокета + подписки
+  // не восстанавливать прошлую позицию прокрутки браузером
+  useEffect(() => {
+    let prev;
+    if ('scrollRestoration' in window.history) {
+      prev = window.history.scrollRestoration;
+      window.history.scrollRestoration = 'manual';
+    }
+    return () => {
+      if (prev !== undefined) window.history.scrollRestoration = prev;
+    };
+  }, []);
+
   useEffect(() => {
     const token = localStorage.getItem('authToken') || null;
-
-    // создаём новое соединение (с токеном, если есть)
-    socketRef.current = io(API_BASE, {
-      auth: token ? { token } : {}, // сервер вытащит из handshake.auth.token
-    });
-
+    socketRef.current = io(API_BASE, { auth: token ? { token } : {} });
     const socket = socketRef.current;
 
-    // новые отзывы
     socket.on('new_review', (newReview) => {
       setLocalReviews((prev) => [newReview, ...prev]);
       addReview?.(newReview);
     });
-
-    // удаление отзывов
     socket.on('review_deleted', (deletedReviewId) => {
       setLocalReviews((prev) => prev.filter((r) => r.id !== deletedReviewId));
     });
 
     return () => {
-      if (!socket) return;
       socket.off('new_review');
       socket.off('review_deleted');
-      socket.disconnect(); // корректно закрываем
+      socket.disconnect();
     };
-    // Пересоздаём соединение, если статус админа меняется (например, после логина)
   }, [isAdmin, addReview]);
 
-  // Первичная загрузка отзывов
   useEffect(() => {
-    const fetchReviews = async () => {
+    (async () => {
       try {
         const res = await fetch(`${API_BASE}/reviews`);
         const data = await res.json();
@@ -60,32 +62,55 @@ const ReviewsPage = ({ specialists, isAdmin, addReview }) => {
       } finally {
         setIsLoading(false);
       }
-    };
-    fetchReviews();
+    })();
   }, [t]);
 
-  // Скролл к конкретному отзыву по хэшу
-  useEffect(() => {
-    if (isLoading) return;
-    const hash = location.hash;
-    if (hash && hash.startsWith('#review-')) {
-      const reviewElement = document.querySelector(hash);
-      const list = document.querySelector('.reviews-list');
-      if (reviewElement && list) {
-        setTimeout(() => {
-          const offset = reviewElement.offsetTop - list.offsetTop;
-          list.scrollTo({ top: offset - 20, behavior: 'smooth' });
-        }, 300);
+  // ---- АВТОСКРОЛЛ: сперва окно к .reviews-list, затем внутри списка к отзыву ----
+  // ---- АВТОСКРОЛЛ: окно -> контейнер, контейнер -> отзыв, затем финальное выравнивание окна ----
+// ---- АВТОСКРОЛЛ: только scrollIntoView + CSS scroll-margin-top ----
+useEffect(() => {
+  if (isLoading || scrolledOnceRef.current) return;
+
+  const stateId = location.state?.reviewId;
+  let targetId = stateId;
+
+  // фолбэк для /reviews#review-123
+  if (!targetId && location.hash?.startsWith('#review-')) {
+    targetId = location.hash.replace('#review-', '');
+  }
+  if (!targetId) return;
+
+  let tries = 0;
+  const MAX_TRIES = 25;      // ~1 сек
+  const TICK_MS   = 40;
+
+  const tick = () => {
+    const el = document.getElementById(`review-${targetId}`);
+    if (el) {
+      // ключевой момент: элемент сам приводит себя «в видимость»
+      el.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' });
+
+      scrolledOnceRef.current = true;
+
+      // очистим state, чтобы при возвращении не автоскроллило снова
+      if (stateId) {
+        navigate(location.pathname, { replace: true, state: null });
       }
+      return;
     }
-  }, [location, isLoading]);
+    if (tries++ < MAX_TRIES) setTimeout(tick, TICK_MS);
+  };
+
+  tick();
+}, [isLoading, location.state, location.hash, location.pathname, navigate]);
+
+
 
   const handleReviewAdded = (newReview) => {
     setLocalReviews((prev) => [newReview, ...prev]);
   };
 
   const handleDeleteReview = (reviewId) => {
-    // Токен уже передан при коннекте; сервер проверит право админа в io.use(...)
     socketRef.current?.emit('delete_review', reviewId);
   };
 
@@ -137,9 +162,7 @@ const ReviewsPage = ({ specialists, isAdmin, addReview }) => {
               )}
             </div>
 
-            <p>
-              <strong>{review.name}</strong>
-            </p>
+            <p><strong>{review.name}</strong></p>
             <p>{review.reviewText}</p>
             <p className="review-date">{formatDate(review.date)}</p>
           </div>

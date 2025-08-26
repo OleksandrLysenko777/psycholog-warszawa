@@ -1,4 +1,4 @@
-import React, { memo, useMemo } from 'react';
+import React, { memo } from 'react';
 import { Link } from 'react-router-dom';
 import ReactStars from 'react-rating-stars-component';
 import { useTranslation } from 'react-i18next';
@@ -7,16 +7,10 @@ import './ReviewCardTeam.css';
 const ReviewCardTeam = ({ review }) => {
   const { t } = useTranslation();
 
-  // Безопасные значения
   const name = review?.name || t('reviews.anonymous') || 'Anonymous';
   const text = review?.reviewText || '';
   const rating = Number(review?.rating) || 0;
-
-  // Якорная ссылка вида /reviews#review-<id>
-  const reviewLink = useMemo(() => {
-    const id = review?.id ?? '';
-    return `/reviews#review-${id}`;
-  }, [review?.id]);
+  const reviewId = review?.id ?? '';
 
   return (
     <div className="review-card-team">
@@ -34,7 +28,10 @@ const ReviewCardTeam = ({ review }) => {
       <p className="review-text-team">{text}</p>
 
       <div className="read-more-team">
-        <Link to={reviewLink}>{t('reviews.readMore')}</Link>
+        {/* передаём id через state, без якорного автоскролла */}
+        <Link to="/reviews" state={{ reviewId }}>
+          {t('reviews.readMore')}
+        </Link>
       </div>
     </div>
   );

@@ -62,13 +62,13 @@
   text-overflow: ellipsis;
 }
 
-.read-more {
+.read-more a {
   position: absolute;
   bottom: 10px;
   right: 10px;
   color: rgb(92, 63, 63);
   text-decoration: none;
-  font-weight: bold;
+  font-weight: bold; /* Подчеркиваем важность ссылки */
   transition: color 0.3s ease, text-decoration 0.3s ease;
 }
 
