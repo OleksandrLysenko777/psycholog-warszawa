@@ -5,7 +5,7 @@
   },
   {
     "id": "section2",
-    "image": "/uploads/section2.jpg"
+    "image": "/uploads/section2.JPG"
   },
   {
     "id": "section3",
@@ -13,7 +13,7 @@
   },
   {
     "id": "section4",
-    "image": "/uploads/section4.png"
+    "image": "/uploads/section4.JPG"
   },
   {
     "id": "section5",
@@ -21,10 +21,10 @@
   },
   {
     "id": "section6",
-    "image": "/uploads/section6.png"
+    "image": "/uploads/section6.JPG"
   },
   {
     "id": "section7",
-    "image": "/uploads/section7.jpg"
+    "image": "/uploads/section7.JPG"
   }
 ]
