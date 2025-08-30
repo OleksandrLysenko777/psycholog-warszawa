@@ -1,10 +1,40 @@
+/* Контейнер страницы */
 .start-page {
-  width: 90%;
+  width: 85%;
+  max-width: 1200px;         /* чтобы на широких экранах не разъезжалось */
   margin: 0 auto;
-  font-family: 'Arial', sans-serif;
-  color: #333;
   padding: 20px;
+  box-sizing: border-box;    /* чтобы padding не создавал горизонт-скролл */
 }
+
+/* На планшетах/мобилках контейнер лучше дать во всю ширину */
+@media (max-width: 768px) {
+  .start-page {
+    width: 100%;
+    padding: 16px 14px;      /* чуть компактнее поля */
+  }
+}
+
+/* Очень узкие экраны — ещё компактнее поля */
+@media (max-width: 380px) {
+  .start-page {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+}
+
+/* Карточка всегда вписывается в контейнер */
+.intro-card {
+  width: 100%;
+  max-width: none;
+  box-sizing: border-box;
+}
+
+/* Чтобы бордер не «крал» ширину на узких экранах */
+@media (max-width: 480px) {
+  .intro-card { border-width: 1px; }
+}
+
 
 /* ---------- заголовки/интро ---------- */
 .header {
@@ -322,3 +352,4 @@
     font-size: 16px;
   }
 }
+

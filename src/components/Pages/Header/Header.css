@@ -21,11 +21,13 @@
   justify-content: center;
   padding-left: 40px;
 }
+
 /* Логотип */
 .logo img {
   width: 500px;
   height: auto;
 }
+
 @media (min-width: 1025px) {
   .logo {
     padding-left: 0;
@@ -97,10 +99,9 @@
 .mobile-menu-toggle .bar:nth-child(2) {
   opacity: 1;
 }
-
 .mobile-menu-toggle.open .bar:nth-child(2) {
-  opacity: 0; /* Скрываем среднюю полоску */
-}
+  opacity: 0;
+} /* Скрываем среднюю полоску */
 
 /* Анимация появления крестика */
 .mobile-menu-toggle .bar {
@@ -154,9 +155,9 @@
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    max-height: 400px; /* Установим максимальную высоту */
-    overflow-y: auto; /* Добавляем прокрутку при переполнении */
-    text-align: center; /* Выравнивание текста по центру */
+    max-height: 400px; /* Максимальная высота */
+    overflow-y: auto; /* Прокрутка при переполнении */
+    text-align: center;
   }
 
   .nav-container.open {
@@ -197,6 +198,7 @@
     margin-top: 0;
   }
 }
+
 /* Переключатель языка */
 .language-switcher {
   display: flex;
@@ -221,16 +223,105 @@
   width: 32px;
   height: 32px;
 }
+
 .logout-button {
   background-color: red;
 }
-
 .logout-button:hover {
   background-color: #2980b9;
 }
 
 /* Отступ для основного контента */
 body {
-  margin-top: 150px; /* Добавляем отступ для основного контента */
+  margin-top: 150px;
 }
 
+/* === MOBILE: чтобы флаги всегда помещались в хедере === */
+@media (max-width: 768px) {
+  /* компактнее сама шапка */
+  .header {
+    padding: 12px 12px;
+  }
+
+  /* логотип без лишних отступов и с «умной» шириной */
+  .logo {
+    padding-left: 0 !important;
+    flex: 0 1 auto; /* логотип может ужаться */
+  }
+  .logo img {
+    padding-left: 0 !important;
+    height: auto;
+    /* логотип занимает то, что остаётся между бургером и флажками */
+    max-width: calc(100vw - 140px); /* бургер ~50px + флаги + отступы */
+    width: clamp(180px, 52vw, 320px);
+  }
+
+  /* контейнер с флагами не сжимать, держать справа */
+  .language-switcher {
+    margin-right: 12px; /* аккуратный правый отступ */
+    gap: 6px; /* меньше расстояние между флагами */
+    flex-shrink: 0; /* не давать сжиматься */
+  }
+
+  /* сделать сами флажки поменьше */
+  .language-switcher .lang-button svg {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+/* ещё компактнее на очень узких экранах */
+@media (max-width: 380px) {
+  .logo img {
+    max-width: calc(100vw - 130px);
+    width: clamp(160px, 48vw, 260px);
+  }
+  .language-switcher .lang-button svg {
+    width: 22px;
+    height: 22px;
+  }
+}
+
+/* ультра-узкие (старые телефоны) */
+@media (max-width: 340px) {
+  .logo img {
+    max-width: calc(100vw - 120px);
+    width: clamp(150px, 45vw, 230px);
+  }
+  .language-switcher {
+    gap: 4px;
+  }
+}
+
+/* --- MOBILE: не даём бургеру перекрывать логотип --- */
+@media (max-width: 768px) {
+  .header {
+    position: fixed;
+  } /* чтобы absolute отмерялось от шапки */
+
+  .mobile-menu-toggle {
+    display: block;
+    position: absolute;
+    left: 12px; /* бургер у левого края */
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1101;
+  }
+
+  /* резервируем место под бургер слева от логотипа */
+  .logo {
+    padding-left: 56px !important;
+  } /* ~35px ширина бургера + зазоры */
+
+  /* логотип без внутреннего сдвига */
+  .logo img {
+    padding-left: 0 !important;
+  }
+}
+
+/* сверхузкие экраны — чуть меньше отступ слева под бургер */
+@media (max-width: 360px) {
+  .logo {
+    padding-left: 48px !important;
+  }
+}
