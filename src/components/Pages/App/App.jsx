@@ -130,7 +130,7 @@ function App() {
   ];
 
   return (
-    <Router basename="/psycholog-warszawa">
+    <Router>
       <div className="page-container">
         <Header isAdmin={isAdmin} onLogout={handleLogout} />
         <div className="content-wrap">
